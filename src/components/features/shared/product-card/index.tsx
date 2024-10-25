@@ -2,14 +2,8 @@ import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IProduct } from "@/types/product.types";
 import Link from "next/link";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import CartSheet from "../../cart/cart-sheet";
 
 export default function ProductCard({ product }: { product: IProduct }) {
   return (
@@ -49,15 +43,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
             Buy now
             {/* <ShoppingCart /> */}
           </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Cart</SheetTitle>
-              <SheetDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </SheetDescription>
-            </SheetHeader>
-          </SheetContent>
+          <CartSheet />
         </Sheet>
       </CardFooter>
     </Card>

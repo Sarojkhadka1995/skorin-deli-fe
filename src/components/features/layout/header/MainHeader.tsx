@@ -2,7 +2,6 @@ import Image from "next/image";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -12,6 +11,7 @@ import Search from "./Search";
 import AccountAndCart from "./AccountAndCart";
 import { Menu, ShoppingCart } from "lucide-react";
 import { logo } from "../../../../../image-config";
+import CartSheet from "../../cart/cart-sheet";
 
 export default function MainHeader() {
   return (
@@ -33,15 +33,7 @@ export default function MainHeader() {
         <SheetTrigger className="lg:hidden flex justify-end">
           <ShoppingCart />
         </SheetTrigger>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Cart</SheetTitle>
-            <SheetDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
+        <CartSheet />
       </Sheet>
       <Search />
       <AccountAndCart />

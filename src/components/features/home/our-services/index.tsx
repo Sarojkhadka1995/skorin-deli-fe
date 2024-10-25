@@ -27,7 +27,7 @@ const features = [
 export default function Services() {
   const [swiperRef, setSwiperRef] = useState<SwiperClass>();
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-8">
       <Swiper
         // slidesPerView={3}
         // grid={{
