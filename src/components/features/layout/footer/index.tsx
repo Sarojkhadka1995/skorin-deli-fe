@@ -41,10 +41,18 @@ export default function Footer() {
           <div className="w-full sm:w-2/4 md:w-1/4 mb-8 md:mb-0">
             <h3 className="text-lg font-semibold mb-4">Follow us</h3>
             <div className="flex space-x-4 mb-4">
-              <Link href="#" className="text-gray-600 hover:text-gray-800">
+              <Link
+                href="https://www.facebook.com/SkorinDeli"
+                target="_blank"
+                className="text-gray-600 hover:text-gray-800"
+              >
                 <Facebook size={24} />
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-800">
+              <Link
+                href="https://www.instagram.com/skorin.deli/"
+                target="_blank"
+                className="text-gray-600 hover:text-gray-800"
+              >
                 <Instagram size={24} />
               </Link>
             </div>
@@ -55,19 +63,19 @@ export default function Footer() {
           </div>
 
           {/* Liquor License */}
-          <div className="w-full sm:w-2/4 md:w-1/4">
+          {/* <div className="w-full sm:w-2/4 md:w-1/4">
             <h3 className="text-lg font-semibold mb-4">Liquor Licence</h3>
             <p className="mb-2">LIQP770017824</p>
             <p className="text-sm">
               NSW Liquor Act 2007: No Alcohol can be sold or supplied to anyone
               under 18. It&apos;s against the law.
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Copyright */}
         <div className="border-t border-gray-200 mt-8 pt-6 text-sm text-center">
-          <p>&copy; {new Date().getFullYear()} La Dispensa.</p>
+          <p>&copy; {new Date().getFullYear()} Skorin Deli.</p>
         </div>
       </div>
     </footer>
