@@ -50,21 +50,22 @@ const AboutUs = () => {
             Brodetto di Pesce
           </Link>{" "}
           (fish soup – we are biased for the Sambenedettese version), to the
-          Fritto Misto all'Ascolana (fried lamb and vegetables) continuing to
-          the better known Italian meal staples such as the Bucatini
-          all'Amatriciana or a Zuppa di Farro (Spelt Soup).
+          Fritto Misto all&apos;Ascolana (fried lamb and vegetables) continuing
+          to the better known Italian meal staples such as the Bucatini
+          all&apos;Amatriciana or a Zuppa di Farro (Spelt Soup).
         </p>
 
         <p>
           After relocating to this beautiful land Downunder, we became acutely
           conscious about the scarcity of quality Italian produce as well as
-          tired of having to spend Saturday mornings taking trips to Sydney's
-          inner-west Italian delis to find some of our favourite ingredients.
+          tired of having to spend Saturday mornings taking trips to
+          Sydney&apos;s inner-west Italian delis to find some of our favourite
+          ingredients.
         </p>
 
         <p>
           Unashamedly, we created La Dispensa to have easy access to all these
-          foods and beverages we miss and crave from our homeland but don't
+          foods and beverages we miss and crave from our homeland but don&apos;t
           worry, we are also going to share them with you!
         </p>
       </div>
