@@ -3,7 +3,7 @@ import Categories from "@/components/features/home/categories";
 // import FAQAccordion from "@/components/features/home/faq";
 // import Newsletter from "@/components/features/home/newsletter";
 import Services from "@/components/features/home/our-services";
-import ProductDetail from "@/components/features/home/product-detail";
+// import ProductDetail from "@/components/features/home/product-detail";
 import ProductList from "@/components/features/home/product-list";
 // import TestimonialCarousel from "@/components/features/home/testimonials";
 
@@ -14,7 +14,7 @@ export default function Home() {
       <ProductList />
       <Categories />
       <Services />
-      <ProductDetail />
+      {/* <ProductDetail /> */}
       {/* <FAQAccordion /> */}
       {/* <TestimonialCarousel /> */}
       {/* <Newsletter /> */}
