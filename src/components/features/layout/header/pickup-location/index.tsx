@@ -19,7 +19,7 @@ export default function PickupLocation() {
           <div className="grid md:grid-cols-2 gap-5">
             <div className="relative aspect-[4/3] md:aspect-auto rounded-lg overflow-hidden border">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d35238.5351493298!2d85.35227012103594!3d27.697371587688895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb1bda4a951f0f%3A0x3ddabb234891c3bd!2sBuddha%20Stupa!5e0!3m2!1sen!2snp!4v1729833734399!5m2!1sen!2snp"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13253.127627170563!2d151.091966!3d-33.856625!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12a4d5a11be6a5%3A0x5cab7361a57d6800!2sSKORIN%20DELI!5e0!3m2!1sen!2snp!4v1730731527385!5m2!1sen!2snp"
                 style={{ border: 0, height: "100%", width: "100%" }}
                 allowFullScreen
                 loading="lazy"
@@ -35,13 +35,14 @@ export default function PickupLocation() {
                 </span>
               </p>
               <div className="px-6 pt-3 mb-3">
-                <p className="font-medium">101/20 Dale Street</p>
-                <p className="font-medium">Brookvale NSW 2100</p>
+                <p className="font-medium">215 Concord Rd</p>
+                <p className="font-medium">North Strathfield NSW 2137</p>
               </div>
               <div className="px-6 mb-3 text-base font-light">
                 <h3 className="font-semibold ">Opening Hours</h3>
-                <p>Mon-Fri: 7am - 3pm</p>
-                <p>Sat-Sun: Closed</p>
+                <p>Mon-Fri: 8am - 5:30pm</p>
+                <p>Sat: 8am - 5pm</p>
+                <p>Sun: 8am -2pm</p>
                 <p className="mt-2 font-semibold">
                   Public Holidays: <span className="font-normal">Closed</span>
                 </p>
