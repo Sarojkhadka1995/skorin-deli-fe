@@ -16,7 +16,7 @@ const AboutUs = () => {
 
       <Image
         src={banner}
-        alt="La Dispensa founders"
+        alt="Skorin Deli founders"
         width={800}
         height={400}
         className="w-full h-auto mb-6"
@@ -24,7 +24,7 @@ const AboutUs = () => {
 
       <div className="space-y-4 mb-8">
         <p>
-          The story about the birth of La Dispensa starts with two brothers and
+          The story about the birth of Skorin Deli starts with two brothers and
           their passion – Food.
         </p>
 
@@ -64,7 +64,7 @@ const AboutUs = () => {
         </p>
 
         <p>
-          Unashamedly, we created La Dispensa to have easy access to all these
+          Unashamedly, we created Skorin Deli to have easy access to all these
           foods and beverages we miss and crave from our homeland but don&apos;t
           worry, we are also going to share them with you!
         </p>
@@ -75,14 +75,14 @@ const AboutUs = () => {
 
         <div className="space-y-4">
           <div>
-            <h3 className="font-bold">1. La Dispensa is accessible</h3>
+            <h3 className="font-bold">1. Skorin Deli is accessible</h3>
             <p>
               You can reach us online and we will deliver anywhere in Australia.
             </p>
           </div>
 
           <div>
-            <h3 className="font-bold">2. La Dispensa is contemporary</h3>
+            <h3 className="font-bold">2. Skorin Deli is contemporary</h3>
             <p>
               We aim to bring products that are currently popular in Italian to
               the Australian market.
@@ -90,7 +90,7 @@ const AboutUs = () => {
           </div>
 
           <div>
-            <h3 className="font-bold">3. La Dispensa is affordable</h3>
+            <h3 className="font-bold">3. Skorin Deli is affordable</h3>
             <p>
               We aim to provide quality Italian produce at reasonable prices,
               and we do so by avoiding the set up and maintenance costs of a
@@ -99,7 +99,7 @@ const AboutUs = () => {
           </div>
 
           <div>
-            <h3 className="font-bold">4. La Dispensa continues to evolve</h3>
+            <h3 className="font-bold">4. Skorin Deli continues to evolve</h3>
           </div>
         </div>
       </div>

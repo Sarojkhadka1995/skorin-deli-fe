@@ -18,7 +18,7 @@ export default function Banner() {
       />
       <div className="absolute inset-0 flex flex-col items-start justify-center p-6 sm:p-12">
         <h2 className="text-sm sm:text-base md:text-lg text-white mb-2">
-          Eat like a Nepali
+          Eat like a Italian
         </h2>
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
           Eat well, enjoy life

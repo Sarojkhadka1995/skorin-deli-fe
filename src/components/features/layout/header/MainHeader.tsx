@@ -6,6 +6,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import Link from "next/link";
 
 import Search from "./Search";
 import AccountAndCart from "./AccountAndCart";
@@ -27,7 +28,9 @@ export default function MainHeader() {
         </SheetContent>
       </Sheet>
       <div className="flex items-center justify-center lg:justify-start">
-        <Image src={logo} alt="La Dispensa" width={100} height={50} />
+        <Link href="/">
+          <Image src={logo} alt="Skorin Deli" width={100} height={50} />
+        </Link>
       </div>
       <Sheet>
         <SheetTrigger className="lg:hidden flex justify-end">

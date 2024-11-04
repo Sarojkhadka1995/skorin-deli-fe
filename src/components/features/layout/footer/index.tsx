@@ -8,10 +8,11 @@ export default function Footer() {
         <div className="flex flex-wrap justify-between">
           {/* Company Information */}
           <div className="w-full sm:w-2/4 md:w-1/4 mb-8 md:mb-0">
-            <h2 className="text-2xl font-bold mb-4">La Dispensa</h2>
-            <p className="mb-2">101/20 Dale Street</p>
-            <p className="mb-2">Brookvale NSW 2100</p>
-            <p>ABN 89 663 652 622</p>
+            <h2 className="text-2xl font-bold mb-4">Skorin Deli</h2>
+
+            <p className="mb-2"> 215 Concord Rd</p>
+            <p className="mb-2">North Strathfield NSW 2137</p>
+            <p>Australia</p>
           </div>
 
           {/* Quick Links */}

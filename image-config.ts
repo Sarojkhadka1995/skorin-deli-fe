@@ -1,2 +1,2 @@
-export const logo = "/images/logo.svg";
-export const banner = "/images/banner/banner-bg.jpg";
+export const logo = "/images/logo/skorin_deli.jpeg";
+export const banner = "/images/banner/banner-bg-sm.jpg";
