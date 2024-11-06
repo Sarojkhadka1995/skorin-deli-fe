@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
 
@@ -6,14 +7,18 @@ const Title = ({
   subtitle,
   viewAll,
   viewAllLink,
+  className,
 }: {
   title: string;
   subtitle?: string;
   viewAll?: string;
   viewAllLink?: string;
+  className?: string;
 }) => {
   return (
-    <div className="flex justify-between items-center gap-2 py-6">
+    <div
+      className={cn("flex justify-between items-center gap-2 py-6", className)}
+    >
       <div className=" flex flex-col gap-2">
         <h2 className="text-2xl font-medium">{title}</h2>
         {subtitle && <p className="text-base font-light">{subtitle}</p>}

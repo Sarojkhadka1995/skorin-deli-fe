@@ -14,16 +14,11 @@ const NavigationDiv = () => {
       <nav className="container mx-auto my-4 flex justify-between items-center gap-3">
         <div className="hidden lg:flex justify-between items-center gap-3 text-base">
           <Link href="/">
-            <Button variant="link" className="font-medium text-base">
+            <Button variant="link" className="font-medium text-base ps-0">
               Home
             </Button>
           </Link>
           <ShopMenu />
-          <Link href="#">
-            <Button variant="link" className="font-medium text-base">
-              Gift Cards
-            </Button>
-          </Link>
 
           <Link href="/contact">
             <Button variant="link" className="font-medium text-base">
@@ -36,7 +31,7 @@ const NavigationDiv = () => {
             </Button>
           </Link>
         </div>
-        <div className="flex items-center justify-between gap-3 w-full lg:w-auto">
+        <div className="flex items-center justify-between gap-6 w-full lg:w-auto">
           <Dialog>
             <DialogTrigger>
               <div className="flex items-center gap-2 group ">

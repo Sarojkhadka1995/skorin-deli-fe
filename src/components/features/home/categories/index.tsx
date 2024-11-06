@@ -75,7 +75,7 @@ const Categories = () => {
       <Title
         title="Categories"
         subtitle="Explore our wide range of categories"
-        viewAllLink="/categories"
+        viewAllLink="/products"
       />
 
       <Swiper

@@ -25,7 +25,7 @@ const ProductListingPage = () => {
       discount: 14,
     },
     {
-      id: 1,
+      id: 2,
       name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
       description: "(Fruit fondant lollies)",
       price: 7.99,
@@ -33,7 +33,7 @@ const ProductListingPage = () => {
       image: logo,
     },
     {
-      id: 1,
+      id: 3,
       name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
       description: "(Fruit fondant lollies)",
       price: 7.99,
@@ -41,7 +41,7 @@ const ProductListingPage = () => {
       image: logo,
     },
     {
-      id: 1,
+      id: 4,
       name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
       description: "(Fruit fondant lollies)",
       price: 7.99,
@@ -49,7 +49,7 @@ const ProductListingPage = () => {
       image: logo,
     },
     {
-      id: 1,
+      id: 5,
       name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
       description: "(Fruit fondant lollies)",
       price: 7.99,
@@ -57,7 +57,7 @@ const ProductListingPage = () => {
       image: logo,
     },
     {
-      id: 1,
+      id: 6,
       name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
       description: "(Fruit fondant lollies)",
       price: 7.99,

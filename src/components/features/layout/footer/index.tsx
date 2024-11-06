@@ -75,8 +75,11 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-200 mt-8 pt-6 text-sm text-center">
-          <p>&copy; {new Date().getFullYear()} Skorin Deli.</p>
+        <div className="border-t border-gray-200 mt-8 pt-6 text-base lg:text-center">
+          <p>
+            Copyright &copy; {new Date().getFullYear()}{" "}
+            <span className="underline underline-offset-4">Skorin Deli.</span>
+          </p>
         </div>
       </div>
     </footer>
