@@ -12,7 +12,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
       className="w-full max-w-sm mx-auto group  !transition-all !ease-in-out !duration-[1000ms]"
     >
       <CardContent className="p-4">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/products/${product.id}`}>
           <div className="aspect-square relative mb-4">
             <Image
               src={product.image}

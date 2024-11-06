@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { SheetClose } from "@/components/ui/sheet";
 
 interface CartTotalProps {
   total: number;
@@ -27,22 +28,30 @@ export default function CartCheckoutButtons({
         </p>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
-        <Button
-          size={"lg"}
-          variant="outline-black"
-          className="w-full"
-          onClick={onViewCart}
-        >
-          View Cart
-        </Button>
-        <Button
-          size={"lg"}
-          variant="outline"
-          className="w-full"
-          onClick={onCheckout}
-        >
-          Check Out
-        </Button>
+        <SheetClose asChild>
+          <Link href="/cart" className="w-full">
+            <Button
+              size={"lg"}
+              variant="outline-black"
+              className="w-full"
+              onClick={onViewCart}
+            >
+              View Cart
+            </Button>
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link href="/cart" className="w-full">
+            <Button
+              size={"lg"}
+              variant="outline"
+              className="w-full"
+              onClick={onCheckout}
+            >
+              Check Out
+            </Button>
+          </Link>
+        </SheetClose>
       </CardFooter>
     </Card>
   );

@@ -1,16 +1,29 @@
 import Link from "next/link";
 import Image from "next/image";
 import { banner } from "../../../image-config";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const AboutUs = () => {
   return (
     <div className="container py-8">
-      <nav className="text-sm mb-6">
-        <Link className="text-muted-foreground hover:text-foreground" href="/">
-          Home
-        </Link>{" "}
-        / <span className="text-foreground">About Us</span>
-      </nav>
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>About Us</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <h1 className="text-4xl font-bold mb-6">About Us</h1>
 
