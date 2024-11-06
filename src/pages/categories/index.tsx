@@ -13,7 +13,7 @@ const Categories = () => {
   return (
     <div>
       <div className="container">
-        <Breadcrumb className="my-10">
+        <Breadcrumb className="my-6">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>

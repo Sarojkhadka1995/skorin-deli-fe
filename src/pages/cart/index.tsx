@@ -67,7 +67,7 @@ export default function Component() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Breadcrumb className="mb-10">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
