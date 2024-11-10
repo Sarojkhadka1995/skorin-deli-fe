@@ -36,7 +36,7 @@ const Contact = () => {
             <Button
               size="lg"
               variant="outline-black"
-              type="submit"
+              type="button"
               className="w-full md:w-auto text-lg"
             >
               Submit

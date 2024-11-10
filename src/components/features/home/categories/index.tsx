@@ -1,75 +1,51 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
 import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
+import { useQuery } from "@tanstack/react-query";
 
 import CategoryCard from "./category-card";
-import { logo } from "../../../../../image-config";
-import { ICategory } from "@/types/category.types";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Title from "../../shared/title";
+import { getCategories } from "@/service/category.service";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const categories = [
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-  {
-    id: 1,
-    title: "Category 1",
-    image: logo,
-    link: "/categories/1",
-    slug: "category-1",
-  },
-];
 const Categories = () => {
   const [swiperRef, setSwiperRef] = useState<SwiperClass>();
+
+  const { data: categories, isLoading } = useQuery({
+    queryKey: ["getCategories"],
+    queryFn: getCategories,
+  });
+
+  console.log("categories ====", categories);
+  if (isLoading) {
+    return (
+      <div className="container">
+        <Title
+          title="Favorite Categories"
+          subtitle="Explore our wide range of categories"
+          viewAllLink="/products"
+        />
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((item) => (
+            <div key={item} className="space-y-4">
+              <Skeleton className="h-[150px] w-full" />
+              <Skeleton className="h-4 w-[100px] mx-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!categories?.length) {
+    return null;
+  }
+
   return (
     <div className="container">
       <Title
@@ -81,7 +57,6 @@ const Categories = () => {
       <Swiper
         loop={true}
         pagination={false}
-        // modules={[Grid]}
         className="productSwiper"
         onSwiper={setSwiperRef}
         breakpoints={{
@@ -99,17 +74,17 @@ const Categories = () => {
           },
         }}
       >
-        {categories?.map((item: ICategory, index: number) => (
+        {categories?.map((category) => (
           <SwiperSlide
             className="hover:scale-105 transition-all duration-300 p-3"
-            key={`categories-${index}`}
+            key={category.id}
           >
-            <CategoryCard key={`categories-${index}`} category={item} />
+            <CategoryCard category={category} />
           </SwiperSlide>
         ))}
       </Swiper>
       {categories.length > 3 && (
-        <div className={`flex justify-center space-x-4 pt-2 pb-4 `}>
+        <div className="flex justify-center space-x-4 pt-2 pb-4">
           <Button
             variant="outline"
             className="!rounded-full aspect-square p-0"

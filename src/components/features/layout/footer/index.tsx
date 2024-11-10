@@ -20,10 +20,10 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick links</h3>
             <ul className="space-y-2">
               {[
-                "Search",
-                "Our Story",
-                "Refund Policy",
-                "Shipping Policy",
+                // "Search",
+                // "Our Story",
+                // "Refund Policy",
+                // "Shipping Policy",
                 "Contact",
               ].map((item) => (
                 <li key={item}>
@@ -78,7 +78,9 @@ export default function Footer() {
         <div className="border-t border-gray-200 mt-8 pt-6 text-base lg:text-center">
           <p>
             Copyright &copy; {new Date().getFullYear()}{" "}
-            <span className="underline underline-offset-4">Skorin Deli.</span>
+            <Link href="/" className="underline underline-offset-4">
+              Skorin Deli.
+            </Link>
           </p>
         </div>
       </div>

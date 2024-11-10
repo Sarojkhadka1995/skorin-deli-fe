@@ -18,6 +18,7 @@ const NavigationDiv = () => {
               Home
             </Button>
           </Link>
+
           <ShopMenu />
 
           <Link href="/contact">

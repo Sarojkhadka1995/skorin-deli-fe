@@ -5,38 +5,69 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+// import {
+//   Carousel,
+//   CarouselContent,
+//   CarouselItem,
+//   CarouselNext,
+//   CarouselPrevious,
+// } from "@/components/ui/carousel";
+// import { Label } from "@/components/ui/label";
+// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import { banner, logo } from "../../../../../image-config";
+// import { banner, logo } from "../../../../../image-config";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import CartSheet from "../../cart/cart-sheet";
+import { useQuery } from "@tanstack/react-query";
+import { getProductBySlug } from "@/service/product.service";
+import { useParams } from "next/navigation";
+import { getImageUrl } from "@/lib/utils";
 
 // Mock product data
-const mockProduct = {
-  id: 1,
-  name: "Francis X7.1 iperEspresso Machine",
-  price: 399.0,
-  description: `
-    <p>The beautifully-designed Francis Francis X7.1 iperEspresso machine features advanced technology including steel internal thermoblock, and a Pannarello steam wand that froths milk for creamy cappuccino and latte. Available in red or black, the X7.1 makes a striking statement in any kitchen.</p>
-    <p>The uniquely eye catching X7.1's round yet slender shape was inspired by iconic Italian design of the 1960s, while seamlessly integrating a modern control panel featuring soft-touch buttons.</p>
-    <p>Beauty is a notion that goes far beyond aesthetics, to essence. It's about filling your world with what's special - things that have stories, moments that have meaning, objects that inspire. The X7.1 features advanced technology to create beautiful coffees while making striking statement in any kitchen.</p>
-  `,
-  colors: ["Red", "Black"],
-  images: [banner, logo, banner, banner],
-};
+// const mockProduct = {
+//   id: 1,
+//   name: "Francis X7.1 iperEspresso Machine",
+//   price: 399.0,
+//   description: `
+//     <p>The beautifully-designed Francis Francis X7.1 iperEspresso machine features advanced technology including steel internal thermoblock, and a Pannarello steam wand that froths milk for creamy cappuccino and latte. Available in red or black, the X7.1 makes a striking statement in any kitchen.</p>
+//     <p>The uniquely eye catching X7.1's round yet slender shape was inspired by iconic Italian design of the 1960s, while seamlessly integrating a modern control panel featuring soft-touch buttons.</p>
+//     <p>Beauty is a notion that goes far beyond aesthetics, to essence. It's about filling your world with what's special - things that have stories, moments that have meaning, objects that inspire. The X7.1 features advanced technology to create beautiful coffees while making striking statement in any kitchen.</p>
+//   `,
+//   colors: ["Red", "Black"],
+//   images: [banner, logo, banner, banner],
+// };
 
 export default function ProductDetail() {
+  const params = useParams();
+  // const { detail } = params;
+  const detail = params?.detail;
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["getProductDetail", detail],
+    queryFn: async () => {
+      const response = await getProductBySlug(detail as string);
+      return response;
+    },
+    refetchOnWindowFocus: false,
+    gcTime: 0,
+  });
+
   const [quantity, setQuantity] = useState(1);
-  const [color, setColor] = useState(mockProduct.colors[0]);
+  const [color] = useState("Black");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError || !product) {
+    return <div>Error loading product details</div>;
+  }
+  const { id, name, price, description, imageUrl } = product;
+
   const handleZoom = (image: string) => {
     setZoomedImage(image);
   };
@@ -47,60 +78,60 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     console.log({
-      id: mockProduct.id,
-      name: mockProduct.name,
-      price: mockProduct.price,
-      color: color,
-      quantity: quantity,
+      id,
+      name,
+      price,
+      color,
+      quantity,
     });
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" py-3">
       <div className="grid md:grid-cols-2 gap-8">
         <div className="relative">
-          <Carousel className="w-full mx-auto relative mb-[30px]">
+          {/* <Carousel className="w-full mx-auto relative mb-[30px]">
             <CarouselContent>
-              {mockProduct.images.map((image, index) => (
-                <CarouselItem key={index}>
-                  <div className="relative aspect-square">
-                    <Image
-                      src={image}
-                      alt={`${mockProduct.name} - Image ${index + 1}`}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-lg cursor-pointer"
-                      onClick={() => handleZoom(image)}
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="absolute top-2 right-2 z-10"
-                      aria-label="Zoom image"
-                      onClick={() => handleZoom(image)}
-                    >
-                      <Search className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CarouselItem>
+              {images.map((image, index) => (
+                <CarouselItem key={index}> */}
+          <div className="relative aspect-square">
+            <Image
+              src={getImageUrl(imageUrl)}
+              alt={`${name} - Image`}
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg cursor-pointer"
+              onClick={() => handleZoom(imageUrl)}
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-2 right-2 z-10"
+              aria-label="Zoom image"
+              onClick={() => handleZoom(imageUrl)}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+          {/* </CarouselItem>
               ))}
             </CarouselContent>
             <div className="absolute -bottom-10 right-[50%] translate-x-1/2 flex items-center justify-center gap-4 mx-auto">
               <CarouselPrevious className="w-10 h-10" />
               <CarouselNext className="w-10 h-10" />
-            </div>
-          </Carousel>
+            </div> */}
+          {/* </Carousel> */}
         </div>
         <div>
-          <p className="text-xl font-normal mb-2">
-            ${mockProduct.price.toFixed(2)}
-          </p>
-          <h1 className="text-3xl font-bold mb-2">{mockProduct.name}</h1>
+          {/* <p className="text-xl font-normal mb-2">
+            ${Number(price).toFixed(2)}
+          </p> */}
+          <h1 className="text-3xl font-bold mb-2">{name}</h1>
           <div
             className="space-y-4 mb-6"
-            dangerouslySetInnerHTML={{ __html: mockProduct.description }}
+            dangerouslySetInnerHTML={{ __html: description }}
           />
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <h2 className="text-lg font-semibold mb-2">Color</h2>
             <RadioGroup
               defaultValue={color}
@@ -126,9 +157,9 @@ export default function ProductDetail() {
                 </div>
               ))}
             </RadioGroup>
-          </div>
+          </div> */}
           <p className="text-3xl font-medium mb-4">
-            ${mockProduct.price.toFixed(2)}
+            ${Number(price).toFixed(2)}
           </p>
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
@@ -183,7 +214,7 @@ export default function ProductDetail() {
               <X className="h-4 w-4" />
             </Button>
             <Image
-              src={zoomedImage}
+              src={getImageUrl(zoomedImage)}
               alt="Zoomed product image"
               layout="fill"
               objectFit="contain"
