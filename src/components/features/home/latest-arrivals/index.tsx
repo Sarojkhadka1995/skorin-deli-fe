@@ -45,7 +45,7 @@ const LatestArrivals = () => {
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["getProducts"],
-    queryFn: getProducts,
+    queryFn: () => getProducts(),
   });
   return (
     <div className="container">
