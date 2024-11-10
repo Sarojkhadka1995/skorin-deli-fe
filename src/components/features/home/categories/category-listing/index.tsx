@@ -2,6 +2,7 @@
 
 import Title from "@/components/features/shared/title";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getImageUrl } from "@/lib/utils";
 import { getCategories } from "@/service/category.service";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -12,6 +13,8 @@ export default function CategoryListing() {
     queryKey: ["getCategories"],
     queryFn: getCategories,
   });
+
+  console.log("categories=====", categories);
 
   if (isLoading) {
     return (
@@ -42,12 +45,12 @@ export default function CategoryListing() {
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/collections/${category.slug}`}
+            href={`/categories/${category.slug}`}
             className="group relative rounded-lg overflow-hidden bg-white shadow-sm transition-shadow hover:shadow-md"
           >
             <div className="aspect-[4/3] relative">
               <Image
-                src={category.imageUrl || category.image}
+                src={getImageUrl(category.imageUrl)}
                 alt={category.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

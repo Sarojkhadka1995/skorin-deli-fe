@@ -14,6 +14,8 @@ const sortOptions = [
   { label: "Featured", value: "featured" },
   { label: "Price: Low to High", value: "price_asc" },
   { label: "Price: High to Low", value: "price_desc" },
+  { label: "Name: A to Z", value: "name_asc" },
+  { label: "Name: Z to A", value: "name_desc" },
   { label: "Newest", value: "newest" },
 ];
 
@@ -24,7 +26,12 @@ const brands = [
   { label: "Brand 3", value: "brand3" },
 ];
 
-const FilterSort = () => {
+interface FilterSortProps {
+  onSort: (value: string) => void;
+  sortBy: string;
+}
+
+const FilterSort = ({ onSort, sortBy }: FilterSortProps) => {
   return (
     <div className="flex flex-wrap items-center gap-4 mt-4 mb-6">
       <div className="flex items-center gap-2">
@@ -49,7 +56,7 @@ const FilterSort = () => {
 
       <div className="ml-auto flex items-center gap-2">
         <span className="text-sm font-medium">Sort by:</span>
-        <Select>
+        <Select value={sortBy} onValueChange={onSort}>
           <SelectTrigger className="h-9 w-[150px]">
             <SelectValue placeholder="Featured" />
           </SelectTrigger>

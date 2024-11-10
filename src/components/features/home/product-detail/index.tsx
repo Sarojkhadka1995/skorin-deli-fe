@@ -21,6 +21,7 @@ import CartSheet from "../../cart/cart-sheet";
 import { useQuery } from "@tanstack/react-query";
 import { getProductBySlug } from "@/service/product.service";
 import { useParams } from "next/navigation";
+import { getImageUrl } from "@/lib/utils";
 
 // Mock product data
 // const mockProduct = {
@@ -95,7 +96,7 @@ export default function ProductDetail() {
                 <CarouselItem key={index}> */}
           <div className="relative aspect-square">
             <Image
-              src={process.env.NEXT_PUBLIC_IMAGE_URL + imageUrl}
+              src={getImageUrl(imageUrl)}
               alt={`${name} - Image`}
               layout="fill"
               objectFit="cover"
@@ -213,7 +214,7 @@ export default function ProductDetail() {
               <X className="h-4 w-4" />
             </Button>
             <Image
-              src={process.env.NEXT_PUBLIC_IMAGE_URL + zoomedImage}
+              src={getImageUrl(zoomedImage)}
               alt="Zoomed product image"
               layout="fill"
               objectFit="contain"

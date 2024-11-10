@@ -3,7 +3,8 @@ export interface IProduct {
   name: string;
   description: string;
   price: string;
-  imageUrl: string | null;
+  image: string;
+  imageUrl: string;
   featured: boolean;
   slug: string;
   special: boolean;

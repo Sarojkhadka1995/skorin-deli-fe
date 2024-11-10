@@ -12,10 +12,8 @@ export const getCategories = async (): Promise<ICategory[]> => {
 
 export const getCategoryBySlug = async (slug: string): Promise<ICategory> => {
   try {
-    const response = await axiosInstance.get<ICategoryResponse>(
-      `/categories/${slug}`
-    );
-    return response?.data?.data?.items[0];
+    const response = await axiosInstance.get(`/categories/${slug}`);
+    return response?.data?.data;
   } catch (error) {
     throw error;
   }

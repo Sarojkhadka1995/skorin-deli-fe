@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ICategory } from "@/interface/category.types";
+import { getImageUrl } from "@/lib/utils";
 
 interface CategoryCardProps {
   category: ICategory;
@@ -13,7 +14,7 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
         <div className="relative aspect-square rounded-full overflow-hidden border border-gray-200">
           {category.imageUrl ? (
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}${category.imageUrl}`}
+              src={getImageUrl(category.imageUrl)}
               alt={category.name}
               layout="fill"
               objectFit="cover"

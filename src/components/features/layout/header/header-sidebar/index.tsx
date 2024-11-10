@@ -1,6 +1,5 @@
 import {
   ChevronDown,
-  ChevronRight,
   Facebook,
   Instagram,
   Store,
@@ -12,6 +11,8 @@ import Link from "next/link";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 import PickupLocation from "../pickup-location";
+
+import { ShopMenuAccordion } from "../ShopMenuAccordion";
 
 export default function HeaderSidebar() {
   return (
@@ -57,13 +58,14 @@ export default function HeaderSidebar() {
         >
           Home
         </Link>
-        <Link
+        {/* <Link
           href="/categories"
           className="flex items-center justify-between px-6 py-3 text-lg transition-colors hover:bg-muted"
         >
           Shop
           <ChevronRight className="w-5 h-5" />
-        </Link>
+        </Link> */}
+        <ShopMenuAccordion />
 
         <Link
           href="/contact"

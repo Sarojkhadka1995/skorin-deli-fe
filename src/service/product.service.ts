@@ -1,15 +1,19 @@
 import axiosInstance from "@/axios/axiosinstance";
 import {
-  IProduct,
-  IProductResponse,
-  IFeaturedProductResponse,
-  ISpecialProductResponse,
+  // IProduct,
+  // IProductResponse,
+  // IFeaturedProductResponse,
+  // ISpecialProductResponse,
   IProductDetail,
 } from "@/interface/product.types";
 
-export const getProducts = async (): Promise<IProduct[]> => {
+export const getProducts = async (
+  sortBy?: string
+): Promise<IProductDetail[]> => {
   try {
-    const response = await axiosInstance.get<IProductResponse>("/products");
+    const response = await axiosInstance.get(
+      `/products${sortBy ? `?sortby=${sortBy}` : ""}`
+    );
     return response?.data?.data?.items;
   } catch (error) {
     throw error;
@@ -27,23 +31,32 @@ export const getProductBySlug = async (
   }
 };
 
-export const getFeaturedProducts = async (): Promise<IProduct[]> => {
+export const getFeaturedProducts = async (): Promise<IProductDetail[]> => {
   try {
-    const response = await axiosInstance.get<IFeaturedProductResponse>(
-      "/featured-products"
-    );
+    const response = await axiosInstance.get("/featured-products");
     return response?.data?.data?.items;
   } catch (error) {
     throw error;
   }
 };
 
-export const getSpecialProducts = async (): Promise<IProduct[]> => {
+export const getSpecialProducts = async (): Promise<IProductDetail[]> => {
   try {
-    const response = await axiosInstance.get<ISpecialProductResponse>(
-      "/special-products"
-    );
+    const response = await axiosInstance.get("/special-products");
     return response?.data?.data?.items;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getProductsByCategory = async (
+  categoryId: string
+): Promise<IProductDetail[]> => {
+  try {
+    const response = await axiosInstance.get(
+      `/products/category/${categoryId}`
+    );
+    return response?.data?.data;
   } catch (error) {
     throw error;
   }

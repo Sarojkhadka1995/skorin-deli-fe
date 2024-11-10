@@ -12,39 +12,19 @@ import {
 import ProductCard from "@/components/features/shared/product-card";
 
 import FilterSort from "@/components/features/shared/product-filter";
-import { getProducts } from "@/service/product.service";
+import { getProductsByCategory } from "@/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useParams } from "next/navigation";
 
-const ProductListingPage = () => {
-  const [sortBy, setSortBy] = React.useState<string>("featured");
+const CategoryDetailPage = () => {
+  const params = useParams();
+  const categorySlug = params?.detail as string;
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ["getProducts", sortBy],
-    queryFn: () => getProducts(getSortValue(sortBy)),
+    queryKey: ["getProductsByCategory", categorySlug],
+    queryFn: () => getProductsByCategory(categorySlug),
   });
-
-  // Helper function to convert sort option to API parameter
-  const getSortValue = (sort: string) => {
-    switch (sort) {
-      case "price_asc":
-        return "price-ascending";
-      case "price_desc":
-        return "price-descending";
-      case "name_asc":
-        return "name-ascending";
-      case "name_desc":
-        return "name-descending";
-      case "newest":
-        return "created-descending";
-      default:
-        return "";
-    }
-  };
-
-  const handleSort = (value: string) => {
-    setSortBy(value);
-  };
 
   return (
     <div>
@@ -56,12 +36,12 @@ const ProductListingPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Products</BreadcrumbPage>
+              <BreadcrumbPage>{categorySlug}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Title title="Products" />
-        <FilterSort onSort={handleSort} sortBy={sortBy} />
+        <Title title={categorySlug} />
+        <FilterSort onSort={() => {}} sortBy={""} />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6">
           {isLoading &&
             [1, 2, 3, 4].map((item) => (
@@ -76,4 +56,4 @@ const ProductListingPage = () => {
   );
 };
 
-export default ProductListingPage;
+export default CategoryDetailPage;
