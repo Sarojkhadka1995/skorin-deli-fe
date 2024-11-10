@@ -56,7 +56,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" py-3">
       <div className="grid md:grid-cols-2 gap-8">
         <div className="relative">
           <Carousel className="w-full mx-auto relative mb-[30px]">

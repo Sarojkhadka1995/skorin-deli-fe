@@ -1,47 +1,67 @@
 import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { IProduct } from "@/types/product.types";
-import Link from "next/link";
+import { IProduct } from "@/interface/product.types";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import CartSheet from "../../cart/cart-sheet";
+// import { usePathname, useSearchParams } from "next/navigation";
 
 export default function ProductCard({ product }: { product: IProduct }) {
+  // const pathname = usePathname();
+  // const searchParams = useSearchParams();
+  // const currentProductId = searchParams.get("id");
+  console.log(product);
   return (
     <Card
       key={product.id}
-      className="w-full max-w-sm mx-auto group  !transition-all !ease-in-out !duration-[1000ms]"
+      className="w-full max-w-sm mx-auto group !transition-all !ease-in-out !duration-[1000ms]"
     >
       <CardContent className="p-4">
-        <Link href={`/products/${product.id}`}>
+        {/* {product ? ( */}
+        <div>
           <div className="aspect-square relative mb-4">
-            <Image
-              src={product.image}
-              alt={product.name}
-              layout="fill"
-              objectFit="contain"
-              className="group-hover:scale-105 !transition-all !ease-in-out !duration-[1000ms]"
-            />
-            {product.discount && (
+            {product.image ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.image}`}
+                alt={product.name}
+                layout="fill"
+                objectFit="contain"
+                className="group-hover:scale-105 !transition-all !ease-in-out !duration-[1000ms]"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                No Image
+              </div>
+            )}
+            {/* <img src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.image}`} /> */}
+            {product.special && (
               <div className="absolute -top-2 -right-2 bg-[#D14545] text-white px-2 py-1 rounded-sm text-xs">
-                -14%
+                Special
               </div>
             )}
           </div>
           <div className="space-y-2">
-            <p className="text-lg font-light">${product.price.toFixed(2)}</p>
+            <p className="text-lg font-light">
+              ${Number(product.price).toFixed(2)}
+            </p>
             <h3 className="font-semibold text-lg leading-tight">
               {product.name}
             </h3>
-            {/* <p className="text-lg font-light">{product.description}</p> */}
-            <p className="text-lg font-light">{product.weight}</p>
+            <p className="text-sm text-gray-600 line-clamp-2">
+              {product.description}
+            </p>
+            {product.quantity === 0 && (
+              <p className="text-red-500 text-sm">Out of stock</p>
+            )}
           </div>
-        </Link>
+        </div>
       </CardContent>
       <CardFooter>
         <Sheet>
-          <SheetTrigger className="h-[50px] rounded-full px-7 text-[16px] w-full bg-[#ffffff] text-[#2b2b2b] border-[2px] border-[#2b2b2b]  shadow-sm hover:bg-[#2b2b2b] hover:text-[#ffffff]">
-            Buy now
-            {/* <ShoppingCart /> */}
+          <SheetTrigger
+            className="h-[50px] rounded-full px-7 text-[16px] w-full bg-[#ffffff] text-[#2b2b2b] border-[2px] border-[#2b2b2b] shadow-sm hover:bg-[#2b2b2b] hover:text-[#ffffff]"
+            disabled={product.quantity === 0}
+          >
+            {product.quantity === 0 ? "Out of Stock" : "Buy now"}
           </SheetTrigger>
           <CartSheet />
         </Sheet>

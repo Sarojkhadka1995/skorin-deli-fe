@@ -66,14 +66,14 @@ const productPairs = [
   // Add more product pairs here for additional carousel items
 ];
 
-export default function RelatedProducts() {
+export default function RelatedProducts({ rows = 2 }: { rows?: number }) {
   return (
     <div className="mb-[60px] p-6 pb-3 ">
       <h2 className="text-lg font-medium mb-4">Often bought together</h2>
       <Carousel className="relative">
         <CarouselContent>
           {productPairs.map((pair, index) => (
-            <CarouselItem key={index} className="basis-1/2">
+            <CarouselItem key={index} className={`basis-1/${rows}`}>
               <div className="flex space-x-4">
                 <ProductCard product={pair} />
               </div>
@@ -99,8 +99,8 @@ function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             objectFit="contain"
             // className="hover:"
-            height={200}
-            width={200}
+            height={150}
+            width={150}
           />
         </div>
         <div className="text-sm font-light mb-1">
