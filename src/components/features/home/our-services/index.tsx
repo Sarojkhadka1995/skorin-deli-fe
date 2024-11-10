@@ -1,24 +1,27 @@
-import { Truck, Store, Coins, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Button } from "@/components/ui/button";
+import HouseIcon from "@/shared/icons/houseIcon";
+import TruckIcon from "@/shared/icons/truckIcon";
+import CoinIcon from "@/shared/icons/coinIcon";
 
 const features = [
   {
-    icon: Truck,
+    icon: TruckIcon,
     title: "Free Delivery",
     description: "Orders over $150 to Sydney Metro & $50 to Northern Beaches",
   },
   {
-    icon: Store,
+    icon: HouseIcon,
     title: "Click & Collect",
     description: "20 Dale Street, Brookvale NSW 2100",
   },
   {
-    icon: Coins,
+    icon: CoinIcon,
     title: "Value",
     description: "Your favourite Italian brands at accessible prices",
   },
@@ -71,10 +74,7 @@ export default function Services() {
             className="hover:scale-105 transition-all duration-300 p-3"
           >
             <div key={index} className="flex flex-col items-center text-center">
-              <feature.icon
-                strokeWidth={0.6}
-                className="w-[100px] h-[100px] mb-4"
-              />
+              <feature.icon className="w-[100px] h-[100px] mb-6" />
               <h3 className="text-2xl font-medium mb-2">{feature.title}</h3>
               <p className="text-sm text-gray-600">{feature.description}</p>
             </div>

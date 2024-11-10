@@ -3,16 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const Contact = () => {
   return (
     <div className="container py-8">
-      <nav className="text-sm mb-6">
-        <Link className="text-muted-foreground hover:text-foreground" href="/">
-          Home
-        </Link>{" "}
-        / <span className="text-foreground">Contact</span>
-      </nav>
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Contact </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="grid gap-8 md:grid-cols-2">
         <div>
           <h1 className="text-3xl font-bold mb-6">Drop us a line</h1>

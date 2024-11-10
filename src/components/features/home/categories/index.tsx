@@ -73,9 +73,9 @@ const Categories = () => {
   return (
     <div className="container">
       <Title
-        title="Categories"
+        title="Favorite Categories"
         subtitle="Explore our wide range of categories"
-        viewAllLink="/categories"
+        viewAllLink="/products"
       />
 
       <Swiper

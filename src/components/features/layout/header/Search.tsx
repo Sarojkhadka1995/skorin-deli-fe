@@ -6,10 +6,10 @@ export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="mx-3 lg:w-auto w-full lg:col-span-1 col-span-3 mt-6 lg:mt-auto">
-      <div className="relative">
+    <div className=" grow flex items-center w-full lg:w-auto">
+      <div className="relative h-[50px] w-full">
         <SearchIcon
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800"
+          className="absolute left-4 top-5 lg:top-1/2 transform -translate-y-1/2 text-gray-800"
           size={22}
         />
         <Input

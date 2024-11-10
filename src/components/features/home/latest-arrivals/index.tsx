@@ -3,7 +3,7 @@ import { logo } from "../../../../../image-config";
 import ProductCard from "../../shared/product-card";
 import Title from "../../shared/title";
 
-const ProductList = () => {
+const LatestArrivals = () => {
   const products = [
     {
       id: 1,
@@ -42,7 +42,7 @@ const ProductList = () => {
   return (
     <div className="container">
       <Title
-        title="Our Products"
+        title="Latest Arrivals"
         subtitle="Discover our wide range of products"
         viewAllLink="/products"
       />
@@ -55,4 +55,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default LatestArrivals;
