@@ -50,11 +50,13 @@ export const getSpecialProducts = async (): Promise<IProductDetail[]> => {
 };
 
 export const getProductsByCategory = async (
-  categoryId: string
+  categoryId: string,
+  params?: { sort_by?: string }
 ): Promise<IProductDetail[]> => {
   try {
     const response = await axiosInstance.get(
-      `/products/category/${categoryId}`
+      `/products/category/${categoryId}`,
+      { params }
     );
     return response?.data?.data;
   } catch (error) {

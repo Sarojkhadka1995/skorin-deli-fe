@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDown } from "lucide-react";
+// import { ChevronDown } from "lucide-react";
 
 const sortOptions = [
   { label: "Featured", value: "featured" },
@@ -19,12 +19,12 @@ const sortOptions = [
   { label: "Newest", value: "newest" },
 ];
 
-const brands = [
-  { label: "All Brands", value: "all" },
-  { label: "Brand 1", value: "brand1" },
-  { label: "Brand 2", value: "brand2" },
-  { label: "Brand 3", value: "brand3" },
-];
+// const brands = [
+//   { label: "All Brands", value: "all" },
+//   { label: "Brand 1", value: "brand1" },
+//   { label: "Brand 2", value: "brand2" },
+//   { label: "Brand 3", value: "brand3" },
+// ];
 
 interface FilterSortProps {
   onSort: (value: string) => void;
@@ -34,7 +34,9 @@ interface FilterSortProps {
 const FilterSort = ({ onSort, sortBy }: FilterSortProps) => {
   return (
     <div className="flex flex-wrap items-center gap-4 mt-4 mb-6">
-      <div className="flex items-center gap-2">
+      {/* Uncomment later */}
+
+      {/* <div className="flex items-center gap-2">
         <span className="text-sm font-medium">Filter:</span>
         <Button variant="outline" className="h-9 gap-1">
           More filters
@@ -52,8 +54,9 @@ const FilterSort = ({ onSort, sortBy }: FilterSortProps) => {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
+      {/* Uncomment later */}
       <div className="ml-auto flex items-center gap-2">
         <span className="text-sm font-medium">Sort by:</span>
         <Select value={sortBy} onValueChange={onSort}>

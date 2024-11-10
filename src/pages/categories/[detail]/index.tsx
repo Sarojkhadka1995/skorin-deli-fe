@@ -15,16 +15,34 @@ import FilterSort from "@/components/features/shared/product-filter";
 import { getProductsByCategory } from "@/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { getSortValue } from "@/lib/utils";
 
 const CategoryDetailPage = () => {
   const params = useParams();
   const categorySlug = params?.detail as string;
 
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const sortBy = searchParams.get("sort_by") || "featured";
+  const router = useRouter();
+
   const { data: products, isLoading } = useQuery({
-    queryKey: ["getProductsByCategory", categorySlug],
-    queryFn: () => getProductsByCategory(categorySlug),
+    queryKey: ["getProductsByCategory", categorySlug, sortBy],
+    queryFn: () =>
+      getProductsByCategory(categorySlug, { sort_by: getSortValue(sortBy) }),
   });
+
+  const handleSort = (value: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("sort_by", value);
+    router.replace(`${pathname}?${current.toString()}`, { scroll: false });
+  };
 
   return (
     <div>
@@ -41,7 +59,7 @@ const CategoryDetailPage = () => {
           </BreadcrumbList>
         </Breadcrumb>
         <Title title={categorySlug} />
-        <FilterSort onSort={() => {}} sortBy={""} />
+        <FilterSort onSort={handleSort} sortBy={""} />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6">
           {isLoading &&
             [1, 2, 3, 4].map((item) => (
