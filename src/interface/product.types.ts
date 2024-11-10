@@ -4,6 +4,7 @@ export interface IProduct {
   description: string;
   price: string;
   image: string | null;
+  imageUrl: string | null;
   featured: boolean;
   slug: string;
   special: boolean;

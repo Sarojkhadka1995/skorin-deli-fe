@@ -2,7 +2,7 @@ import React from "react";
 
 import ProductCard from "../../shared/product-card";
 import Title from "../../shared/title";
-import { getFeaturedProducts } from "@/service/product.service";
+import { getProducts } from "@/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -44,8 +44,8 @@ const LatestArrivals = () => {
   // ];
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ["getFeaturedProducts"],
-    queryFn: getFeaturedProducts,
+    queryKey: ["getProducts"],
+    queryFn: getProducts,
   });
   return (
     <div className="container">

@@ -13,7 +13,7 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
         <div className="relative aspect-square rounded-full overflow-hidden border border-gray-200">
           {category.imageUrl ? (
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}${category.imageUrl}`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${category.imageUrl}`}
               alt={category.name}
               layout="fill"
               objectFit="cover"

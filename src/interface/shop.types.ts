@@ -1,6 +1,7 @@
 export interface IShop {
   id: number;
   name: string;
+  slug: string;
 }
 
 export interface IShopResponse {
