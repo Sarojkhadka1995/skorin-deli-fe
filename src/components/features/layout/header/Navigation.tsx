@@ -19,11 +19,6 @@ const NavigationDiv = () => {
             </Button>
           </Link>
           <ShopMenu />
-          <Link href="#">
-            <Button variant="link" className="font-medium text-base">
-              Gift Cards
-            </Button>
-          </Link>
 
           <Link href="/contact">
             <Button variant="link" className="font-medium text-base">
