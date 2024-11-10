@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ICategory } from "@/types/category.types";
+import { ICategory } from "@/interface/category.types";
 import Image from "next/image";
 import React from "react";
 

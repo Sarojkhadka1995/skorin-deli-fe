@@ -4,6 +4,7 @@ import {
   IProductResponse,
   IFeaturedProductResponse,
   ISpecialProductResponse,
+  IProductDetail,
 } from "@/interface/product.types";
 
 export const getProducts = async (): Promise<IProduct[]> => {
@@ -15,12 +16,12 @@ export const getProducts = async (): Promise<IProduct[]> => {
   }
 };
 
-export const getProductBySlug = async (slug: string): Promise<IProduct> => {
+export const getProductBySlug = async (
+  slug: string
+): Promise<IProductDetail> => {
   try {
-    const response = await axiosInstance.get<IProductResponse>(
-      `/products/${slug}`
-    );
-    return response?.data?.data?.items[0];
+    const response = await axiosInstance.get(`/products/${slug}`);
+    return response?.data?.data;
   } catch (error) {
     throw error;
   }

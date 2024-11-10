@@ -10,11 +10,32 @@ export interface IProduct {
   quantity: number;
 }
 
+export interface IProductDetail {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  imageUrl: string;
+  featured: boolean;
+  slug: string;
+  special: boolean;
+  quantity: number;
+  createdAt: string;
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+    imageUrl: string | null;
+    featured: boolean;
+    shopId: number;
+  };
+}
+
 // Base response type for common structure
 interface IBaseProductResponse {
   status: string;
   data: {
-    items: IProduct[];
+    items: IProductDetail[];
     total: number;
     pageNumber: number;
     limit: number;

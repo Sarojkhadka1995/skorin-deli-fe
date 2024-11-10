@@ -10,6 +10,9 @@ const ProductList = () => {
     queryKey: ["getFeaturedProducts"],
     queryFn: getFeaturedProducts,
   });
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="container">
       <Title

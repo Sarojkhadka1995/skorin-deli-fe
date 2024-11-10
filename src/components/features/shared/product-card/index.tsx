@@ -3,9 +3,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IProduct } from "@/interface/product.types";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import CartSheet from "../../cart/cart-sheet";
+import { useRouter } from "next/navigation";
 // import { usePathname, useSearchParams } from "next/navigation";
 
 export default function ProductCard({ product }: { product: IProduct }) {
+  const router = useRouter();
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
   // const currentProductId = searchParams.get("id");
@@ -15,8 +17,10 @@ export default function ProductCard({ product }: { product: IProduct }) {
       key={product.id}
       className="w-full max-w-sm mx-auto group !transition-all !ease-in-out !duration-[1000ms]"
     >
-      <CardContent className="p-4">
-        {/* {product ? ( */}
+      <CardContent
+        className="p-4 cursor-pointer hover:opacity-90"
+        onClick={() => router.push(`/products/${product.slug}`)}
+      >
         <div>
           <div className="aspect-square relative mb-4">
             {product.imageUrl ? (
