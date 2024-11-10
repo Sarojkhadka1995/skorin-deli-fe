@@ -8,9 +8,29 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import React from "react";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import { getProductBySlug } from "@/service/product.service";
+import { IProductDetail } from "@/interface/product.types";
 
 const ProductDetailPage = () => {
+  const router = useRouter();
+  const { detail } = router.query;
+
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useQuery<IProductDetail>({
+    queryKey: ["getProductDetail", detail],
+    queryFn: async () => {
+      const response = await getProductBySlug(detail as string);
+      return response;
+    },
+    refetchOnWindowFocus: false,
+    gcTime: 0,
+  });
+
   return (
     <div className="container py-8">
       <Breadcrumb className="mb-6">
@@ -28,7 +48,11 @@ const ProductDetailPage = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <ProductDetail />
+      <ProductDetail
+        product={product}
+        isLoading={isLoading}
+        isError={isError}
+      />
       <RelatedProducts rows={6} />
     </div>
   );

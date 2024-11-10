@@ -16,6 +16,7 @@ import { getProductsByCategory } from "@/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "next/navigation";
+import NoProducts from "@/components/features/shared/no-products";
 
 const CategoryDetailPage = () => {
   const params = useParams();
@@ -50,6 +51,7 @@ const CategoryDetailPage = () => {
           {products?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+          {products?.length === 0 && <NoProducts />}
         </div>
       </div>
     </div>
