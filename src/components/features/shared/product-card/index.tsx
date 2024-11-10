@@ -19,9 +19,9 @@ export default function ProductCard({ product }: { product: IProduct }) {
         {/* {product ? ( */}
         <div>
           <div className="aspect-square relative mb-4">
-            {product.image ? (
+            {product.imageUrl ? (
               <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.image}`}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.imageUrl}`}
                 alt={product.name}
                 layout="fill"
                 objectFit="contain"
