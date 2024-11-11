@@ -1,7 +1,10 @@
+import { ICategory } from "./category.types";
+
 export interface IShop {
   id: number;
   name: string;
   slug: string;
+  categories: ICategory[];
 }
 
 export interface IShopResponse {

@@ -14,8 +14,6 @@ export default function CategoryListing() {
     queryFn: getCategories,
   });
 
-  console.log("categories=====", categories);
-
   if (isLoading) {
     return (
       <div className="pb-10">

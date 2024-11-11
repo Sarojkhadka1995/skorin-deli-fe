@@ -5,62 +5,71 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-// import {
-//   Carousel,
-//   CarouselContent,
-//   CarouselItem,
-//   CarouselNext,
-//   CarouselPrevious,
-// } from "@/components/ui/carousel";
-// import { Label } from "@/components/ui/label";
-// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-// import { banner, logo } from "../../../../../image-config";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import CartSheet from "../../cart/cart-sheet";
-import { useQuery } from "@tanstack/react-query";
-import { getProductBySlug } from "@/service/product.service";
-import { useParams } from "next/navigation";
 import { getImageUrl } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { IProductDetail } from "@/interface/product.types";
 
-// Mock product data
-// const mockProduct = {
-//   id: 1,
-//   name: "Francis X7.1 iperEspresso Machine",
-//   price: 399.0,
-//   description: `
-//     <p>The beautifully-designed Francis Francis X7.1 iperEspresso machine features advanced technology including steel internal thermoblock, and a Pannarello steam wand that froths milk for creamy cappuccino and latte. Available in red or black, the X7.1 makes a striking statement in any kitchen.</p>
-//     <p>The uniquely eye catching X7.1's round yet slender shape was inspired by iconic Italian design of the 1960s, while seamlessly integrating a modern control panel featuring soft-touch buttons.</p>
-//     <p>Beauty is a notion that goes far beyond aesthetics, to essence. It's about filling your world with what's special - things that have stories, moments that have meaning, objects that inspire. The X7.1 features advanced technology to create beautiful coffees while making striking statement in any kitchen.</p>
-//   `,
-//   colors: ["Red", "Black"],
-//   images: [banner, logo, banner, banner],
-// };
-
-export default function ProductDetail() {
-  const params = useParams();
+export default function ProductDetail({
+  product,
+  isLoading,
+  isError,
+}: {
+  product?: IProductDetail;
+  isLoading: boolean;
+  isError: boolean;
+}) {
   // const { detail } = params;
-  const detail = params?.detail;
-  const {
-    data: product,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["getProductDetail", detail],
-    queryFn: async () => {
-      const response = await getProductBySlug(detail as string);
-      return response;
-    },
-    refetchOnWindowFocus: false,
-    gcTime: 0,
-  });
+  // const {
+  //   data: product,
+  //   isLoading,
+  //   isError,
+  // } = useQuery({
+  //   queryKey: ["getProductDetail", detail],
+  //   queryFn: async () => {
+  //     const response = await getProductBySlug(detail as string);
+  //     return response;
+  //   },
+  //   refetchOnWindowFocus: false,
+  //   gcTime: 0,
+  // });
 
   const [quantity, setQuantity] = useState(1);
   const [color] = useState("Black");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="py-3">
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Image skeleton */}
+          <div className="relative">
+            <Skeleton className="aspect-square w-full rounded-lg" />
+          </div>
+
+          {/* Content skeleton */}
+          <div>
+            <Skeleton className="h-10 w-3/4 mb-2" />
+            <div className="space-y-4 mb-6">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="h-4 w-4/6" />
+            </div>
+            <Skeleton className="h-10 w-32 mb-4" />
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center space-x-4">
+                <Skeleton className="h-[50px] w-[50px]" />
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-[50px] w-[50px]" />
+              </div>
+              <Skeleton className="h-[50px] w-[200px]" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (isError || !product) {

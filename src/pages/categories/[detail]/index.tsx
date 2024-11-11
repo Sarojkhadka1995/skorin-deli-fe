@@ -22,6 +22,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { getSortValue } from "@/lib/utils";
+import NoProducts from "@/components/features/shared/no-products";
 
 const CategoryDetailPage = () => {
   const params = useParams();
@@ -69,6 +70,7 @@ const CategoryDetailPage = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        {products?.length === 0 && <NoProducts />}
       </div>
     </div>
   );

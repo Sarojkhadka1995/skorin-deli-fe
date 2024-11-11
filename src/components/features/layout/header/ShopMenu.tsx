@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   HoverCard,
@@ -15,31 +15,10 @@ export function ShopMenu() {
     queryFn: () => getShops(),
   });
 
-  const randomCategory = {
-    id: Math.floor(Math.random() * 1000),
-    name: "Oil",
-    slug: "oil",
-    imageUrl: "/uploads/category/Colavita_Extravirgin_olive_oil-91f0.jpeg",
-    featured: true,
-    shopId: 24,
-  };
-
-  const shopsWithRandomCategory = shops?.map((shop) => {
-    if (Math.random() > 0.5) {
-      return {
-        ...shop,
-        categories: [randomCategory],
-      };
-    }
-    return shop;
-  });
-
-  console.log("shopsWithRandomCategory=====", shopsWithRandomCategory);
-
   if (isLoading) return null;
 
   return (
-    <HoverCard openDelay={0} closeDelay={200}>
+    <HoverCard openDelay={0} closeDelay={600}>
       <HoverCardTrigger asChild>
         <Link
           href="#"
@@ -49,16 +28,49 @@ export function ShopMenu() {
           <ChevronDown strokeWidth={2.5} size={19} />
         </Link>
       </HoverCardTrigger>
-      <HoverCardContent className="w-56">
-        {shopsWithRandomCategory?.map((shop) => (
-          <Link
-            key={shop.id}
-            href={`/categories/${shop.slug}`}
-            className="text-primary hover:underline underline-offset-4 flex items-center justify-between font-medium transition-all duration-300 py-2"
-          >
-            {shop.name}
-          </Link>
-        ))}
+      <HoverCardContent className="w-80 p-0">
+        <ul className=" text-sm">
+          {shops?.map((shop) => (
+            <li key={shop.id}>
+              {shop.categories?.length > 0 && (
+                <HoverCard openDelay={100} closeDelay={100}>
+                  <HoverCardTrigger asChild>
+                    <div className="data-[state=open]:bg-accent flex items-center text-sm font-medium text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3">
+                      {/* <Link
+                        href={`/categories/${shop.slug}`}
+                        className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground"
+                      > */}
+                      {shop.name}
+                      {shop.categories?.length > 0 && (
+                        <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
+                      )}
+                      {/* </Link> */}
+                    </div>
+                  </HoverCardTrigger>
+                  {/* // {shop.categories?.length > 0 && ( */}
+                  <HoverCardContent
+                    side="right"
+                    align="start"
+                    className="w-72 p-0 -ml-1"
+                  >
+                    <ul className="">
+                      {shop.categories.map((category) => (
+                        <li key={category.id}>
+                          <Link
+                            href={`/categories/${category.slug}`}
+                            className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3"
+                          >
+                            {category.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </HoverCardContent>
+                </HoverCard>
+              )}
+            </li>
+          ))}
+        </ul>
       </HoverCardContent>
     </HoverCard>
   );

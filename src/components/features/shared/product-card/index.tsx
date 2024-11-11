@@ -11,7 +11,6 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
   // const currentProductId = searchParams.get("id");
-  console.log(product);
   return (
     <Card
       key={product.id}
