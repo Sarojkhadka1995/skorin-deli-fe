@@ -30,7 +30,6 @@ const ProductDetailPage = () => {
     refetchOnWindowFocus: false,
     gcTime: 0,
   });
-  console.log("product", product);
   return (
     <div className="container py-8">
       <Breadcrumb className="mb-6">

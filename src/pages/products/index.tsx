@@ -15,35 +15,24 @@ import FilterSort from "@/components/features/shared/product-filter";
 import { getProducts } from "@/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { getSortValue } from "@/lib/utils";
 
 const ProductListingPage = () => {
-  const [sortBy, setSortBy] = React.useState<string>("featured");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const sortBy = searchParams.get("sort_by") || "featured";
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["getProducts", sortBy],
     queryFn: () => getProducts(getSortValue(sortBy)),
   });
 
-  // Helper function to convert sort option to API parameter
-  const getSortValue = (sort: string) => {
-    switch (sort) {
-      case "price_asc":
-        return "price-ascending";
-      case "price_desc":
-        return "price-descending";
-      case "name_asc":
-        return "name-ascending";
-      case "name_desc":
-        return "name-descending";
-      case "newest":
-        return "created-descending";
-      default:
-        return "";
-    }
-  };
-
   const handleSort = (value: string) => {
-    setSortBy(value);
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("sort_by", value);
+    router.replace(`${pathname}?${current.toString()}`, { scroll: false });
   };
 
   return (
