@@ -23,6 +23,7 @@ import {
 } from "next/navigation";
 import { getSortValue } from "@/lib/utils";
 import NoProducts from "@/components/features/shared/no-products";
+import { getProductsByShop } from "@/service/shop.service";
 
 const CategoryDetailPage = () => {
   const params = useParams();
@@ -32,11 +33,17 @@ const CategoryDetailPage = () => {
   const searchParams = useSearchParams();
   const sortBy = searchParams.get("sort_by") || "featured";
   const router = useRouter();
-
+  const type = searchParams.get("type") || "";
   const { data: products, isLoading } = useQuery({
     queryKey: ["getProductsByCategory", categorySlug, sortBy],
     queryFn: () =>
-      getProductsByCategory(categorySlug, { sort_by: getSortValue(sortBy) }),
+      type === "shop"
+        ? getProductsByShop(categorySlug, {
+            sort_by: getSortValue(sortBy),
+          })
+        : getProductsByCategory(categorySlug, {
+            sort_by: getSortValue(sortBy),
+          }),
   });
 
   const handleSort = (value: string) => {
@@ -60,7 +67,7 @@ const CategoryDetailPage = () => {
           </BreadcrumbList>
         </Breadcrumb>
         <Title title={categorySlug} />
-        <FilterSort onSort={handleSort} sortBy={""} />
+        <FilterSort onSort={handleSort} sortBy={sortBy} />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6">
           {isLoading &&
             [1, 2, 3, 4].map((item) => (

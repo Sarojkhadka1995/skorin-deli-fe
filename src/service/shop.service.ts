@@ -1,4 +1,5 @@
 import axiosInstance from "@/axios/axiosinstance";
+import { IProductDetail } from "@/interface/product.types";
 import { IShop, IShopResponse } from "@/interface/shop.types";
 
 export const getShops = async (): Promise<IShop[]> => {
@@ -14,6 +15,20 @@ export const getShopBySlug = async (slug: string): Promise<IShop> => {
   try {
     const response = await axiosInstance.get<IShopResponse>(`/shops/${slug}`);
     return response?.data?.data?.items[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getProductsByShop = async (
+  shopId: string,
+  params?: { sort_by?: string }
+): Promise<IProductDetail[]> => {
+  try {
+    const response = await axiosInstance.get(`/products/shop/${shopId}`, {
+      params,
+    });
+    return response?.data?.data;
   } catch (error) {
     throw error;
   }

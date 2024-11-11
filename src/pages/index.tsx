@@ -8,7 +8,7 @@ import Services from "@/components/features/home/our-services";
 // import ProductDetail from "@/components/features/home/product-detail";
 // import ProductList from "@/components/features/home/product-list";
 import SpecialProductList from "@/components/features/home/special-products";
-// import TestimonialCarousel from "@/components/features/home/testimonials";
+import TestimonialCarousel from "@/components/features/home/testimonials";
 
 export default function Home() {
   return (
@@ -22,7 +22,7 @@ export default function Home() {
       <Services />
       {/* <ProductDetail /> */}
       {/* <FAQAccordion /> */}
-      {/* <TestimonialCarousel /> */}
+      <TestimonialCarousel />
       {/* <Newsletter /> */}
     </div>
   );

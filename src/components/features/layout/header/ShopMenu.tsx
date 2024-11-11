@@ -36,15 +36,15 @@ export function ShopMenu() {
                 <HoverCard openDelay={100} closeDelay={100}>
                   <HoverCardTrigger asChild>
                     <div className="data-[state=open]:bg-accent flex items-center text-sm font-medium text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3">
-                      {/* <Link
-                        href={`/categories/${shop.slug}`}
+                      <Link
+                        href={`/categories/${shop.slug}?type=shop`}
                         className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground"
-                      > */}
-                      {shop.name}
-                      {shop.categories?.length > 0 && (
-                        <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
-                      )}
-                      {/* </Link> */}
+                      >
+                        {shop.name}
+                        {shop.categories?.length > 0 && (
+                          <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Link>
                     </div>
                   </HoverCardTrigger>
                   {/* // {shop.categories?.length > 0 && ( */}
@@ -57,7 +57,7 @@ export function ShopMenu() {
                       {shop.categories.map((category) => (
                         <li key={category.id}>
                           <Link
-                            href={`/categories/${category.slug}`}
+                            href={`/categories/${category.slug}?type=category`}
                             className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3"
                           >
                             {category.name}
