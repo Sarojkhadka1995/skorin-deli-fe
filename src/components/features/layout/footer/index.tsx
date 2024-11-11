@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Heart } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {
@@ -57,10 +57,10 @@ export default function Footer() {
                 <Instagram size={24} />
               </Link>
             </div>
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-full flex items-center space-x-2 hover:bg-indigo-700 transition duration-300">
+            {/* <button className="bg-indigo-600 text-white px-4 py-2 rounded-full flex items-center space-x-2 hover:bg-indigo-700 transition duration-300">
               <Heart size={16} />
               <span>Follow on shop</span>
-            </button>
+            </button> */}
           </div>
 
           {/* Liquor License */}
