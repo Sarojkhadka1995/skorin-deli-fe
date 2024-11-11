@@ -51,8 +51,8 @@ const CategoryDetailPage = () => {
           {products?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
-          {products?.length === 0 && <NoProducts />}
         </div>
+        {products?.length === 0 && <NoProducts />}
       </div>
     </div>
   );

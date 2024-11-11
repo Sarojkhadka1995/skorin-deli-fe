@@ -28,14 +28,14 @@ export function ShopMenu() {
           <ChevronDown strokeWidth={2.5} size={19} />
         </Link>
       </HoverCardTrigger>
-      <HoverCardContent className="w-80">
-        <div className="space-y-2">
-          <ul className="space-y-2 text-sm">
-            {shops?.map((shop) => (
-              <li key={shop.id}>
-                <HoverCard openDelay={10}>
+      <HoverCardContent className="w-80 p-0">
+        <ul className=" text-sm">
+          {shops?.map((shop) => (
+            <li key={shop.id}>
+              {shop.categories?.length > 0 && (
+                <HoverCard openDelay={100} closeDelay={100}>
                   <HoverCardTrigger asChild>
-                    <div className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground">
+                    <div className="data-[state=open]:bg-accent flex items-center text-sm font-medium text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3">
                       {/* <Link
                         href={`/categories/${shop.slug}`}
                         className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground"
@@ -47,29 +47,30 @@ export function ShopMenu() {
                       {/* </Link> */}
                     </div>
                   </HoverCardTrigger>
-                  {shop.categories?.length > 0 && (
-                    <HoverCardContent side="right" className="w-72">
-                      <div className="space-y-2">
-                        <ul className="space-y-2">
-                          {shop.categories.map((category) => (
-                            <li key={category.id}>
-                              <Link
-                                href={`/categories/${category.slug}`}
-                                className="block text-sm text-primary hover:text-accent-foreground"
-                              >
-                                {category.name}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </HoverCardContent>
-                  )}
+                  {/* // {shop.categories?.length > 0 && ( */}
+                  <HoverCardContent
+                    side="right"
+                    align="start"
+                    className="w-72 p-0 -ml-1"
+                  >
+                    <ul className="">
+                      {shop.categories.map((category) => (
+                        <li key={category.id}>
+                          <Link
+                            href={`/categories/${category.slug}`}
+                            className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3"
+                          >
+                            {category.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </HoverCardContent>
                 </HoverCard>
-              </li>
-            ))}
-          </ul>
-        </div>
+              )}
+            </li>
+          ))}
+        </ul>
       </HoverCardContent>
     </HoverCard>
   );

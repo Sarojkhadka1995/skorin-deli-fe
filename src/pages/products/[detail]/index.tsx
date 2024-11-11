@@ -30,7 +30,7 @@ const ProductDetailPage = () => {
     refetchOnWindowFocus: false,
     gcTime: 0,
   });
-
+  console.log("product", product);
   return (
     <div className="container py-8">
       <Breadcrumb className="mb-6">
@@ -40,7 +40,9 @@ const ProductDetailPage = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/products">Products</BreadcrumbLink>
+            <BreadcrumbLink href={`/categories/${product?.category.slug}`}>
+              {product?.category.name}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

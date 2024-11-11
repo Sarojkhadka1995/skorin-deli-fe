@@ -44,39 +44,42 @@ export function ShopMenuAccordion() {
         </AccordionTrigger>
         <AccordionContent>
           <div className="flex flex-col py-1">
-            {shopsWithRandomCategory?.map((shop) =>
-              shop.categories?.length > 0 ? (
-                <Accordion
-                  type="single"
-                  collapsible
-                  key={shop.id}
-                  className="w-full"
-                >
-                  <AccordionItem
-                    value={`shop-${shop.id}`}
-                    className="border-none"
+            {shopsWithRandomCategory?.map(
+              (shop) =>
+                shop.categories?.length > 0 && (
+                  <Accordion
+                    type="single"
+                    collapsible
+                    key={shop.id}
+                    className="w-full"
                   >
-                    <AccordionTrigger className="hover:no-underline flex items-start text-start text-lg px-6 py-3 transition-colors hover:bg-muted">
-                      <span className="flex-1 hover:no-underline">
-                        {shop.name}
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="flex flex-col py-1">
-                        {shop.categories.map((category) => (
-                          <Link
-                            key={category.id}
-                            href={`/categories/${category.slug}`}
-                            className="flex items-center px-6 py-2 text-lg transition-colors hover:bg-muted"
-                          >
-                            {category.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              ) : (
+                    <AccordionItem
+                      value={`shop-${shop.id}`}
+                      className="border-none"
+                    >
+                      <AccordionTrigger className="hover:no-underline flex items-start text-start text-lg px-6 py-3 transition-colors hover:bg-muted">
+                        <span className="flex-1 hover:no-underline">
+                          {shop.name}
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="flex flex-col py-1">
+                          {shop.categories.map((category) => (
+                            <Link
+                              key={category.id}
+                              href={`/categories/${category.slug}`}
+                              className="flex items-center px-6 py-2 text-lg transition-colors hover:bg-muted"
+                            >
+                              {category.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )
+            )}
+            {/* ) : (
                 <Link
                   key={shop.id}
                   href={`/shops/${shop.slug}`}
@@ -85,7 +88,7 @@ export function ShopMenuAccordion() {
                   {shop.name}
                 </Link>
               )
-            )}
+            )} */}
           </div>
         </AccordionContent>
       </AccordionItem>
