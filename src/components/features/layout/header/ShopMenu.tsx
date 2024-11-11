@@ -15,27 +15,6 @@ export function ShopMenu() {
     queryFn: () => getShops(),
   });
 
-  const randomCategory = {
-    id: Math.floor(Math.random() * 1000),
-    name: "Oil",
-    slug: "oil",
-    imageUrl: "/uploads/category/Colavita_Extravirgin_olive_oil-91f0.jpeg",
-    featured: true,
-    shopId: 24,
-  };
-
-  const shopsWithRandomCategory = shops?.map((shop) => {
-    if (Math.random() > 0.5) {
-      return {
-        ...shop,
-        categories: [randomCategory],
-      };
-    }
-    return shop;
-  });
-
-  console.log("shopsWithRandomCategory=====", shopsWithRandomCategory);
-
   if (isLoading) return null;
 
   return (
@@ -52,20 +31,20 @@ export function ShopMenu() {
       <HoverCardContent className="w-80">
         <div className="space-y-2">
           <ul className="space-y-2 text-sm">
-            {shopsWithRandomCategory?.map((shop) => (
+            {shops?.map((shop) => (
               <li key={shop.id}>
                 <HoverCard openDelay={10}>
                   <HoverCardTrigger asChild>
-                    <div className="">
-                      <Link
+                    <div className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground">
+                      {/* <Link
                         href={`/categories/${shop.slug}`}
                         className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground"
-                      >
-                        {shop.name}
-                        {shop.categories?.length > 0 && (
-                          <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
-                        )}
-                      </Link>
+                      > */}
+                      {shop.name}
+                      {shop.categories?.length > 0 && (
+                        <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
+                      )}
+                      {/* </Link> */}
                     </div>
                   </HoverCardTrigger>
                   {shop.categories?.length > 0 && (
