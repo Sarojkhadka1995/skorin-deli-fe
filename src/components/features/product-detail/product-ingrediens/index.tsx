@@ -15,19 +15,37 @@ import {
 import { IProductDetail } from "@/interface/product.types";
 
 export default function ProductIngredients({
-  product,
+  nutritionInfo,
+  ingredients,
 }: {
-  product: IProductDetail | undefined;
+  nutritionInfo: IProductDetail["nutritionInfo"] | undefined;
+  ingredients: IProductDetail["ingredients"] | undefined;
 }) {
-  if (!product) return null;
   return (
     <Accordion type="single" collapsible className="w-full max-w-2xl mt-3">
+      <AccordionItem value="ingredients">
+        <AccordionTrigger className="text-lg font-semibold px-3 rounded-lg">
+          Ingredients
+        </AccordionTrigger>
+        <AccordionContent className="mt-3">
+          {ingredients && ingredients.length > 0 ? (
+            <div
+              className="text-sm leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: ingredients }}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No ingredients information available
+            </p>
+          )}
+        </AccordionContent>
+      </AccordionItem>
       <AccordionItem value="nutrition">
         <AccordionTrigger className="text-lg font-semibold px-3 !rounded-lg overflow-hidden">
           Nutritional Information
         </AccordionTrigger>
-        <AccordionContent>
-          {product.nutritionInfo && product.nutritionInfo.length > 0 ? (
+        <AccordionContent className="mt-3">
+          {nutritionInfo && nutritionInfo.length > 0 ? (
             <>
               <div className="rounded-md border">
                 <Table>
@@ -40,7 +58,7 @@ export default function ProductIngredients({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.nutritionInfo.map((row) => (
+                    {nutritionInfo.map((row) => (
                       <TableRow key={row.nutrient}>
                         <TableCell className="font-medium">
                           {row.nutrient}
@@ -62,23 +80,6 @@ export default function ProductIngredients({
           ) : (
             <p className="text-sm text-muted-foreground">
               No nutritional information available
-            </p>
-          )}
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="ingredients">
-        <AccordionTrigger className="text-lg font-semibold px-3 rounded-lg">
-          Ingredients
-        </AccordionTrigger>
-        <AccordionContent>
-          {product.ingredients && product.ingredients.length > 0 ? (
-            <div
-              className="text-sm leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: product.ingredients }}
-            />
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No ingredients information available
             </p>
           )}
         </AccordionContent>

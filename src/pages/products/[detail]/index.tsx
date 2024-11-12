@@ -32,6 +32,7 @@ const ProductDetailPage = () => {
     refetchOnWindowFocus: false,
     gcTime: 0,
   });
+
   return (
     <div className="container py-8">
       <Breadcrumb className="mb-6">
@@ -56,7 +57,10 @@ const ProductDetailPage = () => {
         isLoading={isLoading}
         isError={isError}
       />
-      <ProductIngredients product={product} />
+      <ProductIngredients
+        nutritionInfo={product?.nutritionInfo}
+        ingredients={product?.ingredients}
+      />
       <RelatedProducts rows={6} />
     </div>
   );
