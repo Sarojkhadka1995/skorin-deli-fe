@@ -6,14 +6,14 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useQuery } from "@tanstack/react-query";
 
-import CategoryCard from "./category-card";
+import CategoryCard from "@/components/features/home/categories/category-card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Title from "../../shared/title";
+import Title from "@/components/features/shared/title";
 import { getCategories } from "@/service/category.service";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const Categories = () => {
+const FavouriteCategories = () => {
   const [swiperRef, setSwiperRef] = useState<SwiperClass>();
 
   const { data: categories, isLoading } = useQuery({
@@ -25,11 +25,10 @@ const Categories = () => {
     return (
       <div className="container">
         <Title
-          title="Categories"
+          title="Favorite Categories"
           subtitle="Explore our wide range of categories"
           viewAllLink="/products"
         />
-
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {[1, 2, 3, 4, 5, 6].map((item) => (
             <div key={item} className="space-y-4">
@@ -49,7 +48,7 @@ const Categories = () => {
   return (
     <div className="container">
       <Title
-        title="Categories"
+        title="Favorite Categories"
         subtitle="Explore our wide range of categories"
         viewAllLink="/products"
       />
@@ -109,4 +108,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default FavouriteCategories;

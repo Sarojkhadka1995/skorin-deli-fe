@@ -1,12 +1,9 @@
-import {
-  ChevronDown,
-  Facebook,
-  Instagram,
-  Store,
-  TruckIcon,
-  User,
-} from "lucide-react";
+import { ChevronDown, Facebook, Instagram, User } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+
+import storeIcon from "@/public/icons/shop.svg";
+import truckIcon from "@/public/icons/truck.svg";
 
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
@@ -21,10 +18,12 @@ export default function HeaderSidebar() {
         <Dialog>
           <DialogTrigger>
             <div className="flex items-center gap-2 group ">
-              <Store
+              {/* <Store
                 className="lg:w-[38px] lg:h-[38px] w-[28px] h-[28px]"
                 strokeWidth={0.5}
-              />
+              /> */}
+              <Image src={storeIcon} alt="store" width={38} height={38} />
+
               <div className="flex flex-col gap-1 justify-center items-start">
                 <span className=" text-xs font-normal leading-3">My store</span>
                 <p className=" lg:text-base text-sm font-medium leading-4 group-hover:underline underline-offset-4 flex items-center gap-1">
@@ -38,10 +37,11 @@ export default function HeaderSidebar() {
         </Dialog>
         <Link href="/policies/shipping-policy">
           <div className="flex items-center gap-2 group ">
-            <TruckIcon
+            {/* <TruckIcon
               className="lg:w-[38px] lg:h-[38px] w-[28px] h-[28px]"
               strokeWidth={0.5}
-            />
+            /> */}
+            <Image src={truckIcon} alt="store" width={38} height={38} />
             <div className="flex flex-col gap-1 justify-center items-start ">
               <p className=" lg:text-base text-sm font-medium leading-4 group-hover:underline underline-offset-4 flex items-center gap-1">
                 Delivery Info

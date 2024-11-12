@@ -1,12 +1,16 @@
-import { ChevronDown, Store, TruckIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+
+import storeIcon from "@/public/icons/shop.svg";
+import truckIcon from "@/public/icons/truck.svg";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 import { ShopMenu } from "./ShopMenu";
 import PickupLocation from "./pickup-location";
+import Image from "next/image";
 
 const NavigationDiv = () => {
   return (
@@ -36,10 +40,11 @@ const NavigationDiv = () => {
           <Dialog>
             <DialogTrigger>
               <div className="flex items-center gap-2 group ">
-                <Store
+                {/* <Store
                   className="lg:w-[38px] lg:h-[38px] w-[28px] h-[28px]"
                   strokeWidth={0.5}
-                />
+                /> */}
+                <Image src={storeIcon} alt="store" width={38} height={38} />
                 <div className="flex flex-col gap-1 justify-center items-start text-primary">
                   <span className=" text-xs font-normal leading-3">
                     My store
@@ -55,10 +60,11 @@ const NavigationDiv = () => {
           </Dialog>
           <Link href="/policies/shipping-policy">
             <div className="flex items-center gap-2 group ">
-              <TruckIcon
+              {/* <TruckIcon
                 className="lg:w-[38px] lg:h-[38px] w-[28px] h-[28px]"
                 strokeWidth={0.5}
-              />
+              /> */}
+              <Image src={truckIcon} alt="store" width={38} height={38} />
               <div className="flex flex-col gap-1 justify-center items-start text-primary">
                 <p className=" lg:text-base text-sm font-medium leading-4 group-hover:underline underline-offset-4 flex items-center gap-1">
                   Delivery Info
