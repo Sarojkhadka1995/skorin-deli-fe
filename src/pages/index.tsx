@@ -1,6 +1,7 @@
 import Banner from "@/components/features/home/banner";
 import Categories from "@/components/features/home/categories";
-import FeaturedProducts from "@/components/features/home/featured-products";
+import FavouriteCategories from "@/components/features/home/categories/favourite-categories";
+// import FeaturedProducts from "@/components/features/home/featured-products";
 import LatestArrivals from "@/components/features/home/latest-arrivals";
 // import FAQAccordion from "@/components/features/home/faq";
 import Newsletter from "@/components/features/home/newsletter";
@@ -16,8 +17,9 @@ export default function Home() {
       <Banner />
       <SpecialProductList />
       <LatestArrivals />
-      <FeaturedProducts />
+      {/* <FeaturedProducts /> */}
       {/* <ProductList /> */}
+      <FavouriteCategories />
       <Categories />
       <Services />
       {/* <ProductDetail /> */}

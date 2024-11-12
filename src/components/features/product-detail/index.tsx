@@ -1,6 +1,5 @@
 import React from "react";
 import ProductDetailSlider from "./product-detail-slider";
-
 const ProductDetail = () => {
   return (
     <div>

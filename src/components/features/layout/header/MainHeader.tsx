@@ -17,7 +17,7 @@ import HeaderSidebar from "./header-sidebar";
 
 export default function MainHeader() {
   return (
-    <div className="flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 lg:py-6 py-3 container mx-auto">
+    <div className="flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 lg:py-4 py-3 container mx-auto">
       <Sheet>
         <SheetTrigger className="lg:hidden hover:text-primary">
           <Menu />

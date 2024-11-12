@@ -35,11 +35,11 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
                 </div>
               )}
               {/* <img src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.image}`} /> */}
-              {product.special && (
+              {/* {product.special && (
                 <div className="absolute -top-2 -right-2 bg-[#D14545] text-white px-2 py-1 rounded-sm text-xs">
                   Special
                 </div>
-              )}
+              )} */}
             </div>
             <div className="space-y-2">
               <p className="text-lg font-light">
