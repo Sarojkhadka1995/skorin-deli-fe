@@ -19,8 +19,8 @@ export default function Home() {
       <LatestArrivals />
       {/* <FeaturedProducts /> */}
       {/* <ProductList /> */}
-      <FavouriteCategories />
       <Categories />
+      <FavouriteCategories />
       <Services />
       {/* <ProductDetail /> */}
       {/* <FAQAccordion /> */}

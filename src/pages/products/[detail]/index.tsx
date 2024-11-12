@@ -57,11 +57,16 @@ const ProductDetailPage = () => {
         isLoading={isLoading}
         isError={isError}
       />
-      <ProductIngredients
-        nutritionInfo={product?.nutritionInfo}
-        ingredients={product?.ingredients}
-      />
+      <div className="my-6">
+        <ProductIngredients
+          nutritionInfo={product?.nutritionInfo}
+          ingredients={product?.ingredients}
+        />
+      </div>
+
+      {/* Related Products */}
       <RelatedProducts rows={6} />
+      {/* Related Products */}
     </div>
   );
 };

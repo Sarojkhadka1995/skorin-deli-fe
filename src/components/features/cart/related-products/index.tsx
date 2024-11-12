@@ -134,7 +134,7 @@ function ProductCard({ product }: { product: Product }) {
           />
         </div>
         <div className="text-sm font-light mb-1">
-          ${product.price.toFixed(2)}
+          {/* ${product.price.toFixed(2)} */}
         </div>
         <h3 className="font-medium mb-2">{product.name}</h3>
         <p className="text-sm text-gray-600">{product.description}</p>
