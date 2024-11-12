@@ -30,6 +30,16 @@ export interface IProductDetail {
     featured: boolean;
     shopId: number;
   };
+  ingredients: string | undefined;
+  nutritionInfo:
+    | {
+        id: number;
+        nutrient: string;
+        per100gOrMl: string;
+        perServing: string;
+        percentDI: string;
+      }[]
+    | undefined;
 }
 
 // Base response type for common structure
