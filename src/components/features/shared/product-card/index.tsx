@@ -42,9 +42,9 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
               )} */}
             </div>
             <div className="space-y-2">
-              <p className="text-lg font-light">
+              {/* <p className="text-lg font-light">
                 ${Number(product.price).toFixed(2)}
-              </p>
+              </p> */}
               <h3 className="font-semibold text-lg leading-tight">
                 {product.name}
               </h3>

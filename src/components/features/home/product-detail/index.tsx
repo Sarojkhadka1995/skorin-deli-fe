@@ -20,21 +20,6 @@ export default function ProductDetail({
   isLoading: boolean;
   isError: boolean;
 }) {
-  // const { detail } = params;
-  // const {
-  //   data: product,
-  //   isLoading,
-  //   isError,
-  // } = useQuery({
-  //   queryKey: ["getProductDetail", detail],
-  //   queryFn: async () => {
-  //     const response = await getProductBySlug(detail as string);
-  //     return response;
-  //   },
-  //   refetchOnWindowFocus: false,
-  //   gcTime: 0,
-  // });
-
   const [quantity, setQuantity] = useState(1);
   const [color] = useState("Black");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
@@ -132,9 +117,6 @@ export default function ProductDetail({
           {/* </Carousel> */}
         </div>
         <div>
-          {/* <p className="text-xl font-normal mb-2">
-            ${Number(price).toFixed(2)}
-          </p> */}
           <h1 className="text-3xl font-bold mb-2">{name}</h1>
           <div
             className="space-y-4 mb-6"
@@ -167,9 +149,12 @@ export default function ProductDetail({
               ))}
             </RadioGroup>
           </div> */}
-          <p className="text-3xl font-medium mb-4">
+
+          {/* Will be displayed for logged in user only */}
+          {/* <p className="text-3xl font-medium mb-4">
             ${Number(price).toFixed(2)}
-          </p>
+          </p> */}
+          {/* Will be displayed for logged in user only */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button
