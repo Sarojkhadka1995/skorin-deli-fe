@@ -10,6 +10,7 @@ import CartSheet from "../../cart/cart-sheet";
 import { getImageUrl } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IProductDetail } from "@/interface/product.types";
+import ProductIngredients from "../../product-detail/product-ingrediens";
 
 export default function ProductDetail({
   product,
@@ -189,6 +190,12 @@ export default function ProductDetail({
               </SheetTrigger>
               <CartSheet />
             </Sheet>
+          </div>
+          <div className="my-6">
+            <ProductIngredients
+              nutritionInfo={product?.nutritionInfo}
+              ingredients={product?.ingredients}
+            />
           </div>
         </div>
       </div>

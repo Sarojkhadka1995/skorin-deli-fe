@@ -45,7 +45,7 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
               {/* <p className="text-lg font-light">
                 ${Number(product.price).toFixed(2)}
               </p> */}
-              <h3 className="font-semibold text-lg leading-tight">
+              <h3 className="font-semibold text-lg leading-tight line-clamp-2 h-[49px]">
                 {product.name}
               </h3>
               <p className="text-sm text-gray-600 line-clamp-2">
