@@ -1,6 +1,6 @@
 import Banner from "@/components/features/home/banner";
 import Categories from "@/components/features/home/categories";
-import FavouriteCategories from "@/components/features/home/categories/favourite-categories";
+// import FavouriteCategories from "@/components/features/home/categories/favourite-categories";
 // import FeaturedProducts from "@/components/features/home/featured-products";
 import LatestArrivals from "@/components/features/home/latest-arrivals";
 // import FAQAccordion from "@/components/features/home/faq";
@@ -20,7 +20,7 @@ export default function Home() {
       {/* <FeaturedProducts /> */}
       {/* <ProductList /> */}
       <Categories />
-      <FavouriteCategories />
+      {/* <FavouriteCategories /> */}
       <Services />
       {/* <ProductDetail /> */}
       {/* <FAQAccordion /> */}
