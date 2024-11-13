@@ -47,20 +47,26 @@ export default function ProductIngredients({
         <AccordionContent className="mt-3">
           {nutritionInfo && nutritionInfo.length > 0 ? (
             <>
-              <div className="rounded-md border">
+              <div className="rounded-md">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Nutrient</TableHead>
-                      <TableHead>Per 100g/ml</TableHead>
-                      <TableHead>Per Serving</TableHead>
-                      <TableHead>%DI*</TableHead>
+                      <TableHead></TableHead>
+                      <TableHead className="text-black font-medium">
+                        Per 100g/ml
+                      </TableHead>
+                      <TableHead className="text-black font-medium">
+                        Per Serving
+                      </TableHead>
+                      <TableHead className="text-black font-medium">
+                        %DI*
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {nutritionInfo.map((row) => (
                       <TableRow key={row.nutrient}>
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium text-black">
                           {row.nutrient}
                         </TableCell>
                         <TableCell>{row.per100gOrMl}</TableCell>

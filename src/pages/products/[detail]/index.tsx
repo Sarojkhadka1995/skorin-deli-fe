@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 
 import RelatedProducts from "@/components/features/cart/related-products";
 import ProductDetail from "@/components/features/home/product-detail";
-import ProductIngredients from "@/components/features/product-detail/product-ingrediens";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -57,12 +57,6 @@ const ProductDetailPage = () => {
         isLoading={isLoading}
         isError={isError}
       />
-      <div className="my-6">
-        <ProductIngredients
-          nutritionInfo={product?.nutritionInfo}
-          ingredients={product?.ingredients}
-        />
-      </div>
 
       {/* Related Products */}
       <RelatedProducts rows={6} />
