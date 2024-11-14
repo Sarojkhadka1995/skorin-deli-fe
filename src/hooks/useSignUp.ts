@@ -26,11 +26,11 @@ const useSignUp = () => {
 
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
-    passwordConfirmation: false,
+    password_confirmation: false,
   });
 
   const togglePasswordVisibility = (
-    field: "password" | "passwordConfirmation"
+    field: "password" | "password_confirmation"
   ) => {
     setPasswordVisibility((prev) => ({
       ...prev,
@@ -55,7 +55,10 @@ const useSignUp = () => {
 
   const onSubmit = (data: z.infer<typeof signUpSchema>) => {
     const payload = {
-      ...data,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email,
+      password: data.password,
       role: "user",
     };
     signUp(payload);
