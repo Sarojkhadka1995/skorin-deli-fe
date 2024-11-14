@@ -11,6 +11,12 @@ import { getImageUrl } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IProductDetail } from "@/interface/product.types";
 import ProductIngredients from "../../product-detail/product-ingrediens";
+import { getCookie } from "cookies-next";
+import { COOKIE_CONFIG } from "@/config/app";
+import { useMutation } from "@tanstack/react-query";
+import { createCart } from "@/services/cart/cart.service";
+import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+import useProfileStore from "@/store/useProfileStore";
 
 export default function ProductDetail({
   product,
@@ -21,9 +27,22 @@ export default function ProductDetail({
   isLoading: boolean;
   isError: boolean;
 }) {
+  const { profileData } = useProfileStore();
   const [quantity, setQuantity] = useState(1);
   const [color] = useState("Black");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+
+  const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
+
+  const { mutate: addToCart } = useMutation({
+    mutationFn: createCart,
+    onSuccess: () => {
+      showToast(TOAST_TYPES.success, "Product added to cart");
+    },
+    onError: () => {
+      showToast(TOAST_TYPES.error, "Failed to add product to cart");
+    },
+  });
 
   if (isLoading) {
     return (
@@ -79,6 +98,13 @@ export default function ProductDetail({
       color,
       quantity,
     });
+
+    const cartData = {
+      userId: profileData?.id || 1,
+      productId: id,
+      quantity,
+    };
+    addToCart(cartData);
   };
 
   return (
@@ -151,11 +177,12 @@ export default function ProductDetail({
             </RadioGroup>
           </div> */}
 
-          {/* Will be displayed for logged in user only */}
-          {/* <p className="text-3xl font-medium mb-4">
-            ${Number(price).toFixed(2)}
-          </p> */}
-          {/* Will be displayed for logged in user only */}
+          {isLoggedIn && (
+            <p className="text-3xl font-medium mb-4">
+              ${Number(price).toFixed(2)}
+            </p>
+          )}
+
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button

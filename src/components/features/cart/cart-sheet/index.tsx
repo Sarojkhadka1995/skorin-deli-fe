@@ -1,59 +1,121 @@
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import React from "react";
+import React, { useCallback } from "react";
 import CartProductCard from "./cart-product-card";
-import { banner } from "../../../../../image-config";
 import RelatedProducts from "../related-products";
 import { Textarea } from "@/components/ui/textarea";
 import CartCheckoutButtons from "./cart-checkout-buttons";
-
-const fakeProducts = [
-  {
-    imageUrl: banner,
-    price: 29.99,
-    name: "Product 1",
-    description: "Description for product 1",
-    weight: "1kg",
-    onRemove: () => console.log("Removed Product 1"),
-  },
-  {
-    imageUrl: banner,
-    price: 49.99,
-    name: "Product 2",
-    description: "Description for product 2",
-    weight: "2kg",
-    onRemove: () => console.log("Removed Product 2"),
-  },
-  {
-    imageUrl: banner,
-    price: 19.99,
-    name: "Product 3",
-    description: "Description for product 3",
-    weight: "0.5kg",
-    onRemove: () => console.log("Removed Product 3"),
-  },
-];
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useProfileStore from "@/store/useProfileStore";
+import { useQuery } from "@tanstack/react-query";
+import {
+  checkoutCart,
+  deleteCartItem,
+  getCartItems,
+  updateCartItem,
+} from "@/services/cart/cart.service";
+import { ICartItem } from "@/interface/cart.types";
+import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 
 const CartSheet = () => {
+  const queryClient = useQueryClient();
+  const { profileData } = useProfileStore();
+
+  const { data: cartData, isLoading: cartLoading } = useQuery({
+    queryKey: ["cart", profileData?.id],
+    queryFn: () => getCartItems(profileData?.id || 1),
+  });
+
+  const { mutate: deleteItem } = useMutation({
+    mutationFn: (data: { userId: number; id: number }) =>
+      deleteCartItem(data.userId, data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
+      showToast(TOAST_TYPES.success, "Cart item deleted successfully");
+    },
+    onError: () => {
+      showToast(TOAST_TYPES.error, "Failed to delete cart item");
+    },
+  });
+
+  const { mutate: updateCart, isPending: updateCartPending } = useMutation({
+    mutationFn: updateCartItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
+      showToast(TOAST_TYPES.success, "Cart item updated successfully");
+    },
+  });
+
+  const { mutate: checkoutMutation, isPending: checkoutPending } = useMutation({
+    mutationFn: ({ userId }: { userId: number }) => checkoutCart(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
+      showToast(TOAST_TYPES.success, "Checkout successful");
+    },
+    onError: () => {
+      showToast(TOAST_TYPES.error, "Failed to checkout");
+    },
+  });
+
+  const updateQuantity = useCallback(
+    (id: number, quantity: number, productId: number) => {
+      const payload = {
+        userId: profileData?.id || 1,
+        quantity,
+        productId,
+      };
+      updateCart(payload);
+    },
+    [updateCart]
+  );
+
+  const removeFromCart = useCallback(
+    (id: number) => {
+      deleteItem({ userId: profileData?.id || 1, id });
+    },
+    [deleteItem]
+  );
+
+  const checkout = useCallback(() => {
+    checkoutMutation({ userId: profileData?.id || 1 });
+  }, [checkoutMutation]);
+
+  const getTotal = useCallback(() => {
+    return cartData?.reduce(
+      (acc: number, item: ICartItem) =>
+        acc + Number(item.product.price) * item.quantity,
+      0
+    );
+  }, [cartData]);
+
+  console.log(cartData);
   return (
     <SheetContent className="p-0">
       <SheetHeader className="border-b border-b-[#e5e5e5] p-5 px-6">
         <SheetTitle className="font-medium text-xl">
-          Shopping Cart (3)
+          Shopping Cart ({cartData?.length})
         </SheetTitle>
       </SheetHeader>
       <div className="max-h-[calc(100vh-69px)] overflow-y-auto">
         <div className="p-6 grid gap-4 border-b border-b-[#e5e5e5]">
-          {fakeProducts.map((product) => (
-            <CartProductCard
-              key={product.name}
-              imageUrl={product.imageUrl}
-              price={product.price}
-              name={product.name}
-              description={product.description}
-              weight={product.weight}
-              onRemove={product.onRemove}
-            />
-          ))}
+          {cartLoading || updateCartPending ? (
+            <div>Loading...</div>
+          ) : (
+            cartData?.map((item: ICartItem) => (
+              <CartProductCard
+                key={item.id}
+                imageUrl={item.product.imageUrl}
+                price={Number(item.product.price)}
+                name={item.product.name}
+                description={item.product.description}
+                weight={item.product.weight}
+                quantity={item.quantity}
+                onRemove={() => removeFromCart(item.id)}
+                updateQuantity={(quantity: number) =>
+                  updateQuantity(item.id, quantity, item.product.id)
+                }
+              />
+            ))
+          )}
         </div>
         <div>
           <RelatedProducts />
@@ -64,9 +126,10 @@ const CartSheet = () => {
         </div>
         <div className="">
           <CartCheckoutButtons
-            total={238.92}
+            total={getTotal()}
             onViewCart={() => console.log("View Cart clicked")}
-            onCheckout={() => console.log("Checkout clicked")}
+            onCheckout={checkout}
+            checkoutLoading={checkoutPending}
           />
         </div>
       </div>

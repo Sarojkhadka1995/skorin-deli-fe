@@ -1,10 +1,23 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
+import useForgotPassword from "@/hooks/useForgotPassword";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2 } from "lucide-react";
+import useGlobalHook from "@/hooks/useGlobalHook";
 const ForgetPassword = () => {
+  const { form, onSubmit, forgotPasswordLoading } = useForgotPassword();
+
+  const { goBack } = useGlobalHook();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <nav className="text-sm mb-6">
@@ -22,8 +35,7 @@ const ForgetPassword = () => {
             We will send you an email to reset your password.
           </AlertDescription>
         </Alert>
-
-        <form className="space-y-4">
+        {/* <form className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="Email" required />
@@ -47,7 +59,55 @@ const ForgetPassword = () => {
               Cancel
             </Button>
           </div>
-        </form>
+        </form> */}
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              name="email"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Email"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex space-x-4">
+              <Button
+                variant="outline-black"
+                size="lg"
+                type="submit"
+                className="flex-1"
+                disabled={forgotPasswordLoading}
+              >
+                Submit{" "}
+                {forgotPasswordLoading && (
+                  <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                type="button"
+                className="flex-1"
+                onClick={goBack}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

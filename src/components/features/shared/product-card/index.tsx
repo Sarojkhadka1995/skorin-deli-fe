@@ -5,12 +5,16 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import CartSheet from "../../cart/cart-sheet";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
+import { getCookie } from "cookies-next";
+import { COOKIE_CONFIG } from "@/config/app";
 // import { usePathname, useSearchParams } from "next/navigation";
 
 export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
   // const currentProductId = searchParams.get("id");
+
+  const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
   return (
     <Card
       key={product.id}
@@ -42,9 +46,11 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
               )} */}
             </div>
             <div className="space-y-2">
-              {/* <p className="text-lg font-light">
-                ${Number(product.price).toFixed(2)}
-              </p> */}
+              {isLoggedIn && (
+                <p className="text-lg font-light">
+                  ${Number(product.price).toFixed(2)}
+                </p>
+              )}
               <h3 className="font-semibold text-lg leading-tight line-clamp-2 h-[49px]">
                 {product.name}
               </h3>
