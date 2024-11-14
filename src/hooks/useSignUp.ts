@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { showToast, TOAST_TYPES } from "@/shared/utils/toast.utils";
+import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { signUpUser } from "@/services/auth/login.service";

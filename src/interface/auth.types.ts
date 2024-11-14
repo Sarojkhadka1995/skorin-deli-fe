@@ -28,3 +28,12 @@ export interface Profile {
   email: string;
   role: string;
 }
+
+export interface ForgotPasswordCredentials {
+  email: string;
+}
+
+export interface ResetPasswordCredentials {
+  password: string;
+  confirm_password: string;
+}

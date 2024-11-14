@@ -1,7 +1,7 @@
-import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getImageUrl } from "@/lib/utils";
 
 interface ProductCardProps {
   imageUrl: string;
@@ -9,29 +9,29 @@ interface ProductCardProps {
   name: string;
   description: string;
   weight: string;
+  quantity: number;
   onRemove: () => void;
+  updateQuantity: (quantity: number) => void;
 }
 
-export default function CartProductCard(
-  { imageUrl, price, name, description, weight, onRemove }: ProductCardProps = {
-    imageUrl: "/placeholder.svg?height=200&width=200",
-    price: 37.99,
-    name: "Tre Marie Panettone",
-    description: "Tuttuvetta (rasins only)",
-    weight: "1Kg",
-    onRemove: () => console.log("Remove clicked"),
-  }
-) {
-  const [quantity, setQuantity] = useState(1);
-
+export default function CartProductCard({
+  imageUrl,
+  price,
+  name,
+  description,
+  weight,
+  quantity,
+  onRemove,
+  updateQuantity,
+}: ProductCardProps) {
   const decreaseQuantity = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 1);
+      updateQuantity(quantity - 1);
     }
   };
 
   const increaseQuantity = () => {
-    setQuantity(quantity + 1);
+    updateQuantity(quantity + 1);
   };
 
   return (
@@ -40,7 +40,7 @@ export default function CartProductCard(
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-4 border border-[#e5e5e5] rounded-xl !p-3 h-full flex justify-center items-center">
             <Image
-              src={imageUrl}
+              src={getImageUrl(imageUrl)}
               alt={name}
               height={100}
               width={100}

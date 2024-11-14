@@ -1,11 +1,11 @@
 import axios from "axios";
 import { getCookie } from "cookies-next";
-import { API_CONFIG } from "@/config/app";
+import { API_CONFIG, COOKIE_CONFIG } from "@/config/app";
 const axiosInstance = axios.create({
   baseURL: API_CONFIG.baseUrl, // Set the base URL for all requests
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${getCookie("accessToken")}`,
+    Authorization: `Bearer ${getCookie(COOKIE_CONFIG.accessToken)}`,
   },
   // withCredentials: true,
 });

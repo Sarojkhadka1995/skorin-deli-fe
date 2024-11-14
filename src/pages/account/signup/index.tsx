@@ -122,7 +122,7 @@ const SignUp = () => {
                     <div className="relative">
                       <Input
                         type={
-                          passwordVisibility.passwordConfirmation
+                          passwordVisibility.password_confirmation
                             ? "text"
                             : "password"
                         }
@@ -135,10 +135,10 @@ const SignUp = () => {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() =>
-                          togglePasswordVisibility("passwordConfirmation")
+                          togglePasswordVisibility("password_confirmation")
                         }
                       >
-                        {passwordVisibility.passwordConfirmation ? (
+                        {passwordVisibility.password_confirmation ? (
                           <Eye className="h-4 w-4" />
                         ) : (
                           <EyeOff className="h-4 w-4" />

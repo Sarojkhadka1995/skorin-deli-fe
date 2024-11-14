@@ -44,7 +44,7 @@ export default function ProductDetailSlider() {
           </div>
 
           <Button className="w-full" size="lg">
-            Add to cart
+            Add to cart [ Not used]
           </Button>
 
           <div className="prose prose-sm">

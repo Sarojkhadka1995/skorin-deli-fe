@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { showToast, TOAST_TYPES } from "@/shared/utils/toast.utils";
+import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { useMutation } from "@tanstack/react-query";
 import { setCookie } from "cookies-next";
 import { AxiosError } from "axios";
@@ -26,7 +26,7 @@ const useLogin = () => {
 
   const { mutate: login, isPending: loginLoading } = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data: ILoginRes) => {
+    onSuccess: async (data: ILoginRes) => {
       setCookie(COOKIE_CONFIG.loggedIn, "true");
       setCookie(COOKIE_CONFIG.accessToken, data.access_token);
       setCookie(COOKIE_CONFIG.refreshToken, data.refresh_token);
