@@ -1,6 +1,6 @@
 import axiosInstance from "@/axios/axiosinstance";
 
-interface PersonalDetails {
+export interface PersonalDetails {
   name: string;
   email: string;
   phone: string;
@@ -8,7 +8,7 @@ interface PersonalDetails {
   profileImage: string;
 }
 
-interface PasswordChange {
+export interface PasswordChange {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
@@ -21,7 +21,7 @@ interface Address {
   country: string;
 }
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   message?: string;

@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +22,8 @@ import {
   changePassword,
   getProfile,
   updatePersonalDetails,
+  PersonalDetails,
+  ApiResponse,
 } from "@/service/account.service";
 import { ApiError } from "next/dist/server/api-utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -33,7 +36,7 @@ const personalDetailsSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   address: z.string().min(10, "Address must be at least 10 characters"),
-  profileImage: z.union([z.instanceof(File), z.string(), z.null()]).nullable(),
+  profileImage: z.any(),
 });
 
 const passwordSchema = z
@@ -49,17 +52,21 @@ const passwordSchema = z
     path: ["confirmPassword"],
   });
 
+type PersonalDetailsFormData = Omit<PersonalDetails, "profileImage"> & {
+  profileImage: File | string | null;
+};
+
 export default function UserProfile() {
   const queryClient = useQueryClient();
 
-  const personalDetailsForm = useForm({
+  const personalDetailsForm = useForm<PersonalDetailsFormData>({
     resolver: zodResolver(personalDetailsSchema),
     defaultValues: {
       name: "",
       email: "",
       phone: "",
       address: "",
-      profileImage: null as File | string | null,
+      profileImage: null,
     },
   });
 
@@ -72,33 +79,33 @@ export default function UserProfile() {
     },
   });
 
-  const { data: profileData } = useQuery({
+  const { data: profileData } = useQuery<ApiResponse<PersonalDetails>>({
     queryKey: ["getProfile"],
     queryFn: getProfile,
   });
 
   useEffect(() => {
-    if (profileData) {
+    if (profileData?.data) {
       personalDetailsForm.reset({
-        name: profileData?.data?.name,
-        email: profileData?.data?.email,
-        phone: profileData?.data?.phone,
-        address: profileData?.data?.address,
-        profileImage: profileData?.data?.profileImage,
+        name: profileData.data.name,
+        email: profileData.data.email,
+        phone: profileData.data.phone,
+        address: profileData.data.address,
+        profileImage: profileData.data.profileImage,
       });
     }
   }, [profileData, personalDetailsForm]);
 
-  const updatePersonalDetailsMutation = useMutation({
-    mutationFn: (data: FormData) => updatePersonalDetails(data),
+  const { mutate: updateProfile } = useMutation<
+    ApiResponse<PersonalDetails>,
+    Error,
+    PersonalDetails
+  >({
+    mutationFn: updatePersonalDetails,
     onSuccess: (data) => {
-      toast.success("Personal details updated successfully");
       console.log("data:", data);
+      toast.success("Personal details updated successfully");
       queryClient.invalidateQueries({ queryKey: ["getProfile"] });
-    },
-    onError: (error: ApiError) => {
-      toast.error("Failed to update personal details");
-      console.log("error:", error);
     },
   });
 
@@ -115,18 +122,28 @@ export default function UserProfile() {
     },
   });
 
-  const onPersonalDetailsSubmit = async (
-    data: z.infer<typeof personalDetailsSchema>
-  ) => {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-    formData.append("address", data.address);
-    if (data.profileImage) {
-      formData.append("profileImage", data.profileImage);
+  const onPersonalDetailsSubmit = (data: PersonalDetailsFormData) => {
+    const updateData: PersonalDetails = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      profileImage:
+        typeof data.profileImage === "string" ? data.profileImage : "",
+    };
+
+    if (data.profileImage instanceof File) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateProfile({
+          ...updateData,
+          profileImage: reader.result as string,
+        });
+      };
+      reader.readAsDataURL(data.profileImage);
+    } else {
+      updateProfile(updateData);
     }
-    updatePersonalDetailsMutation.mutate(formData);
   };
 
   const onPasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
@@ -176,19 +193,23 @@ export default function UserProfile() {
                       <Avatar className="w-20 h-20">
                         <AvatarImage
                           src={
-                            personalDetailsForm.watch("profileImage")
+                            personalDetailsForm.watch("profileImage") instanceof
+                            File
                               ? URL.createObjectURL(
                                   personalDetailsForm.watch(
                                     "profileImage"
                                   ) as File
                                 )
-                              : profileData?.data?.profileImage ||
-                                "/placeholder.svg?height=80&width=80"
+                              : (personalDetailsForm.watch(
+                                  "profileImage"
+                                ) as string) || "/placeholder.svg"
                           }
                           alt="Profile picture"
                         />
                         <AvatarFallback>
-                          {profileData?.data?.name?.[0]?.toUpperCase() || "U"}
+                          {personalDetailsForm
+                            .watch("name")?.[0]
+                            ?.toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <label
@@ -228,9 +249,9 @@ export default function UserProfile() {
                   <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
                     <Input
-                      {...personalDetailsForm.register("name")}
                       id="name"
-                      placeholder="Your name"
+                      {...personalDetailsForm.register("name")}
+                      // disabled={updateProfile.}
                     />
                     {personalDetailsForm.formState.errors.name && (
                       <p className="text-sm text-red-500">
@@ -282,7 +303,7 @@ export default function UserProfile() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit">Save Changes</Button>
+                  <Button type="submit">Update</Button>
                 </CardFooter>
               </form>
             </Card>

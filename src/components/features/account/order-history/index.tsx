@@ -1,8 +1,6 @@
-"use client";
-
 import { useState } from "react";
 import { format } from "date-fns";
-import { Calendar, Package, X } from "lucide-react";
+import { Calendar, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +8,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -20,6 +17,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface OrderDetails {
+  id: number;
+  items: OrderItem[];
+  shippingAddress: string;
+  paymentMethod: string;
+}
+
+interface Order {
+  id: number;
+  name: string;
+  date: string;
+  status: string;
+  total: number;
+}
 
 // Fake order data
 const orders = [
@@ -61,7 +79,7 @@ const orders = [
 ];
 
 // Fake order details
-const getOrderDetails = (id) => ({
+const getOrderDetails = (id: number): OrderDetails => ({
   id,
   items: [
     { name: "Product 1", quantity: 2, price: 9.99 },
@@ -72,7 +90,7 @@ const getOrderDetails = (id) => ({
 });
 
 export default function OrderHistory() {
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   return (
     <div className="container mx-auto p-4">
