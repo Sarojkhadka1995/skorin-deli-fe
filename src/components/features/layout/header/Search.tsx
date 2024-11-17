@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchQuery.trim()) {
+      router.push(`/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <div className=" grow flex items-center w-full lg:w-auto">
@@ -17,6 +25,7 @@ export default function Search() {
           placeholder="Search for..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleSearch}
           className="pl-12 pr-4 py-2 h-10 lg:h-[50px] w-full border rounded-full text-[16px]"
         />
       </div>
