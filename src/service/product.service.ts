@@ -20,6 +20,17 @@ export const getProducts = async (
   }
 };
 
+export const searchProducts = async (
+  keyword: string
+): Promise<IProductDetail[]> => {
+  try {
+    const response = await axiosInstance.get(`/products?keyword=${keyword}`);
+    return response?.data?.data?.items;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getProductBySlug = async (
   slug: string
 ): Promise<IProductDetail> => {

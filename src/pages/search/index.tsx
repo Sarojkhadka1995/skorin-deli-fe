@@ -12,11 +12,11 @@ import {
 import ProductCard from "@/components/features/shared/product-card";
 
 import FilterSort from "@/components/features/shared/product-filter";
-import { getProducts } from "@/service/product.service";
+import { searchProducts } from "@/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useSearchParams } from "next/navigation";
-import { getSortValue } from "@/lib/utils";
+
 import { useRouter } from "next/router";
 
 const SearchPage = () => {
@@ -28,8 +28,9 @@ const SearchPage = () => {
   const sortBy = searchParams.get("sort_by") || "featured";
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ["getProducts", sortBy],
-    queryFn: () => getProducts(getSortValue(sortBy)),
+    queryKey: ["searchProducts", keyword],
+    queryFn: () => (keyword ? searchProducts(keyword as string) : null),
+    enabled: !!keyword,
   });
 
   const handleSort = (value: string) => {
