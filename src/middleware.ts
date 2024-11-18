@@ -8,7 +8,6 @@ export function middleware(request: NextRequest) {
   if (path.startsWith("/_next/static")) {
     return NextResponse.next();
   }
-  console.log("In middleware");
   const isAuthRoute = AUTH_ROUTES.includes(path);
   const isPrivateRoute = PRIVATE_ROUTES.includes(path);
   const isLoggedIn = request.cookies.get(COOKIE_CONFIG.loggedIn) || "";
