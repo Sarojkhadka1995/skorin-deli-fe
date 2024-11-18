@@ -6,14 +6,12 @@ import { Loader2 } from "lucide-react";
 
 interface CartTotalProps {
   total: number;
-  onViewCart: () => void;
   onCheckout: () => void;
   checkoutLoading: boolean;
 }
 
 export default function CartCheckoutButtons({
   total,
-  onViewCart,
   onCheckout,
   checkoutLoading = false,
 }: CartTotalProps) {
@@ -33,29 +31,21 @@ export default function CartCheckoutButtons({
       <CardFooter className="flex flex-col gap-2">
         <SheetClose asChild>
           <Link href="/cart" className="w-full">
-            <Button
-              size={"lg"}
-              variant="outline-black"
-              className="w-full"
-              onClick={onViewCart}
-            >
+            <Button size={"lg"} variant="outline-black" className="w-full">
               View Cart
             </Button>
           </Link>
         </SheetClose>
         <SheetClose asChild>
-          <Link href="/cart" className="w-full">
-            <Button
-              size={"lg"}
-              variant="outline"
-              className="w-full"
-              disabled={checkoutLoading}
-              onClick={onCheckout}
-            >
-              Check Out{" "}
-              {checkoutLoading && <Loader2 className="w-4 h-4 ml-2" />}
-            </Button>
-          </Link>
+          <Button
+            size={"lg"}
+            variant="outline"
+            className="w-full"
+            disabled={checkoutLoading}
+            onClick={onCheckout}
+          >
+            Check Out {checkoutLoading && <Loader2 className="w-4 h-4 ml-2" />}
+          </Button>
         </SheetClose>
       </CardFooter>
     </Card>

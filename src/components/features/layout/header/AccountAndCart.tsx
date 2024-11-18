@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import CartSheet from "../../cart/cart-sheet";
 import Link from "next/link";
+import useCartStore from "@/store/useCartStore";
 
 export default function AccountAndCart() {
+  const { cartTotal, cartData } = useCartStore();
   return (
     <div className="lg:flex items-center gap-3 hidden">
       <Link href="/account/login">
@@ -15,8 +17,8 @@ export default function AccountAndCart() {
       </Link>
       <Sheet>
         <SheetTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-[50px] rounded-full px-7 text-[16px] bg-[#2b2b2b] text-white border-[2px] border-[#2b2b2b]  shadow-sm hover:bg-[#ffffff] hover:text-[#2b2b2b]">
-          <ShoppingCart size={28} className="!h-[22px] !w-[22px]" />
-          $6.49 (1)
+          <ShoppingCart size={28} className="!h-[22px] !w-[22px]" />${cartTotal}{" "}
+          ({cartData?.length})
         </SheetTrigger>
         <CartSheet />
       </Sheet>

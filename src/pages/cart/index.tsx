@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,8 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { Minus, Plus } from "lucide-react";
-import { banner } from "../../../image-config";
+import { Loader2, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import {
   BreadcrumbItem,
@@ -25,44 +24,89 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import useCartStore from "@/store/useCartStore";
+import { showToast } from "@/utils/toast-utils/toast-util";
+import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+import { deleteCartItem, updateCartItem } from "@/services/cart/cart.service";
+import useProfileStore from "@/store/useProfileStore";
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getImageUrl } from "@/lib/utils";
+import { ICartItem } from "@/interface/cart.types";
+import { ICreateOrder } from "@/interface/order.types";
+import { orderCreate } from "@/services/order/order.service";
 
-export default function Component() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Tre Marie Panettone Tuttuvetta (rasins only)",
-      price: 37.99,
-      image: banner,
-      quantity: 1,
+export default function ShoppingCart() {
+  const queryClient = useQueryClient();
+  const { cartData, cartTotal } = useCartStore();
+
+  const { profileData } = useProfileStore();
+
+  const { mutate: deleteItem, isPending: deleteCartPending } = useMutation({
+    mutationFn: (data: { userId: number; id: number }) =>
+      deleteCartItem(data.userId, data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+      showToast(TOAST_TYPES.success, "Cart item deleted successfully");
     },
-    // You can add more initial items here
-  ]);
+    onError: () => {
+      showToast(TOAST_TYPES.error, "Failed to delete cart item");
+    },
+  });
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity >= 1) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        )
-      );
-    }
+  const { mutate: updateCart, isPending: updateCartPending } = useMutation({
+    mutationFn: updateCartItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+      showToast(TOAST_TYPES.success, "Cart item updated successfully");
+    },
+    onError: () => {
+      showToast(TOAST_TYPES.error, "Failed to update cart item");
+    },
+  });
+
+  const { mutate: orderMutation, isPending: orderPending } = useMutation({
+    mutationFn: (payload: ICreateOrder) => orderCreate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      showToast(TOAST_TYPES.success, "Order created successfully");
+    },
+    onError: () => {
+      showToast(TOAST_TYPES.error, "Failed to create order");
+    },
+  });
+
+  const order = useCallback(() => {
+    const payload: ICreateOrder = {
+      userId: profileData?.id || 1,
+      items: cartData?.map((item: ICartItem) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        productName: item.product.name,
+        productPrice: Number(item.product.price),
+      })),
+    };
+    orderMutation(payload);
+  }, [orderMutation]);
+
+  const removeItem = (id: number) => {
+    deleteItem({ userId: profileData?.id || 1, id });
   };
 
-  const removeItem = (itemId: string) => {
-    setCartItems(cartItems.filter((item) => item.id !== itemId));
-  };
-
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+  const updateQuantity = useCallback(
+    (quantity: number, productId: number) => {
+      const payload = {
+        userId: profileData?.id || 1,
+        quantity,
+        productId,
+      };
+      updateCart(payload);
+    },
+    [updateCart]
   );
 
   return (
@@ -98,14 +142,14 @@ export default function Component() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {cartItems.map((item) => (
+              {cartData.map((item) => (
                 <TableRow key={item.id} className="text-slate-900">
                   <TableCell className="min-w-[300px]">
                     <div className="flex items-center space-x-4 py-4 px-6">
                       <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-xl overflow-hidden flex justify-center items-center group shrink-0 border">
                         <Image
-                          src={item.image}
-                          alt={item.name}
+                          src={getImageUrl(item.product.imageUrl)}
+                          alt={item.product.name}
                           height={100}
                           width={100}
                           className="object-contain group-hover:scale-110 transition-all duration-300"
@@ -114,9 +158,9 @@ export default function Component() {
                       <div className="text-base sm:text-[17px]">
                         <div className="font-light mb-1">${item.price}</div>
                         <div className="font-medium line-clamp-2">
-                          {item.name}
+                          {item.product.name}
                         </div>
-                        <div className="font-medium">1Kg</div>
+                        <div className="font-medium">{item.quantity}</div>
                       </div>
                     </div>
                   </TableCell>
@@ -130,6 +174,7 @@ export default function Component() {
                           onClick={() =>
                             updateQuantity(item.id, item.quantity - 1)
                           }
+                          disabled={updateCartPending}
                         >
                           <Minus className="h-4 w-4" />
                           <span className="sr-only">Decrease quantity</span>
@@ -141,6 +186,7 @@ export default function Component() {
                           onChange={(e) =>
                             updateQuantity(item.id, parseInt(e.target.value))
                           }
+                          disabled={true}
                           className="w-16 h-8 text-center"
                         />
                         <Button
@@ -150,6 +196,7 @@ export default function Component() {
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)
                           }
+                          disabled={updateCartPending}
                         >
                           <Plus className="h-4 w-4" />
                           <span className="sr-only">Increase quantity</span>
@@ -159,13 +206,17 @@ export default function Component() {
                         variant="link"
                         className="text-slate-600"
                         onClick={() => removeItem(item.id)}
+                        disabled={deleteCartPending}
                       >
-                        Remove
+                        Remove{" "}
+                        {deleteCartPending && (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        )}
                       </Button>
                     </div>
                   </TableCell>
                   <TableCell className="text-right text-lg font-medium px-9 py-4 min-w-[150px]">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ${item.total}
                   </TableCell>
                 </TableRow>
               ))}
@@ -177,7 +228,7 @@ export default function Component() {
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold mb-4">Total</h2>
-              <div className="text-4xl font-bold">${total.toFixed(2)}</div>
+              <div className="text-4xl font-bold">${cartTotal}</div>
             </div>
 
             <div>
@@ -197,8 +248,15 @@ export default function Component() {
               calculated at checkout.
             </div>
 
-            <Button variant="outline-black" className="w-full" size="lg">
-              Check Out
+            <Button
+              variant="outline-black"
+              className="w-full"
+              size="lg"
+              onClick={order}
+              disabled={orderPending}
+            >
+              Check Out{" "}
+              {orderPending && <Loader2 className="h-4 w-4 animate-spin" />}
             </Button>
           </div>
         </Card>

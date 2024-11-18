@@ -8,28 +8,36 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useProfileStore from "@/store/useProfileStore";
 import { useQuery } from "@tanstack/react-query";
 import {
-  checkoutCart,
+  // checkoutCart,
   deleteCartItem,
   getCartItems,
   updateCartItem,
 } from "@/services/cart/cart.service";
 import { ICartItem } from "@/interface/cart.types";
 import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+import { ICreateOrder } from "@/interface/order.types";
+import { orderCreate } from "@/services/order/order.service";
+import useCartStore from "@/store/useCartStore";
 
 const CartSheet = () => {
   const queryClient = useQueryClient();
   const { profileData } = useProfileStore();
+  const { setCartData, cartTotal } = useCartStore();
 
   const { data: cartData, isLoading: cartLoading } = useQuery({
     queryKey: ["cart", profileData?.id],
-    queryFn: () => getCartItems(profileData?.id || 1),
+    queryFn: async () => {
+      const response = await getCartItems(profileData?.id || 1);
+      setCartData(response);
+      return response;
+    },
   });
 
   const { mutate: deleteItem } = useMutation({
     mutationFn: (data: { userId: number; id: number }) =>
       deleteCartItem(data.userId, data.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
       showToast(TOAST_TYPES.success, "Cart item deleted successfully");
     },
     onError: () => {
@@ -40,19 +48,30 @@ const CartSheet = () => {
   const { mutate: updateCart, isPending: updateCartPending } = useMutation({
     mutationFn: updateCartItem,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
       showToast(TOAST_TYPES.success, "Cart item updated successfully");
     },
   });
 
-  const { mutate: checkoutMutation, isPending: checkoutPending } = useMutation({
-    mutationFn: ({ userId }: { userId: number }) => checkoutCart(userId),
+  // const { mutate: checkoutMutation, isPending: checkoutPending } = useMutation({
+  //   mutationFn: ({ userId }: { userId: number }) => checkoutCart(userId),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
+  //     showToast(TOAST_TYPES.success, "Checkout successful");
+  //   },
+  //   onError: () => {
+  //     showToast(TOAST_TYPES.error, "Failed to checkout");
+  //   },
+  // });
+
+  const { mutate: orderMutation, isPending: orderPending } = useMutation({
+    mutationFn: (payload: ICreateOrder) => orderCreate(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
-      showToast(TOAST_TYPES.success, "Checkout successful");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      showToast(TOAST_TYPES.success, "Order created successfully");
     },
     onError: () => {
-      showToast(TOAST_TYPES.error, "Failed to checkout");
+      showToast(TOAST_TYPES.error, "Failed to create order");
     },
   });
 
@@ -75,19 +94,23 @@ const CartSheet = () => {
     [deleteItem]
   );
 
-  const checkout = useCallback(() => {
-    checkoutMutation({ userId: profileData?.id || 1 });
-  }, [checkoutMutation]);
+  const order = useCallback(() => {
+    const payload: ICreateOrder = {
+      userId: profileData?.id || 1,
+      items: cartData?.map((item: ICartItem) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price,
+        productName: item.product.name,
+      })),
+    };
+    orderMutation(payload);
+  }, [orderMutation]);
 
-  const getTotal = useCallback(() => {
-    return cartData?.reduce(
-      (acc: number, item: ICartItem) =>
-        acc + Number(item.product.price) * item.quantity,
-      0
-    );
-  }, [cartData]);
+  // const checkout = useCallback(() => {
+  //   checkoutMutation({ userId: profileData?.id || 1 });
+  // }, [checkoutMutation]);
 
-  console.log(cartData);
   return (
     <SheetContent className="p-0">
       <SheetHeader className="border-b border-b-[#e5e5e5] p-5 px-6">
@@ -126,10 +149,9 @@ const CartSheet = () => {
         </div>
         <div className="">
           <CartCheckoutButtons
-            total={getTotal()}
-            onViewCart={() => console.log("View Cart clicked")}
-            onCheckout={checkout}
-            checkoutLoading={checkoutPending}
+            total={cartTotal}
+            onCheckout={order}
+            checkoutLoading={orderPending}
           />
         </div>
       </div>
