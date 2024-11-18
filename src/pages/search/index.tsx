@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { useRouter } from "next/router";
+import ProductNotFoundCard from "@/components/features/shared/product-not-found";
 
 const SearchPage = () => {
   const router = useRouter();
@@ -38,7 +39,7 @@ const SearchPage = () => {
     current.set("sort_by", value);
     router.replace(`${pathname}?${current.toString()}`);
   };
-
+  console.log("products:", products);
   return (
     <div>
       <div className="container">
@@ -57,7 +58,13 @@ const SearchPage = () => {
         </Breadcrumb>
         <Title title={`Search results for: ${keyword}`} />
         <FilterSort onSort={handleSort} sortBy={sortBy} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6">
+        <div
+          className={`${
+            products && products?.length > 0
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6"
+              : ""
+          }`}
+        >
           {isLoading &&
             [1, 2, 3, 4].map((item) => (
               <Skeleton key={item} className="h-[300px] w-full" />
@@ -66,6 +73,9 @@ const SearchPage = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        {(!products || products?.length === 0) && (
+          <ProductNotFoundCard onButtonClick={() => router.push("/")} />
+        )}
       </div>
     </div>
   );

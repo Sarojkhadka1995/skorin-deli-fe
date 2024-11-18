@@ -1,12 +1,11 @@
 import axiosInstance from "@/axios/axiosinstance";
 
-export interface PersonalDetails {
+export type PersonalDetails = {
   name: string;
   email: string;
   phone: string;
   address: string;
-  profileImage: string;
-}
+};
 
 export interface PasswordChange {
   currentPassword: string;

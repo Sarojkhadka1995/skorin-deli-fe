@@ -20,7 +20,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick links</h3>
             <ul className="space-y-2">
               {[
-                // "Search",
+                "Search",
                 // "Our Story",
                 // "Refund Policy",
                 // "Shipping Policy",

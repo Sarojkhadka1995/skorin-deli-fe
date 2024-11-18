@@ -5,23 +5,25 @@ import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Button } from "@/components/ui/button";
-import HouseIcon from "@/shared/icons/houseIcon";
-import TruckIcon from "@/shared/icons/truckIcon";
-import CoinIcon from "@/shared/icons/coinIcon";
+
+import storeIcon from "@/public/icons/shop.svg";
+import truckIcon from "@/public/icons/truck.svg";
+import coinIcon from "@/public/icons/coin.svg";
+import Image from "next/image";
 
 const features = [
   {
-    icon: TruckIcon,
+    icon: truckIcon,
     title: "Free Delivery",
     description: "Orders over $150 to Sydney Metro & $50 to Northern Beaches",
   },
   {
-    icon: HouseIcon,
+    icon: storeIcon,
     title: "Click & Collect",
     description: "20 Dale Street, Brookvale NSW 2100",
   },
   {
-    icon: CoinIcon,
+    icon: coinIcon,
     title: "Value",
     description: "Your favourite Italian brands at accessible prices",
   },
@@ -74,7 +76,13 @@ export default function Services() {
             className="hover:scale-105 transition-all duration-300 p-3"
           >
             <div key={index} className="flex flex-col items-center text-center">
-              <feature.icon className="w-[100px] h-[100px] mb-6" />
+              <Image
+                src={feature.icon}
+                height={100}
+                width={100}
+                alt={feature.title}
+                className="mb-4"
+              />
               <h3 className="text-2xl font-medium mb-2">{feature.title}</h3>
               <p className="text-sm text-gray-600">{feature.description}</p>
             </div>

@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   changePassword,
   getProfile,
@@ -28,7 +28,6 @@ import {
 import { ApiError } from "next/dist/server/api-utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import OrderHistory from "./order-history";
-import { Trash2 } from "lucide-react";
 
 // Zod Schemas
 const personalDetailsSchema = z.object({
@@ -36,7 +35,6 @@ const personalDetailsSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   address: z.string().min(10, "Address must be at least 10 characters"),
-  profileImage: z.any(),
 });
 
 const passwordSchema = z
@@ -52,8 +50,11 @@ const passwordSchema = z
     path: ["confirmPassword"],
   });
 
-type PersonalDetailsFormData = Omit<PersonalDetails, "profileImage"> & {
-  profileImage: File | string | null;
+type PersonalDetailsFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
 };
 
 export default function UserProfile() {
@@ -66,7 +67,6 @@ export default function UserProfile() {
       email: "",
       phone: "",
       address: "",
-      profileImage: null,
     },
   });
 
@@ -91,7 +91,6 @@ export default function UserProfile() {
         email: profileData.data.email,
         phone: profileData.data.phone,
         address: profileData.data.address,
-        profileImage: profileData.data.profileImage,
       });
     }
   }, [profileData, personalDetailsForm]);
@@ -123,27 +122,12 @@ export default function UserProfile() {
   });
 
   const onPersonalDetailsSubmit = (data: PersonalDetailsFormData) => {
-    const updateData: PersonalDetails = {
+    updateProfile({
       name: data.name,
       email: data.email,
       phone: data.phone,
       address: data.address,
-      profileImage:
-        typeof data.profileImage === "string" ? data.profileImage : "",
-    };
-
-    if (data.profileImage instanceof File) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateProfile({
-          ...updateData,
-          profileImage: reader.result as string,
-        });
-      };
-      reader.readAsDataURL(data.profileImage);
-    } else {
-      updateProfile(updateData);
-    }
+    });
   };
 
   const onPasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
@@ -188,68 +172,11 @@ export default function UserProfile() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="relative group">
-                      <Avatar className="w-20 h-20">
-                        <AvatarImage
-                          src={
-                            personalDetailsForm.watch("profileImage") instanceof
-                            File
-                              ? URL.createObjectURL(
-                                  personalDetailsForm.watch(
-                                    "profileImage"
-                                  ) as File
-                                )
-                              : (personalDetailsForm.watch(
-                                  "profileImage"
-                                ) as string) || "/placeholder.svg"
-                          }
-                          alt="Profile picture"
-                        />
-                        <AvatarFallback>
-                          {personalDetailsForm
-                            .watch("name")?.[0]
-                            ?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <label
-                        htmlFor="profileImage"
-                        className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 rounded-full cursor-pointer transition-opacity"
-                      >
-                        Change
-                      </label>
-                      <input
-                        type="file"
-                        id="profileImage"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            personalDetailsForm.setValue("profileImage", file);
-                          }
-                        }}
-                      />
-                    </div>
-                    {(personalDetailsForm.watch("profileImage") ||
-                      profileData?.data?.profileImage) && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => {
-                          personalDetailsForm.setValue("profileImage", null);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
                     <Input
                       id="name"
+                      placeholder="Your name"
                       {...personalDetailsForm.register("name")}
                       // disabled={updateProfile.}
                     />

@@ -93,12 +93,11 @@ export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Order History</h1>
+    <div className="border rounded-lg">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Order Name</TableHead>
+            <TableHead className="ps-6">Order Name</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Total</TableHead>
