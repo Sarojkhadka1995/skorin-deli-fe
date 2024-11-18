@@ -2,17 +2,20 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { SheetClose } from "@/components/ui/sheet";
+import { Loader2 } from "lucide-react";
 
 interface CartTotalProps {
   total: number;
   onViewCart: () => void;
   onCheckout: () => void;
+  checkoutLoading: boolean;
 }
 
 export default function CartCheckoutButtons({
-  total = 238.92,
-  onViewCart = () => console.log("View Cart clicked"),
-  onCheckout = () => console.log("Checkout clicked"),
+  total,
+  onViewCart,
+  onCheckout,
+  checkoutLoading = false,
 }: CartTotalProps) {
   return (
     <Card className="w-full max-w-sm border-none">
@@ -46,9 +49,11 @@ export default function CartCheckoutButtons({
               size={"lg"}
               variant="outline"
               className="w-full"
+              disabled={checkoutLoading}
               onClick={onCheckout}
             >
-              Check Out
+              Check Out{" "}
+              {checkoutLoading && <Loader2 className="w-4 h-4 ml-2" />}
             </Button>
           </Link>
         </SheetClose>

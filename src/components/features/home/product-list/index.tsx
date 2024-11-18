@@ -18,7 +18,7 @@ const ProductList = () => {
     <div className="container">
       <Title
         title="Our Products"
-        subtitle="Discover our wide range of products"
+        // subtitle="Discover our wide range of products"
         viewAllLink="/products"
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6">

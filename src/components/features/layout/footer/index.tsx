@@ -1,3 +1,4 @@
+import { QUICK_LINKS } from "@/constants/quicklinks";
 import { Facebook, Instagram } from "lucide-react";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ export default function Footer() {
           <div className="w-full sm:w-2/4 md:w-1/4 mb-8 md:mb-0">
             <h2 className="text-2xl font-bold mb-4">Skorin Deli</h2>
 
-            <p className="mb-2"> 215 Concord Rd</p>
+            <p className="mb-2">215 Concord Rd</p>
             <p className="mb-2">North Strathfield NSW 2137</p>
             <p>Australia</p>
           </div>
@@ -19,19 +20,13 @@ export default function Footer() {
           <div className="w-full sm:w-2/4 md:w-1/4 mb-8 md:mb-0">
             <h3 className="text-lg font-semibold mb-4">Quick links</h3>
             <ul className="space-y-2">
-              {[
-                "Search",
-                // "Our Story",
-                // "Refund Policy",
-                // "Shipping Policy",
-                "Contact",
-              ].map((item) => (
-                <li key={item}>
+              {Object.entries(QUICK_LINKS).map(([key, value]) => (
+                <li key={key}>
                   <Link
-                    href={`/${item.toLowerCase().replace(" ", "-")}`}
+                    href={`/${key}`}
                     className="hover:text-primary underline"
                   >
-                    {item}
+                    {value}
                   </Link>
                 </li>
               ))}

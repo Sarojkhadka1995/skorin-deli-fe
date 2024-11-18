@@ -1,5 +1,3 @@
-// import toast, { Toast } from "react-hot-toast";
-
 import toast, { Toast } from "react-hot-toast";
 
 export enum TOAST_TYPES {
