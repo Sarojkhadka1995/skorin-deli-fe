@@ -3,6 +3,7 @@ import Layout from "@/components/features/layout";
 import type { AppProps } from "next/app";
 import { Libre_Franklin } from "next/font/google";
 import { ToasterComponent } from "@/components/features/shared/toast";
+import QueryProviders from "@/lib/QueryProvides";
 
 export const librefranklin = Libre_Franklin({
   weight: ["400", "500", "600", "700"],
@@ -15,10 +16,12 @@ export const librefranklin = Libre_Franklin({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <main className={`${librefranklin.variable} font-sans`}>
-      <ToasterComponent />
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <QueryProviders>
+        <ToasterComponent />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </QueryProviders>
     </main>
   );
 }
