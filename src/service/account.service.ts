@@ -7,10 +7,9 @@ export type PersonalDetails = {
   address: string;
 };
 
-export interface PasswordChange {
+export interface IPasswordChange {
   currentPassword: string;
   newPassword: string;
-  confirmPassword: string;
 }
 
 interface Address {
@@ -41,7 +40,7 @@ export const updatePersonalDetails = async (
 };
 
 export const changePassword = async (
-  data: PasswordChange
+  data: IPasswordChange
 ): Promise<ApiResponse<null>> => {
   try {
     const response = await axiosInstance.put<ApiResponse<null>>(
