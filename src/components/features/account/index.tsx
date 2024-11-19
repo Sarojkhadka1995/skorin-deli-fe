@@ -31,6 +31,9 @@ import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { showToast } from "@/utils/toast-utils/toast-util";
 import { VALIDATION_MESSAGE } from "@/constants/validation";
 import { PASSWORD_REGEX } from "@/constants/regex";
+import { deleteCookie, getCookies } from "cookies-next";
+import { COOKIE_CONFIG } from "@/config/app";
+import { useRouter } from "next/navigation";
 
 // Zod Schemas
 const personalDetailsSchema = z.object({
@@ -69,6 +72,7 @@ type PersonalDetailsFormData = {
 };
 
 export default function UserProfile() {
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const personalDetailsForm = useForm<PersonalDetailsFormData>({
@@ -146,6 +150,14 @@ export default function UserProfile() {
       newPassword: data.newPassword,
     };
     changePasswordMutation.mutate(payload);
+  };
+
+  const logout = () => {
+    deleteCookie(COOKIE_CONFIG.loggedIn);
+    deleteCookie(COOKIE_CONFIG.accessToken);
+    deleteCookie(COOKIE_CONFIG.refreshToken);
+    router.push("/account/login");
+    showToast(TOAST_TYPES.success, "Logged out successfully");
   };
 
   return (
@@ -339,7 +351,7 @@ export default function UserProfile() {
                 <CardDescription>Sign out of your account.</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button>Logout</Button>
+                <Button onClick={logout}>Logout</Button>
               </CardContent>
             </Card>
           </TabsContent>
