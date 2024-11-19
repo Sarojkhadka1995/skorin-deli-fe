@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
@@ -28,6 +27,13 @@ import {
 import { ApiError } from "next/dist/server/api-utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import OrderHistory from "./order-history";
+import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+import { showToast } from "@/utils/toast-utils/toast-util";
+import { VALIDATION_MESSAGE } from "@/constants/validation";
+import { PASSWORD_REGEX } from "@/constants/regex";
+import { deleteCookie } from "cookies-next";
+import { COOKIE_CONFIG } from "@/config/app";
+import { useRouter } from "next/navigation";
 
 // Zod Schemas
 const personalDetailsSchema = z.object({
@@ -41,9 +47,17 @@ const passwordSchema = z
   .object({
     currentPassword: z
       .string()
-      .min(6, "Password must be at least 6 characters"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
+      .min(1, { message: VALIDATION_MESSAGE.get("Password", "required") }),
+    newPassword: z
+      .string()
+      .min(1, { message: VALIDATION_MESSAGE.get("New Password", "required") })
+      .regex(PASSWORD_REGEX, {
+        message:
+          "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+      }),
+    confirmPassword: z.string().min(1, {
+      message: VALIDATION_MESSAGE.get("Confirm Password", "required"),
+    }),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
@@ -58,6 +72,7 @@ type PersonalDetailsFormData = {
 };
 
 export default function UserProfile() {
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const personalDetailsForm = useForm<PersonalDetailsFormData>({
@@ -103,20 +118,19 @@ export default function UserProfile() {
     mutationFn: updatePersonalDetails,
     onSuccess: (data) => {
       console.log("data:", data);
-      toast.success("Personal details updated successfully");
+      showToast(TOAST_TYPES.success, "Personal details updated successfully");
       queryClient.invalidateQueries({ queryKey: ["getProfile"] });
     },
   });
 
   const changePasswordMutation = useMutation({
     mutationFn: changePassword,
-    onSuccess: (data) => {
-      toast.success("Password updated successfully");
-      console.log("data:", data);
+    onSuccess: () => {
+      showToast(TOAST_TYPES.success, "Password updated successfully");
       passwordForm.reset();
     },
     onError: (error: ApiError) => {
-      toast.error("Failed to update password");
+      showToast(TOAST_TYPES.error, "Failed to update password");
       console.log("error:", error);
     },
   });
@@ -131,7 +145,19 @@ export default function UserProfile() {
   };
 
   const onPasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
-    changePasswordMutation.mutate(data);
+    const payload = {
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+    };
+    changePasswordMutation.mutate(payload);
+  };
+
+  const logout = () => {
+    deleteCookie(COOKIE_CONFIG.loggedIn);
+    deleteCookie(COOKIE_CONFIG.accessToken);
+    deleteCookie(COOKIE_CONFIG.refreshToken);
+    router.push("/account/login");
+    showToast(TOAST_TYPES.success, "Logged out successfully");
   };
 
   return (
@@ -325,7 +351,7 @@ export default function UserProfile() {
                 <CardDescription>Sign out of your account.</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button>Logout</Button>
+                <Button onClick={logout}>Logout</Button>
               </CardContent>
             </Card>
           </TabsContent>

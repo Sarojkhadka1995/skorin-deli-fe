@@ -27,6 +27,7 @@ const useForgotPassword = () => {
           TOAST_TYPES.success,
           "Reset link will be sent to your email."
         );
+        router.push("/account/login");
       },
       onError: (error: AxiosError<ErrorResponse>) => {
         showToast(
