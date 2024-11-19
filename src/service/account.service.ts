@@ -1,6 +1,7 @@
 import axiosInstance from "@/axios/axiosinstance";
 
 export type PersonalDetails = {
+  id: number;
   first_name: string;
   last_name: string;
   email: string;
