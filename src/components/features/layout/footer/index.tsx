@@ -1,5 +1,5 @@
 import { QUICK_LINKS } from "@/constants/quicklinks";
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook, Instagram, PhoneOutgoing } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {
@@ -13,7 +13,13 @@ export default function Footer() {
 
             <p className="mb-2">215 Concord Rd</p>
             <p className="mb-2">North Strathfield NSW 2137</p>
-            <p>Australia</p>
+            <p className="mb-2">Australia</p>
+            <a
+              href="tel:0297551111"
+              className="text-primary hover:underline flex items-center gap-2"
+            >
+              02 9755 1111 <PhoneOutgoing size={16} />
+            </a>
           </div>
 
           {/* Quick Links */}

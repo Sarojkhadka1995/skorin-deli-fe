@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { Profile } from "@/interface/auth.types";
+import { PersonalDetails } from "@/service/account.service";
 
 interface ProfileState {
-  profileData: Profile | null;
-  setProfile: (profile: Profile) => void;
+  profileData: PersonalDetails | null;
+  setProfile: (profile: PersonalDetails) => void;
   clearProfile: () => void;
 }
 

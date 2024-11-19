@@ -112,7 +112,7 @@ const CartSheet = () => {
   // }, [checkoutMutation]);
 
   return (
-    <SheetContent className="p-0">
+    <SheetContent className="p-0 sm:min-w-[500px] min-w-full">
       <SheetHeader className="border-b border-b-[#e5e5e5] p-5 px-6">
         <SheetTitle className="font-medium text-xl">
           Shopping Cart ({cartData?.length})

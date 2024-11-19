@@ -7,11 +7,22 @@ import Link from "next/link";
 import useCartStore from "@/store/useCartStore";
 import { getCookie } from "cookies-next";
 import { COOKIE_CONFIG } from "@/config/app";
+import { useState } from "react";
+import { useEffect } from "react";
 
 export default function AccountAndCart() {
   const { cartTotal, cartData } = useCartStore();
-
+  const [isMounted, setIsMounted] = useState(false);
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
+  console.log("isLoggedIn", isLoggedIn);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div className="lg:flex items-center gap-3 hidden">
@@ -21,14 +32,17 @@ export default function AccountAndCart() {
           Account
         </Button>
       </Link>
-
-      <Sheet>
-        <SheetTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-[50px] rounded-full px-7 text-[16px] bg-[#2b2b2b] text-white border-[2px] border-[#2b2b2b]  shadow-sm hover:bg-[#ffffff] hover:text-[#2b2b2b]">
-          <ShoppingCart size={28} className="!h-[22px] !w-[22px]" />${cartTotal}{" "}
-          ({cartData?.length})
-        </SheetTrigger>
-        <CartSheet />
-      </Sheet>
+      {isLoggedIn && (
+        <Sheet>
+          <SheetTrigger
+            className={`inline-flex items-center justify-center gap-2 whitespace-nowrap h-[50px] rounded-full px-7 text-[16px] bg-[#2b2b2b] text-white border-[2px] border-[#2b2b2b]  shadow-sm hover:bg-[#ffffff] hover:text-[#2b2b2b]`}
+          >
+            <ShoppingCart size={28} className="!h-[22px] !w-[22px]" />$
+            {cartTotal} ({cartData?.length})
+          </SheetTrigger>
+          <CartSheet />
+        </Sheet>
+      )}
     </div>
   );
 }

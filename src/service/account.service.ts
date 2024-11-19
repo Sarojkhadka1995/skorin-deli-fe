@@ -1,7 +1,8 @@
 import axiosInstance from "@/axios/axiosinstance";
 
 export type PersonalDetails = {
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   address: string;
@@ -79,7 +80,7 @@ export const deleteAccount = async (): Promise<ApiResponse<null>> => {
 export const getProfile = async (): Promise<ApiResponse<PersonalDetails>> => {
   try {
     const response = await axiosInstance.get<ApiResponse<PersonalDetails>>(
-      "/account/profile"
+      "/profile"
     );
     return response.data;
   } catch (error) {

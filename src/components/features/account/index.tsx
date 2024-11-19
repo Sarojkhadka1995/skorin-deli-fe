@@ -19,13 +19,12 @@ import { Button } from "@/components/ui/button";
 
 import {
   changePassword,
-  getProfile,
   updatePersonalDetails,
   PersonalDetails,
   ApiResponse,
 } from "@/service/account.service";
 import { ApiError } from "next/dist/server/api-utils";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import OrderHistory from "./order-history";
 import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { showToast } from "@/utils/toast-utils/toast-util";
@@ -34,6 +33,7 @@ import { PASSWORD_REGEX } from "@/constants/regex";
 import { deleteCookie } from "cookies-next";
 import { COOKIE_CONFIG } from "@/config/app";
 import { useRouter } from "next/navigation";
+import useProfileStore from "@/store/useProfileStore";
 
 // Zod Schemas
 const personalDetailsSchema = z.object({
@@ -65,7 +65,8 @@ const passwordSchema = z
   });
 
 type PersonalDetailsFormData = {
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   address: string;
@@ -75,13 +76,16 @@ export default function UserProfile() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  const { profileData } = useProfileStore();
+
   const personalDetailsForm = useForm<PersonalDetailsFormData>({
     resolver: zodResolver(personalDetailsSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
+      first_name: profileData?.first_name || "",
+      last_name: profileData?.last_name || "",
+      email: profileData?.email || "",
+      phone: profileData?.phone || "",
+      address: profileData?.address || "",
     },
   });
 
@@ -94,18 +98,14 @@ export default function UserProfile() {
     },
   });
 
-  const { data: profileData } = useQuery<ApiResponse<PersonalDetails>>({
-    queryKey: ["getProfile"],
-    queryFn: getProfile,
-  });
-
   useEffect(() => {
-    if (profileData?.data) {
+    if (profileData) {
       personalDetailsForm.reset({
-        name: profileData.data.name,
-        email: profileData.data.email,
-        phone: profileData.data.phone,
-        address: profileData.data.address,
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        email: profileData.email,
+        phone: profileData.phone,
+        address: profileData.address,
       });
     }
   }, [profileData, personalDetailsForm]);
@@ -136,8 +136,10 @@ export default function UserProfile() {
   });
 
   const onPersonalDetailsSubmit = (data: PersonalDetailsFormData) => {
+    console.log("data:", data);
     updateProfile({
-      name: data.name,
+      first_name: data.first_name,
+      last_name: data.last_name,
       email: data.email,
       phone: data.phone,
       address: data.address,
@@ -198,19 +200,41 @@ export default function UserProfile() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="Your name"
-                      {...personalDetailsForm.register("name")}
-                      // disabled={updateProfile.}
-                    />
-                    {personalDetailsForm.formState.errors.name && (
-                      <p className="text-sm text-red-500">
-                        {personalDetailsForm.formState.errors.name.message}
-                      </p>
-                    )}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="first_name">First Name</Label>
+                      <Input
+                        id="first_name"
+                        placeholder="Your first name"
+                        {...personalDetailsForm.register("first_name")}
+                        // disabled={updateProfile.}
+                      />
+                      {personalDetailsForm.formState.errors.first_name && (
+                        <p className="text-sm text-red-500">
+                          {
+                            personalDetailsForm.formState.errors.first_name
+                              .message
+                          }
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name</Label>
+                      <Input
+                        id="name"
+                        placeholder="Your last name"
+                        {...personalDetailsForm.register("last_name")}
+                        // disabled={updateProfile.}
+                      />
+                      {personalDetailsForm.formState.errors.last_name && (
+                        <p className="text-sm text-red-500">
+                          {
+                            personalDetailsForm.formState.errors.last_name
+                              .message
+                          }
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
