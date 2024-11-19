@@ -31,7 +31,7 @@ import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { showToast } from "@/utils/toast-utils/toast-util";
 import { VALIDATION_MESSAGE } from "@/constants/validation";
 import { PASSWORD_REGEX } from "@/constants/regex";
-import { deleteCookie, getCookies } from "cookies-next";
+import { deleteCookie } from "cookies-next";
 import { COOKIE_CONFIG } from "@/config/app";
 import { useRouter } from "next/navigation";
 
