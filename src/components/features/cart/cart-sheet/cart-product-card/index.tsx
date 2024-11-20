@@ -35,7 +35,7 @@ export default function CartProductCard({
   };
 
   return (
-    <Card className="w-full max-w-sm border-0 group">
+    <Card className="w-full border-0 group">
       <CardContent className="p-0">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-4 border border-[#e5e5e5] rounded-xl !p-3 h-full flex justify-center items-center">
@@ -51,7 +51,7 @@ export default function CartProductCard({
           <div className="col-span-8">
             <p className="text-2xl font-bold">${price.toFixed(2)}</p>
             <h3 className="text-lg font-semibold">{name}</h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 line-clamp-2">
               {description} {weight}
             </p>
             <div className="flex items-center mt-2">

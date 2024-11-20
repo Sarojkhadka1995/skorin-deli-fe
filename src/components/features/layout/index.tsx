@@ -3,17 +3,21 @@ import Header from "./header";
 import Footer from "./footer";
 import { showToast } from "@/utils/toast-utils/toast-util";
 import useProfileStore from "@/store/useProfileStore";
-import { getProfile } from "@/services/auth/login.service";
+// import { getProfile } from "@/services/auth/login.service";
 import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { COOKIE_CONFIG } from "@/config/app";
 import { getCookie } from "cookies-next";
+import { getProfile } from "@/service/account.service";
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { setProfile } = useProfileStore();
   const fetchProfile = async () => {
     try {
       const profile = await getProfile();
-      setProfile(profile);
+      console.log("profile:", profile);
+      if (profile.data) {
+        setProfile(profile.data);
+      }
       return;
     } catch (error: unknown) {
       const errorMessage =

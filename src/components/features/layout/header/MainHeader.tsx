@@ -22,14 +22,14 @@ export default function MainHeader() {
         <SheetTrigger className="lg:hidden hover:text-primary">
           <Menu />
         </SheetTrigger>
-        <SheetContent side="left" className="p-0">
+        <SheetContent side="left" className="p-0 sm:min-w-[300px] min-w-full">
           <SheetHeader className="p-6">
             <SheetTitle className="">Menu</SheetTitle>
           </SheetHeader>
           <HeaderSidebar />
         </SheetContent>
       </Sheet>
-      <div className="flex items-center justify-center lg:justify-start me-10 md:me-[130px]">
+      <div className="flex items-center justify-center lg:justify-start  lg:me-[130px]">
         <Link href="/">
           <Image src={logo} alt="Skorin Deli" width={100} height={50} />
         </Link>
