@@ -14,7 +14,6 @@ export default function AccountAndCart() {
   const { cartTotal, cartData } = useCartStore();
   const [isMounted, setIsMounted] = useState(false);
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
-  console.log("isLoggedIn", isLoggedIn);
 
   useEffect(() => {
     setIsMounted(true);

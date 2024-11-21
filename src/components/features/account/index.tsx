@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 import {
   changePassword,
@@ -80,6 +81,7 @@ export default function UserProfile() {
 
   const personalDetailsForm = useForm<PersonalDetailsFormData>({
     resolver: zodResolver(personalDetailsSchema),
+    mode: "onChange",
     defaultValues: {
       first_name: profileData?.first_name || "",
       last_name: profileData?.last_name || "",
@@ -91,12 +93,17 @@ export default function UserProfile() {
 
   const passwordForm = useForm({
     resolver: zodResolver(passwordSchema),
+    mode: "onChange",
     defaultValues: {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
   });
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (profileData) {
@@ -296,11 +303,28 @@ export default function UserProfile() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input
-                      {...passwordForm.register("currentPassword")}
-                      id="currentPassword"
-                      type="password"
-                    />
+                    <div className="relative">
+                      <Input
+                        {...passwordForm.register("currentPassword")}
+                        id="currentPassword"
+                        type={showCurrentPassword ? "text" : "password"}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() =>
+                          setShowCurrentPassword(!showCurrentPassword)
+                        }
+                      >
+                        {!showCurrentPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                     {passwordForm.formState.errors.currentPassword && (
                       <p className="text-sm text-red-500">
                         {passwordForm.formState.errors.currentPassword.message}
@@ -309,11 +333,26 @@ export default function UserProfile() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      {...passwordForm.register("newPassword")}
-                      id="newPassword"
-                      type="password"
-                    />
+                    <div className="relative">
+                      <Input
+                        {...passwordForm.register("newPassword")}
+                        id="newPassword"
+                        type={showNewPassword ? "text" : "password"}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        {!showNewPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                     {passwordForm.formState.errors.newPassword && (
                       <p className="text-sm text-red-500">
                         {passwordForm.formState.errors.newPassword.message}
@@ -324,11 +363,28 @@ export default function UserProfile() {
                     <Label htmlFor="confirmPassword">
                       Confirm New Password
                     </Label>
-                    <Input
-                      {...passwordForm.register("confirmPassword")}
-                      id="confirmPassword"
-                      type="password"
-                    />
+                    <div className="relative">
+                      <Input
+                        {...passwordForm.register("confirmPassword")}
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                      >
+                        {!showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                     {passwordForm.formState.errors.confirmPassword && (
                       <p className="text-sm text-red-500">
                         {passwordForm.formState.errors.confirmPassword.message}
