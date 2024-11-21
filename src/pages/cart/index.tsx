@@ -81,8 +81,9 @@ export default function ShoppingCart() {
   });
 
   const order = useCallback(() => {
+    if (!profileData?.id) return;
     const payload: ICreateOrder = {
-      userId: profileData?.id || 1,
+      userId: profileData?.id,
       items: cartData?.map((item: ICartItem) => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -91,24 +92,27 @@ export default function ShoppingCart() {
       })),
     };
     orderMutation(payload);
-  }, [orderMutation]);
+  }, [orderMutation, profileData]);
 
   const removeItem = (id: number) => {
-    deleteItem({ userId: profileData?.id || 1, id });
+    if (!profileData?.id) return;
+    deleteItem({ userId: profileData?.id, id });
   };
 
   const updateQuantity = useCallback(
-    (quantity: number, productId: number) => {
+    (id: number, quantity: number) => {
+      if (!profileData?.id) return;
       const payload = {
-        userId: profileData?.id || 1,
+        userId: profileData?.id,
         quantity,
-        productId,
+        cartId: id,
       };
       updateCart(payload);
     },
-    [updateCart]
+    [updateCart, profileData]
   );
 
+  console.log("====", cartData);
   return (
     <div className="container mx-auto px-4 py-8">
       <Breadcrumb className="mb-6">

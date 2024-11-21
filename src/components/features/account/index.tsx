@@ -25,7 +25,7 @@ import {
   ApiResponse,
 } from "@/service/account.service";
 import { ApiError } from "next/dist/server/api-utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import OrderHistory from "./order-history";
 import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { showToast } from "@/utils/toast-utils/toast-util";
@@ -38,10 +38,19 @@ import useProfileStore from "@/store/useProfileStore";
 
 // Zod Schemas
 const personalDetailsSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  address: z.string().min(10, "Address must be at least 10 characters"),
+  first_name: z
+    .string()
+    .min(2, VALIDATION_MESSAGE.get("First Name", "required")),
+  last_name: z.string().min(2, VALIDATION_MESSAGE.get("Last Name", "required")),
+  email: z.string().email(VALIDATION_MESSAGE.get("Email", "invalid")),
+  phoneNumber: z
+    .string()
+    .min(1, VALIDATION_MESSAGE.get("Phone Number", "required"))
+    .max(15, VALIDATION_MESSAGE.get("Phone Number", "max")),
+  address: z
+    .string()
+    .min(2, VALIDATION_MESSAGE.get("Address", "required"))
+    .max(20, VALIDATION_MESSAGE.get("Address", "max")),
 });
 
 const passwordSchema = z
@@ -69,15 +78,14 @@ type PersonalDetailsFormData = {
   first_name: string;
   last_name: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   address: string;
 };
 
 export default function UserProfile() {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
-  const { profileData } = useProfileStore();
+  const { profileData, setProfile } = useProfileStore();
 
   const personalDetailsForm = useForm<PersonalDetailsFormData>({
     resolver: zodResolver(personalDetailsSchema),
@@ -86,7 +94,7 @@ export default function UserProfile() {
       first_name: profileData?.first_name || "",
       last_name: profileData?.last_name || "",
       email: profileData?.email || "",
-      phone: profileData?.phone || "",
+      phoneNumber: profileData?.phoneNumber || "",
       address: profileData?.address || "",
     },
   });
@@ -111,7 +119,7 @@ export default function UserProfile() {
         first_name: profileData.first_name,
         last_name: profileData.last_name,
         email: profileData.email,
-        phone: profileData.phone,
+        phoneNumber: profileData.phoneNumber,
         address: profileData.address,
       });
     }
@@ -124,9 +132,10 @@ export default function UserProfile() {
   >({
     mutationFn: updatePersonalDetails,
     onSuccess: (data) => {
-      console.log("data:", data);
       showToast(TOAST_TYPES.success, "Personal details updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["getProfile"] });
+      if (data.data) {
+        setProfile(data.data);
+      }
     },
   });
 
@@ -143,14 +152,12 @@ export default function UserProfile() {
   });
 
   const onPersonalDetailsSubmit = (data: PersonalDetailsFormData) => {
-    console.log("data:", data);
     updateProfile({
       first_name: data.first_name,
       last_name: data.last_name,
       email: data.email,
-      phone: data.phone,
+      phoneNumber: data.phoneNumber,
       address: data.address,
-      id: profileData?.id || 1,
     });
   };
 
@@ -186,9 +193,9 @@ export default function UserProfile() {
           <TabsTrigger value="orderHistory" className="justify-start">
             Order History
           </TabsTrigger>
-          <TabsTrigger value="delete" className="justify-start">
+          {/* <TabsTrigger value="delete" className="justify-start">
             Delete Account
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger value="logout" className="justify-start">
             Logout
           </TabsTrigger>
@@ -207,6 +214,7 @@ export default function UserProfile() {
                     Update your personal information here.
                   </CardDescription>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -259,16 +267,19 @@ export default function UserProfile() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
                     <Input
-                      {...personalDetailsForm.register("phone")}
-                      id="phone"
+                      {...personalDetailsForm.register("phoneNumber")}
+                      id="phoneNumber"
                       type="tel"
                       placeholder="Your phone number"
                     />
-                    {personalDetailsForm.formState.errors.phone && (
+                    {personalDetailsForm.formState.errors.phoneNumber && (
                       <p className="text-sm text-red-500">
-                        {personalDetailsForm.formState.errors.phone.message}
+                        {
+                          personalDetailsForm.formState.errors.phoneNumber
+                            .message
+                        }
                       </p>
                     )}
                   </div>
@@ -276,13 +287,13 @@ export default function UserProfile() {
                     <Label htmlFor="address">Address</Label>
                     <Input
                       {...personalDetailsForm.register("address")}
-                      id="phone"
-                      type="tel"
+                      id="address"
+                      type="text"
                       placeholder="Your address"
                     />
-                    {personalDetailsForm.formState.errors.phone && (
+                    {personalDetailsForm.formState.errors.address && (
                       <p className="text-sm text-red-500">
-                        {personalDetailsForm.formState.errors.phone.message}
+                        {personalDetailsForm.formState.errors.address.message}
                       </p>
                     )}
                   </div>
@@ -409,7 +420,7 @@ export default function UserProfile() {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="delete">
+          {/* <TabsContent value="delete">
             <Card>
               <CardHeader>
                 <CardTitle>Delete Account</CardTitle>
@@ -424,7 +435,7 @@ export default function UserProfile() {
                 <Button variant="destructive">Delete Account</Button>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
           <TabsContent value="logout">
             <Card>
               <CardHeader>

@@ -13,10 +13,11 @@ import { IProductDetail } from "@/interface/product.types";
 import ProductIngredients from "../../product-detail/product-ingrediens";
 import { getCookie } from "cookies-next";
 import { COOKIE_CONFIG } from "@/config/app";
-import { useMutation } from "@tanstack/react-query";
-import { createCart } from "@/services/cart/cart.service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { checkStock, createCart } from "@/services/cart/cart.service";
 import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import useProfileStore from "@/store/useProfileStore";
+import { useRouter } from "next/navigation";
 
 export default function ProductDetail({
   product,
@@ -27,9 +28,11 @@ export default function ProductDetail({
   isLoading: boolean;
   isError: boolean;
 }) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  //Ref
   const { profileData } = useProfileStore();
-  const [quantity, setQuantity] = useState(1);
-  const [color] = useState("Black");
+  const [quantity, setQuantity] = useState<number>(1);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
@@ -38,13 +41,22 @@ export default function ProductDetail({
     mutationFn: createCart,
     onSuccess: () => {
       showToast(TOAST_TYPES.success, "Product added to cart");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
     onError: () => {
       showToast(TOAST_TYPES.error, "Failed to add product to cart");
     },
   });
 
-  if (isLoading) {
+  const { data: stockData, isLoading: checkStockLoading } = useQuery({
+    queryKey: ["stock", product?.id],
+    queryFn: () => {
+      if (!product?.id) return 0;
+      return checkStock(product?.id);
+    },
+  });
+
+  if (isLoading || (isLoggedIn && profileData === null)) {
     return (
       <div className="py-3">
         <div className="grid md:grid-cols-2 gap-8">
@@ -90,19 +102,21 @@ export default function ProductDetail({
     setZoomedImage(null);
   };
 
-  const handleAddToCart = () => {
-    console.log({
-      id,
-      name,
-      price,
-      color,
-      quantity,
-    });
+  const updateQuantity = (value: number) => {
+    // if (stockData === 0 || stockData < value) return;
+    setQuantity(value);
+  };
 
+  const handleAddToCart = () => {
+    if (!isLoggedIn) {
+      router.push("/account/login");
+      return;
+    }
+    if (!profileData?.id) return;
     const cartData = {
-      userId: profileData?.id || 1,
+      userId: profileData?.id,
       productId: id,
-      quantity,
+      quantity: 1,
     };
     addToCart(cartData);
   };
@@ -176,19 +190,18 @@ export default function ProductDetail({
               ))}
             </RadioGroup>
           </div> */}
-
           {isLoggedIn && (
             <p className="text-3xl font-medium mb-4">
               ${Number(price).toFixed(2)}
             </p>
           )}
-
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                onClick={() => updateQuantity(quantity - 1)}
+                disabled={quantity === 1 || checkStockLoading}
                 aria-label="Decrease quantity"
                 className="p-4"
               >
@@ -200,7 +213,10 @@ export default function ProductDetail({
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => setQuantity((q) => q + 1)}
+                onClick={() => updateQuantity(quantity + 1)}
+                disabled={
+                  checkStockLoading || stockData === 0 || stockData < quantity
+                }
                 aria-label="Increase quantity"
                 className="p-4"
               >
@@ -210,7 +226,11 @@ export default function ProductDetail({
 
             <Sheet>
               <SheetTrigger
-                onClick={handleAddToCart}
+                disabled={stockData === 0 || stockData < quantity}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAddToCart();
+                }}
                 className="h-[50px] rounded-full px-7 text-lg w-full hover:bg-[#ffffff] hover:text-[#2b2b2b] border-[2px] border-[#2b2b2b]  shadow-sm bg-[#2b2b2b] text-[#ffffff]"
               >
                 Add to cart
@@ -218,6 +238,13 @@ export default function ProductDetail({
               <CartSheet />
             </Sheet>
           </div>
+          {/* Out of stock */}
+          {(stockData === 0 || stockData < quantity) && (
+            <div>
+              <p className="text-red-500">Out of stock</p>
+            </div>
+          )}
+           
           <div className="my-6">
             <ProductIngredients
               nutritionInfo={product?.nutritionInfo}

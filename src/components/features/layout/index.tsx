@@ -11,10 +11,10 @@ import { getProfile } from "@/service/account.service";
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { setProfile } = useProfileStore();
+
   const fetchProfile = async () => {
     try {
       const profile = await getProfile();
-      console.log("profile:", profile);
       if (profile.data) {
         setProfile(profile.data);
       }

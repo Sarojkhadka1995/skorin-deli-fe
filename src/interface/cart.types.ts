@@ -1,9 +1,14 @@
 export interface ICart {
   userId: number;
-  productId: number;
+  cartId: number;
   quantity: number;
 }
 
+export interface ICreateCart {
+  userId: number;
+  productId: number;
+  quantity: number;
+}
 export interface ICartItem {
   id: number;
   price: string;

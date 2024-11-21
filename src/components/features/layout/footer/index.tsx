@@ -15,10 +15,10 @@ export default function Footer() {
             <p className="mb-2">North Strathfield NSW 2137</p>
             <p className="mb-2">Australia</p>
             <a
-              href="tel:0297551111"
+              href="tel:0297432058"
               className="text-primary hover:underline flex items-center gap-2"
             >
-              02 9755 1111 <PhoneOutgoing size={16} />
+              02 9743 2058 <PhoneOutgoing size={16} />
             </a>
           </div>
 

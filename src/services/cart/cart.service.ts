@@ -1,7 +1,7 @@
 import axiosInstance from "@/axios/axiosinstance";
-import { ICart } from "@/interface/cart.types";
+import { ICart, ICreateCart } from "@/interface/cart.types";
 
-export const createCart = async (data: ICart) => {
+export const createCart = async (data: ICreateCart) => {
   try {
     const response = await axiosInstance.post(`/carts`, data);
     return response?.data?.data;
@@ -21,7 +21,9 @@ export const getCartItems = async (userId: number) => {
 
 export const deleteCartItem = async (userId: number, id: number) => {
   try {
-    const response = await axiosInstance.delete(`/carts/${userId}/${id}`);
+    const response = await axiosInstance.delete(
+      `/carts/remove/${userId}/${id}`
+    );
     return response?.data?.data;
   } catch (error) {
     throw error;
@@ -40,6 +42,15 @@ export const updateCartItem = async (data: ICart) => {
 export const checkoutCart = async (userId: number) => {
   try {
     const response = await axiosInstance.post(`/carts/checkout/${userId}`);
+    return response?.data?.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const checkStock = async (productId: number) => {
+  try {
+    const response = await axiosInstance.get(`/products/stock/${productId}`);
     return response?.data?.data;
   } catch (error) {
     throw error;

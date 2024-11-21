@@ -2,8 +2,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getImageUrl } from "@/lib/utils";
+import { checkStock } from "@/services/cart/cart.service";
+import { useQuery } from "@tanstack/react-query";
+import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+import { showToast } from "@/utils/toast-utils/toast-util";
 
 interface ProductCardProps {
+  id: number;
   imageUrl: string;
   price: number;
   name: string;
@@ -15,6 +20,7 @@ interface ProductCardProps {
 }
 
 export default function CartProductCard({
+  id,
   imageUrl,
   price,
   name,
@@ -24,14 +30,25 @@ export default function CartProductCard({
   onRemove,
   updateQuantity,
 }: ProductCardProps) {
+  const { data: stockData, isLoading: checkStockLoading } = useQuery({
+    queryKey: ["stock", id],
+    queryFn: () => checkStock(id),
+  });
+
   const decreaseQuantity = () => {
-    if (quantity > 1) {
+    if (quantity > 1 && stockData && stockData > 0) {
       updateQuantity(quantity - 1);
+    } else {
+      showToast(TOAST_TYPES.error, `${name} is out of stock`);
     }
   };
 
   const increaseQuantity = () => {
-    updateQuantity(quantity + 1);
+    if (stockData && stockData > 0) {
+      updateQuantity(quantity + 1);
+    } else {
+      showToast(TOAST_TYPES.error, `${name} is out of stock`);
+    }
   };
 
   return (
@@ -59,7 +76,8 @@ export default function CartProductCard({
                 variant="outline"
                 size="icon"
                 onClick={decreaseQuantity}
-                className="h-8 w-8"
+                className="h-8 w-8 disabled:cursor-not-allowed"
+                disabled={quantity === 1 || checkStockLoading}
               >
                 -
               </Button>
@@ -69,6 +87,9 @@ export default function CartProductCard({
                 size="icon"
                 onClick={increaseQuantity}
                 className="h-8 w-8"
+                disabled={
+                  checkStockLoading || stockData === 0 || stockData < quantity
+                }
               >
                 +
               </Button>

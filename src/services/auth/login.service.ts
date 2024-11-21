@@ -9,7 +9,7 @@ import {
 
 export const loginUser = async (data: LoginCredentials): Promise<ILoginRes> => {
   try {
-    const response = await axiosInstance.post(`/auth/login`, data);
+    const response = await axiosInstance.post(`/frontend-users`, data);
     return response?.data?.data;
   } catch (error) {
     throw error;

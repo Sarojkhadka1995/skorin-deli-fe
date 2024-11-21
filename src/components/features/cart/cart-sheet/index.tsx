@@ -27,7 +27,8 @@ const CartSheet = () => {
   const { data: cartData, isLoading: cartLoading } = useQuery({
     queryKey: ["cart", profileData?.id],
     queryFn: async () => {
-      const response = await getCartItems(profileData?.id || 1);
+      if (!profileData?.id) return;
+      const response = await getCartItems(profileData?.id);
       setCartData(response);
       return response;
     },
@@ -76,22 +77,24 @@ const CartSheet = () => {
   });
 
   const updateQuantity = useCallback(
-    (id: number, quantity: number, productId: number) => {
+    (id: number, quantity: number) => {
+      if (!profileData?.id) return;
       const payload = {
-        userId: profileData?.id || 1,
+        userId: profileData?.id,
         quantity,
-        productId,
+        cartId: id,
       };
       updateCart(payload);
     },
-    [updateCart]
+    [updateCart, profileData]
   );
 
   const removeFromCart = useCallback(
     (id: number) => {
-      deleteItem({ userId: profileData?.id || 1, id });
+      if (!profileData?.id) return;
+      deleteItem({ userId: profileData?.id, id });
     },
-    [deleteItem]
+    [deleteItem, profileData]
   );
 
   const order = useCallback(() => {
@@ -105,7 +108,7 @@ const CartSheet = () => {
       })),
     };
     orderMutation(payload);
-  }, [orderMutation]);
+  }, [orderMutation, profileData]);
 
   // const checkout = useCallback(() => {
   //   checkoutMutation({ userId: profileData?.id || 1 });
@@ -126,6 +129,7 @@ const CartSheet = () => {
             cartData?.map((item: ICartItem) => (
               <CartProductCard
                 key={item.id}
+                id={item.product.id}
                 imageUrl={item.product.imageUrl}
                 price={Number(item.product.price)}
                 name={item.product.name}
@@ -134,7 +138,7 @@ const CartSheet = () => {
                 quantity={item.quantity}
                 onRemove={() => removeFromCart(item.id)}
                 updateQuantity={(quantity: number) =>
-                  updateQuantity(item.id, quantity, item.product.id)
+                  updateQuantity(item.id, quantity)
                 }
               />
             ))

@@ -7,14 +7,43 @@ import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
 import { getCookie } from "cookies-next";
 import { COOKIE_CONFIG } from "@/config/app";
-// import { usePathname, useSearchParams } from "next/navigation";
+// import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+// import useProfileStore from "@/store/useProfileStore";
+// import { createCart } from "@/services/cart/cart.service";
+import { useRouter } from "next/navigation";
+// import { showToast } from "@/utils/toast-utils/toast-util";
+import { useRef } from "react";
 
 export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
   // const currentProductId = searchParams.get("id");
+  const router = useRouter();
 
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
+
+  // const { profileData } = useProfileStore();
+
+  const sheetTrigger = useRef<HTMLButtonElement>(null);
+
+  const buyNow = async () => {
+    if (!isLoggedIn) {
+      router.push("/account/login");
+    } else {
+      router.push(`/products/${product.slug}`);
+      // if (!profileData?.id) return;
+      // const payload = {
+      //   userId: profileData?.id,
+      //   productId,
+      //   quantity: 1,
+      // };
+
+      // const response = await createCart(payload);
+      // if (response) {
+      //   showToast(TOAST_TYPES.success, "Product added to cart");
+      // }
+    }
+  };
   return (
     <Card
       key={product.id}
@@ -67,8 +96,13 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
       <CardFooter>
         <Sheet>
           <SheetTrigger
+            ref={sheetTrigger}
             className="h-[50px] rounded-full px-7 text-[16px] w-full bg-[#ffffff] text-[#2b2b2b] border-[2px] border-[#2b2b2b] shadow-sm hover:bg-[#2b2b2b] hover:text-[#ffffff]"
             disabled={product.quantity === 0}
+            onClick={(e) => {
+              e.preventDefault();
+              buyNow();
+            }}
           >
             {product.quantity === 0 ? "Out of Stock" : "Buy now"}
           </SheetTrigger>

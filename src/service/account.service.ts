@@ -1,12 +1,13 @@
 import axiosInstance from "@/axios/axiosinstance";
 
 export type PersonalDetails = {
-  id: number;
+  id?: number;
   first_name: string;
   last_name: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   address: string;
+  role?: string;
 };
 
 export interface IPasswordChange {
@@ -32,7 +33,7 @@ export const updatePersonalDetails = async (
 ): Promise<ApiResponse<PersonalDetails>> => {
   try {
     const response = await axiosInstance.put<ApiResponse<PersonalDetails>>(
-      "/account/personal-details",
+      "/profile",
       data
     );
     return response.data;
@@ -46,7 +47,7 @@ export const changePassword = async (
 ): Promise<ApiResponse<null>> => {
   try {
     const response = await axiosInstance.put<ApiResponse<null>>(
-      "/account/change-password",
+      "/auth/change-password",
       data
     );
     return response.data;
