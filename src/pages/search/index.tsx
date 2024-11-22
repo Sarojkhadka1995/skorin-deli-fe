@@ -51,12 +51,13 @@ const SearchPage = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbPage className="normal-case">
-                Search results for: {keyword}
+                Search results for:{" "}
+                {keyword?.toString() === "undefined" ? "" : keyword}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Title title={`Search results for: ${keyword}`} />
+        <Title title={`Search results for: ${keyword ? keyword : ""}`} />
         <FilterSort onSort={handleSort} sortBy={sortBy} />
         <div
           className={`${
