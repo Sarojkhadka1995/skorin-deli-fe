@@ -59,7 +59,7 @@ const useSignUp = () => {
       last_name: data.last_name,
       email: data.email,
       password: data.password,
-      role: "User",
+      role: "user",
     };
     signUp(payload);
   };

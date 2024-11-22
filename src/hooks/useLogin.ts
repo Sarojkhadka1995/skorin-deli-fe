@@ -27,6 +27,7 @@ const useLogin = () => {
   const { mutate: login, isPending: loginLoading } = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data: ILoginRes) => {
+      debugger;
       setCookie(COOKIE_CONFIG.loggedIn, "true");
       setCookie(COOKIE_CONFIG.accessToken, data.access_token);
       setCookie(COOKIE_CONFIG.refreshToken, data.refresh_token);

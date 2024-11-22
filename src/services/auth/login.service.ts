@@ -9,8 +9,8 @@ import {
 
 export const loginUser = async (data: LoginCredentials): Promise<ILoginRes> => {
   try {
-    const response = await axiosInstance.post(`/frontend-users`, data);
-    return response?.data?.data;
+    const response = await axiosInstance.post(`/frontend-users/login`, data);
+    return response?.data?.data?.data;
   } catch (error) {
     throw error;
   }
