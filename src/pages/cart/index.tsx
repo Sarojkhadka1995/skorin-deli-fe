@@ -35,6 +35,7 @@ import { getImageUrl } from "@/lib/utils";
 import { ICartItem } from "@/interface/cart.types";
 import { ICreateOrder } from "@/interface/order.types";
 import { orderCreate } from "@/services/order/order.service";
+import NoProducts from "@/components/features/shared/no-products";
 
 export default function ShoppingCart() {
   const queryClient = useQueryClient();
@@ -131,101 +132,110 @@ export default function ShoppingCart() {
 
       <div className="grid lg:grid-cols-[1fr,400px] gap-8">
         <Card className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="text-xl">
-                <TableHead className="w-[50%] text-slate-900 px-9 py-4 min-w-[300px]">
-                  Product
-                </TableHead>
-                <TableHead className="text-start text-slate-900 px-9 py-4 min-w-[200px]">
-                  Quantity
-                </TableHead>
-                <TableHead className="text-right text-slate-900 px-9 py-4 min-w-[150px]">
-                  Total
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {cartData.map((item) => (
-                <TableRow key={item.id} className="text-slate-900">
-                  <TableCell className="min-w-[300px]">
-                    <div className="flex items-center space-x-4 py-4 px-6">
-                      <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-xl overflow-hidden flex justify-center items-center group shrink-0 border">
-                        <Image
-                          src={getImageUrl(item.product.imageUrl)}
-                          alt={item.product.name}
-                          height={100}
-                          width={100}
-                          className="object-contain group-hover:scale-110 transition-all duration-300"
-                        />
-                      </div>
-                      <div className="text-base sm:text-[17px]">
-                        <div className="font-light mb-1">${item.price}</div>
-                        <div className="font-medium line-clamp-2">
-                          {item.product.name}
-                        </div>
-                        <div className="font-medium">{item.quantity}</div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="min-w-[200px]">
-                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                          disabled={updateCartPending}
-                        >
-                          <Minus className="h-4 w-4" />
-                          <span className="sr-only">Decrease quantity</span>
-                        </Button>
-                        <Input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) =>
-                            updateQuantity(item.id, parseInt(e.target.value))
-                          }
-                          disabled={true}
-                          className="w-16 h-8 text-center"
-                        />
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                          disabled={updateCartPending}
-                        >
-                          <Plus className="h-4 w-4" />
-                          <span className="sr-only">Increase quantity</span>
-                        </Button>
-                      </div>
-                      <Button
-                        variant="link"
-                        className="text-slate-600"
-                        onClick={() => removeItem(item.id)}
-                        disabled={deleteCartPending}
-                      >
-                        Remove{" "}
-                        {deleteCartPending && (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        )}
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right text-lg font-medium px-9 py-4 min-w-[150px]">
-                    ${item.total}
-                  </TableCell>
+          {cartData.length === 0 ? (
+            <div className="text-center text-lg font-medium">
+              <NoProducts
+                title="No Products in Cart"
+                description="It looks like there are no products in your cart yet."
+              />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="text-xl">
+                  <TableHead className="w-[50%] text-slate-900 px-9 py-4 min-w-[300px]">
+                    Product
+                  </TableHead>
+                  <TableHead className="text-start text-slate-900 px-9 py-4 min-w-[200px]">
+                    Quantity
+                  </TableHead>
+                  <TableHead className="text-right text-slate-900 px-9 py-4 min-w-[150px]">
+                    Total
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {cartData.map((item) => (
+                  <TableRow key={item.id} className="text-slate-900">
+                    <TableCell className="min-w-[300px]">
+                      <div className="flex items-center space-x-4 py-4 px-6">
+                        <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-xl overflow-hidden flex justify-center items-center group shrink-0 border">
+                          <Image
+                            src={getImageUrl(item.product.imageUrl)}
+                            alt={item.product.name}
+                            height={100}
+                            width={100}
+                            className="object-contain group-hover:scale-110 transition-all duration-300"
+                          />
+                        </div>
+                        <div className="text-base sm:text-[17px]">
+                          <div className="font-light mb-1">${item.price}</div>
+                          <div className="font-medium line-clamp-2">
+                            {item.product.name}
+                          </div>
+                          <div className="font-medium">{item.quantity}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="min-w-[200px]">
+                      <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
+                            disabled={updateCartPending}
+                          >
+                            <Minus className="h-4 w-4" />
+                            <span className="sr-only">Decrease quantity</span>
+                          </Button>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updateQuantity(item.id, parseInt(e.target.value))
+                            }
+                            disabled={true}
+                            className="w-16 h-8 text-center"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
+                            disabled={updateCartPending}
+                          >
+                            <Plus className="h-4 w-4" />
+                            <span className="sr-only">Increase quantity</span>
+                          </Button>
+                        </div>
+                        <Button
+                          variant="link"
+                          className="text-slate-600"
+                          onClick={() => removeItem(item.id)}
+                          disabled={deleteCartPending}
+                        >
+                          Remove{" "}
+                          {deleteCartPending && (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          )}
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right text-lg font-medium px-9 py-4 min-w-[150px]">
+                      ${item.total}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </Card>
 
         <Card className="p-6 h-fit">
