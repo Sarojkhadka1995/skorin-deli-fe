@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function Search() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [debouncedQuery, setDebouncedQuery] = useState<string>("");
   const router = useRouter();
 
   // Debounce search query
@@ -20,20 +20,24 @@ export default function Search() {
 
   // Trigger search when debounced query changes
   useEffect(() => {
-    if (debouncedQuery.trim()) {
+    if (debouncedQuery.trim() || debouncedQuery === "") {
       handleSearch();
     }
   }, [debouncedQuery]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchQuery.trim()) {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
+      // Navigate to the search results with query
       router.push(`/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      // Clear the search parameters
+      router.push("/search");
     }
   };
 

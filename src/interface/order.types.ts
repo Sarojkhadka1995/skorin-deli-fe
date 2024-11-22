@@ -8,4 +8,5 @@ export interface IOrder {
 export interface ICreateOrder {
   userId: number;
   items: IOrder[];
+  orderInstructions?: string;
 }

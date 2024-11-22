@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Title from "@/components/features/shared/title";
 import {
   Breadcrumb,
@@ -19,6 +19,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 
 import { useRouter } from "next/router";
 import ProductNotFoundCard from "@/components/features/shared/product-not-found";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const SearchPage = () => {
   const router = useRouter();
@@ -27,6 +29,8 @@ const SearchPage = () => {
   const { keyword } = router.query;
   const searchParams = useSearchParams();
   const sortBy = searchParams.get("sort_by") || "featured";
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["searchProducts", keyword],
@@ -39,7 +43,13 @@ const SearchPage = () => {
     current.set("sort_by", value);
     router.replace(`${pathname}?${current.toString()}`);
   };
-  console.log("products:", products);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <div>
       <div className="container">
@@ -57,8 +67,20 @@ const SearchPage = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Title title={`Search results for: ${keyword ? keyword : ""}`} />
-        <FilterSort onSort={handleSort} sortBy={sortBy} />
+        {!keyword && (
+          <div className="flex items-center justify-center my-8">
+            <Input
+              type="text"
+              placeholder="Search for products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full max-w-lg mr-4"
+            />
+            <Button onClick={handleSearch}>Search</Button>
+          </div>
+        )}
+        {keyword && <Title title={`Search results for: ${keyword}`} />}
+        {keyword && <FilterSort onSort={handleSort} sortBy={sortBy} />}
         <div
           className={`${
             products && products?.length > 0
@@ -74,7 +96,7 @@ const SearchPage = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        {(!products || products?.length === 0) && (
+        {(!products || products?.length === 0) && keyword && (
           <ProductNotFoundCard onButtonClick={() => router.push("/")} />
         )}
       </div>

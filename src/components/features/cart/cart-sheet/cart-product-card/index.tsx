@@ -44,8 +44,9 @@ export default function CartProductCard({
   };
 
   const increaseQuantity = () => {
-    if (stockData && stockData > 0) {
-      updateQuantity(quantity + 1);
+    const newQuantity = quantity + 1;
+    if (stockData && newQuantity <= stockData) {
+      updateQuantity(newQuantity);
     } else {
       showToast(TOAST_TYPES.error, `${name} is out of stock`);
     }

@@ -1,5 +1,5 @@
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import CartProductCard from "./cart-product-card";
 import RelatedProducts from "../related-products";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +24,7 @@ const CartSheet = () => {
   const { profileData } = useProfileStore();
   const { setCartData, cartTotal } = useCartStore();
 
+  const [orderInstructions, setOrderInstructions] = useState<string>("");
   const { data: cartData, isLoading: cartLoading } = useQuery({
     queryKey: ["cart", profileData?.id],
     queryFn: async () => {
@@ -106,9 +107,10 @@ const CartSheet = () => {
         price: item.product.price,
         productName: item.product.name,
       })),
+      orderInstructions,
     };
     orderMutation(payload);
-  }, [orderMutation, profileData]);
+  }, [orderMutation, profileData, orderInstructions, cartData]);
 
   // const checkout = useCallback(() => {
   //   checkoutMutation({ userId: profileData?.id || 1 });
@@ -149,7 +151,10 @@ const CartSheet = () => {
         </div>
         <div className="p-6 border-y border-y-[#e5e5e5]">
           <p className="text-lg font-medium mb-2">Order instructions</p>
-          <Textarea className="min-h-[100px]" />
+          <Textarea
+            className="min-h-[100px]"
+            onChange={(e) => setOrderInstructions(e.target.value)}
+          />
         </div>
         <div className="">
           <CartCheckoutButtons
