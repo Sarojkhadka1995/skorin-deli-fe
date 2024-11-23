@@ -104,7 +104,7 @@ const CartSheet = () => {
       items: cartData?.map((item: ICartItem) => ({
         productId: item.product.id,
         quantity: item.quantity,
-        price: item.product.price,
+        productPrice: item.product.price,
         productName: item.product.name,
       })),
       orderInstructions,
