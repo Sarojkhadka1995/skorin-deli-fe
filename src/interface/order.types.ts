@@ -10,3 +10,14 @@ export interface ICreateOrder {
   items: IOrder[];
   orderInstructions?: string;
 }
+
+export interface IOrderHistory {
+  id: number;
+  items: IOrder[];
+  shippingAddress: string;
+  paymentMethod: string;
+  totalAmount: string;
+  status: string;
+  createdAt: string;
+  orderInstructions: string | null;
+}

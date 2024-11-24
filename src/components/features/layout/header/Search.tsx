@@ -36,8 +36,9 @@ export default function Search() {
       // Navigate to the search results with query
       router.push(`/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
     } else {
-      // Clear the search parameters
-      router.push("/search");
+      if (window.location.pathname === "/search") {
+        router.push("/search");
+      }
     }
   };
 
