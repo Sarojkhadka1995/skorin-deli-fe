@@ -2,7 +2,8 @@
 
 import { Minus, Plus, Search, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
@@ -30,10 +31,12 @@ export default function ProductDetail({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
   //Ref
   const { profileData } = useProfileStore();
   const [quantity, setQuantity] = useState<number>(1);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
 
@@ -42,6 +45,7 @@ export default function ProductDetail({
     onSuccess: () => {
       showToast(TOAST_TYPES.success, "Product added to cart");
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      setIsSheetOpen(true);
     },
     onError: () => {
       showToast(TOAST_TYPES.error, "Failed to add product to cart");
@@ -55,6 +59,28 @@ export default function ProductDetail({
       return checkStock(product?.id);
     },
   });
+
+  useEffect(() => {
+    // Check if we're returning from login with pending cart addition
+    const shouldAddToCart = searchParams.get("addToCart");
+    const pendingQuantity = searchParams.get("quantity");
+
+    if (
+      shouldAddToCart === product?.id?.toString() &&
+      pendingQuantity &&
+      isLoggedIn &&
+      profileData?.id
+    ) {
+      const cartData = {
+        userId: profileData.id,
+        productId: product.id,
+        quantity: parseInt(pendingQuantity, 10),
+      };
+      addToCart(cartData);
+      // Clear URL parameters after adding to cart
+      router.replace(window.location.pathname);
+    }
+  }, [isLoggedIn, profileData, searchParams]);
 
   if (isLoading || (isLoggedIn && profileData === null)) {
     return (
@@ -109,14 +135,17 @@ export default function ProductDetail({
 
   const handleAddToCart = () => {
     if (!isLoggedIn) {
-      router.push("/account/login");
+      const returnUrl = encodeURIComponent(
+        `${window.location.pathname}?addToCart=${id}&quantity=${quantity}`
+      );
+      router.push(`/account/login?returnUrl=${returnUrl}`);
       return;
     }
     if (!profileData?.id) return;
     const cartData = {
-      userId: profileData?.id,
+      userId: profileData.id,
       productId: id,
-      quantity: 1,
+      quantity: quantity,
     };
     addToCart(cartData);
   };
@@ -224,7 +253,7 @@ export default function ProductDetail({
               </Button>
             </div>
 
-            <Sheet>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger
                 disabled={stockData === 0 || stockData < quantity}
                 onClick={(e) => {

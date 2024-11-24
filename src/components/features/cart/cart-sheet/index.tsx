@@ -1,7 +1,7 @@
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import CartProductCard from "./cart-product-card";
-import RelatedProducts from "../related-products";
+// import RelatedProducts from "../related-products";
 import { Textarea } from "@/components/ui/textarea";
 import CartCheckoutButtons from "./cart-checkout-buttons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,13 +18,19 @@ import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { ICreateOrder } from "@/interface/order.types";
 import { orderCreate } from "@/services/order/order.service";
 import useCartStore from "@/store/useCartStore";
+import { cn } from "@/lib/utils";
 
 const CartSheet = () => {
   const queryClient = useQueryClient();
   const { profileData } = useProfileStore();
-  const { setCartData, cartTotal } = useCartStore();
+  const {
+    setCartData,
+    cartTotal,
+    orderInstructions,
+    setOrderInstructions,
+    clearOrderInstructions,
+  } = useCartStore();
 
-  const [orderInstructions, setOrderInstructions] = useState<string>("");
   const { data: cartData, isLoading: cartLoading } = useQuery({
     queryKey: ["cart", profileData?.id],
     queryFn: async () => {
@@ -40,6 +46,9 @@ const CartSheet = () => {
       deleteCartItem(data.userId, data.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      if (cartData?.length === 1) {
+        clearOrderInstructions();
+      }
       showToast(TOAST_TYPES.success, "Cart item deleted successfully");
     },
     onError: () => {
@@ -55,21 +64,11 @@ const CartSheet = () => {
     },
   });
 
-  // const { mutate: checkoutMutation, isPending: checkoutPending } = useMutation({
-  //   mutationFn: ({ userId }: { userId: number }) => checkoutCart(userId),
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["cart", profileData?.id] });
-  //     showToast(TOAST_TYPES.success, "Checkout successful");
-  //   },
-  //   onError: () => {
-  //     showToast(TOAST_TYPES.error, "Failed to checkout");
-  //   },
-  // });
-
   const { mutate: orderMutation, isPending: orderPending } = useMutation({
     mutationFn: (payload: ICreateOrder) => orderCreate(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      clearOrderInstructions();
       showToast(TOAST_TYPES.success, "Order created successfully");
     },
     onError: () => {
@@ -112,10 +111,6 @@ const CartSheet = () => {
     orderMutation(payload);
   }, [orderMutation, profileData, orderInstructions, cartData]);
 
-  // const checkout = useCallback(() => {
-  //   checkoutMutation({ userId: profileData?.id || 1 });
-  // }, [checkoutMutation]);
-
   return (
     <SheetContent className="p-0 sm:min-w-[500px] min-w-full">
       <SheetHeader className="border-b border-b-[#e5e5e5] p-5 px-6">
@@ -125,34 +120,49 @@ const CartSheet = () => {
       </SheetHeader>
       <div className="max-h-[calc(100vh-69px)] overflow-y-auto">
         <div className="p-6 grid gap-4 border-b border-b-[#e5e5e5]">
-          {cartLoading || updateCartPending ? (
+          {cartLoading ? (
             <div>Loading...</div>
           ) : (
-            cartData?.map((item: ICartItem) => (
-              <CartProductCard
-                key={item.id}
-                id={item.product.id}
-                imageUrl={item.product.imageUrl}
-                price={Number(item.product.price)}
-                name={item.product.name}
-                description={item.product.description}
-                weight={item.product.weight}
-                quantity={item.quantity}
-                onRemove={() => removeFromCart(item.id)}
-                updateQuantity={(quantity: number) =>
-                  updateQuantity(item.id, quantity)
-                }
-              />
-            ))
+            <>
+              <div
+                className={cn(
+                  "relative",
+                  updateCartPending && "opacity-50 pointer-events-none"
+                )}
+              >
+                {/* {updateCartPending && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
+                    <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+                  </div>
+                )} */}
+                {cartData?.map((item: ICartItem) => (
+                  <CartProductCard
+                    key={item.id}
+                    id={item.product.id}
+                    imageUrl={item.product.imageUrl}
+                    price={Number(item.product.price)}
+                    name={item.product.name}
+                    description={item.product.description}
+                    weight={item.product.weight}
+                    quantity={item.quantity}
+                    onRemove={() => removeFromCart(item.id)}
+                    updateQuantity={(quantity: number) =>
+                      updateQuantity(item.id, quantity)
+                    }
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
-        <div>
+        {/* <div>
           <RelatedProducts />
-        </div>
+        </div> */}
         <div className="p-6 border-y border-y-[#e5e5e5]">
           <p className="text-lg font-medium mb-2">Order instructions</p>
           <Textarea
             className="min-h-[100px]"
+            value={orderInstructions}
             onChange={(e) => setOrderInstructions(e.target.value)}
           />
         </div>

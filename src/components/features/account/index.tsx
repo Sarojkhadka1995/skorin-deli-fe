@@ -173,7 +173,7 @@ export default function UserProfile() {
     deleteCookie(COOKIE_CONFIG.loggedIn);
     deleteCookie(COOKIE_CONFIG.accessToken);
     deleteCookie(COOKIE_CONFIG.refreshToken);
-    router.push("/account/login");
+    router.replace("/account/login");
     showToast(TOAST_TYPES.success, "Logged out successfully");
   };
 

@@ -28,7 +28,9 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
 
   const buyNow = async () => {
     if (!isLoggedIn) {
-      router.push("/account/login");
+      // Set returnUrl to the product's specific page
+      const returnUrl = encodeURIComponent(`/products/${product.slug}`);
+      router.push(`/account/login?returnUrl=${returnUrl}`);
     } else {
       router.push(`/products/${product.slug}`);
       // if (!profileData?.id) return;

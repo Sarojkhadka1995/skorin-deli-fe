@@ -39,7 +39,13 @@ import NoProducts from "@/components/features/shared/no-products";
 
 export default function ShoppingCart() {
   const queryClient = useQueryClient();
-  const { cartData, cartTotal } = useCartStore();
+  const {
+    cartData,
+    cartTotal,
+    orderInstructions,
+    setOrderInstructions,
+    clearOrderInstructions,
+  } = useCartStore();
 
   const { profileData } = useProfileStore();
 
@@ -50,6 +56,10 @@ export default function ShoppingCart() {
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
+
+      if (cartData.length === 1) {
+        clearOrderInstructions();
+      }
       showToast(TOAST_TYPES.success, "Cart item deleted successfully");
     },
     onError: () => {
@@ -74,6 +84,7 @@ export default function ShoppingCart() {
     mutationFn: (payload: ICreateOrder) => orderCreate(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      clearOrderInstructions();
       showToast(TOAST_TYPES.success, "Order created successfully");
     },
     onError: () => {
@@ -91,9 +102,10 @@ export default function ShoppingCart() {
         productName: item.product.name,
         productPrice: Number(item.product.price),
       })),
+      orderInstructions,
     };
     orderMutation(payload);
-  }, [orderMutation, profileData]);
+  }, [orderMutation, profileData, orderInstructions, cartData]);
 
   const removeItem = (id: number) => {
     if (!profileData?.id) return;
@@ -113,7 +125,6 @@ export default function ShoppingCart() {
     [updateCart, profileData]
   );
 
-  console.log("====", cartData);
   return (
     <div className="container mx-auto px-4 py-8">
       <Breadcrumb className="mb-6">
@@ -238,42 +249,49 @@ export default function ShoppingCart() {
           )}
         </Card>
 
-        <Card className="p-6 h-fit">
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Total</h2>
-              <div className="text-4xl font-bold">${cartTotal}</div>
-            </div>
+        {cartData.length > 0 && (
+          <Card className="p-6 h-fit">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Total</h2>
+                <div className="text-4xl font-bold">${cartTotal}</div>
+              </div>
 
-            <div>
-              <label htmlFor="instructions" className="text-lg font-medium">
-                Order instructions
-              </label>
-              <Textarea id="instructions" className="mt-2 min-h-[100px]" />
-            </div>
+              <div>
+                <label htmlFor="instructions" className="text-lg font-medium">
+                  Order instructions
+                </label>
+                <Textarea
+                  id="instructions"
+                  className="mt-2 min-h-[100px]"
+                  value={orderInstructions}
+                  onChange={(e) => setOrderInstructions(e.target.value)}
+                />
+              </div>
 
-            <div className="text-sm text-muted-foreground">
-              Tax included.{" "}
-              <Link href="/policies/shipping-policy">
-                <Button variant="link" className="p-0 h-auto font-normal">
-                  Shipping
-                </Button>{" "}
-              </Link>
-              calculated at checkout.
-            </div>
+              <div className="text-sm text-muted-foreground">
+                Tax included.{" "}
+                <Link href="/policies/shipping-policy">
+                  <Button variant="link" className="p-0 h-auto font-normal">
+                    Shipping
+                  </Button>{" "}
+                </Link>
+                calculated at checkout.
+              </div>
 
-            <Button
-              variant="outline-black"
-              className="w-full"
-              size="lg"
-              onClick={order}
-              disabled={orderPending}
-            >
-              Check Out{" "}
-              {orderPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            </Button>
-          </div>
-        </Card>
+              <Button
+                variant="outline-black"
+                className="w-full"
+                size="lg"
+                onClick={order}
+                disabled={orderPending}
+              >
+                Check Out{" "}
+                {orderPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              </Button>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );

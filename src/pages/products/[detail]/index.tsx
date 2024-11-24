@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 
-import RelatedProducts from "@/components/features/cart/related-products";
+// import RelatedProducts from "@/components/features/cart/related-products";
 import ProductDetail from "@/components/features/home/product-detail";
 
 import {
@@ -59,7 +59,7 @@ const ProductDetailPage = () => {
       />
 
       {/* Related Products */}
-      <RelatedProducts rows={6} />
+      {/* <RelatedProducts rows={6} /> */}
       {/* Related Products */}
     </div>
   );
