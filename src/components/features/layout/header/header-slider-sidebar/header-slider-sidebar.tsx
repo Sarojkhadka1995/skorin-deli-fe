@@ -104,7 +104,7 @@ export default function SlidingMenu() {
   }
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+      <SheetTrigger asChild className="lg:hidden">
         <Menu className="cursor-pointer" />
       </SheetTrigger>
       <SheetContent
