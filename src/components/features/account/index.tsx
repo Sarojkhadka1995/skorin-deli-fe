@@ -181,26 +181,26 @@ export default function UserProfile() {
     <div className="flex flex-col h-[830px] bg-gray-100">
       <Tabs
         defaultValue="personal"
-        className="flex flex-grow w-full max-w-4xl mx-auto my-8 bg-white rounded-lg shadow-lg overflow-hidden"
+        className="w-full max-w-4xl mx-auto my-8 bg-white rounded-lg shadow-lg overflow-hidden"
       >
-        <TabsList className="flex flex-col items-stretch h-[230px] w-1/4 bg-gray-50 p-4 space-y-2 m-8 me-0 border rounded-xl">
-          <TabsTrigger value="personal" className="justify-start">
+        <TabsList className="flex h-[66px] gap-3 items-center justify-start   bg-gray-50 p-4 py-6 m-6 mb-0 me-0 border rounded-xl">
+          <TabsTrigger value="personal" className="justify-start p-2">
             Personal Details
           </TabsTrigger>
-          <TabsTrigger value="password" className="justify-start">
+          <TabsTrigger value="password" className="justify-start p-2">
             Change Password
           </TabsTrigger>
-          <TabsTrigger value="orderHistory" className="justify-start">
+          <TabsTrigger value="orderHistory" className="justify-start p-2">
             Order History
           </TabsTrigger>
           {/* <TabsTrigger value="delete" className="justify-start">
             Delete Account
           </TabsTrigger> */}
-          <TabsTrigger value="logout" className="justify-start">
+          <TabsTrigger value="logout" className="justify-start p-2">
             Logout
           </TabsTrigger>
         </TabsList>
-        <div className="flex flex-col w-3/4 p-6 overflow-auto">
+        <div className="flex flex-col  p-6 pt-3 overflow-auto">
           <TabsContent value="personal">
             <Card>
               <form
