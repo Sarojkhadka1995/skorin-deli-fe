@@ -40,6 +40,7 @@ export function ShopMenuAccordion() {
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="shops" className="border-none">
         <AccordionTrigger className="transition-colors hover:bg-muted hover:no-underline pe-3">
+          {/* NOT USED */}
           <span className="flex items-center px-6 text-lg">Shop</span>
         </AccordionTrigger>
         <AccordionContent>

@@ -60,14 +60,24 @@ export default function SlidingMenu() {
         title: "Menu",
         items: [
           { title: "Home", href: "/" },
+          // Do not remove this
+          // {
+          //   title: "Shop",
+          //   items: shops.map((shop) => ({
+          //     title: shop.name,
+          //     items: shop.categories?.map((category) => ({
+          //       title: category.name,
+          //       href: `/categories/${category.slug}`,
+          //     })),
+          //   })),
+          // },
+          // Do not remove this
           {
-            title: "Shop",
-            items: shops.map((shop) => ({
-              title: shop.name,
-              items: shop.categories?.map((category) => ({
-                title: category.name,
-                href: `/categories/${category.slug}`,
-              })),
+            title: "Categories",
+
+            items: shops?.[0]?.categories?.map((category) => ({
+              title: category.name,
+              href: `/categories/${category.slug}`,
             })),
           },
           { title: "Contact", href: "/contact" },
@@ -180,7 +190,7 @@ export default function SlidingMenu() {
                         onClick={() => setOpen(false)}
                       >
                         {item.icon}
-                        <span className="flex-1 text-left text-lg">
+                        <span className="flex-1 text-left text-lg capitalize">
                           {item.title}
                         </span>
                       </Link>
