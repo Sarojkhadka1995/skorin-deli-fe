@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import {
   HoverCard,
@@ -17,9 +17,12 @@ export function ShopMenu() {
 
   if (isLoading) return null;
 
+  // Get categories from the first shop
+  const categories = shops?.[0]?.categories || [];
+
   return (
     <HoverCard openDelay={0} closeDelay={600}>
-      <HoverCardTrigger asChild>
+      {/* <HoverCardTrigger asChild>
         <Link
           href="#"
           className="text-primary hover:underline underline-offset-4 flex items-center gap-1 font-medium transition-all duration-300"
@@ -38,7 +41,7 @@ export function ShopMenu() {
                     <div className="data-[state=open]:bg-accent flex items-center text-sm font-medium text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3">
                       <Link
                         href={`/categories/${shop.slug}?type=shop`}
-                        className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground"
+                        className="flex items-center text-sm font-medium text-primary hover:text-accent-foreground capitalize"
                       >
                         {shop.name}
                         {shop.categories?.length > 0 && (
@@ -47,7 +50,6 @@ export function ShopMenu() {
                       </Link>
                     </div>
                   </HoverCardTrigger>
-                  {/* // {shop.categories?.length > 0 && ( */}
                   <HoverCardContent
                     side="right"
                     align="start"
@@ -68,6 +70,30 @@ export function ShopMenu() {
                   </HoverCardContent>
                 </HoverCard>
               )}
+            </li>
+          ))}
+        </ul>
+      </HoverCardContent> */}
+
+      <HoverCardTrigger asChild>
+        <Link
+          href="#"
+          className="text-primary hover:underline underline-offset-4 flex items-center gap-1 font-medium transition-all duration-300"
+        >
+          Categories
+          <ChevronDown strokeWidth={2.5} size={19} />
+        </Link>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80 p-0">
+        <ul className="text-sm">
+          {categories.map((category) => (
+            <li key={category.id}>
+              <Link
+                href={`/categories/${category.slug}?type=category`}
+                className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3"
+              >
+                {category.name}
+              </Link>
             </li>
           ))}
         </ul>
