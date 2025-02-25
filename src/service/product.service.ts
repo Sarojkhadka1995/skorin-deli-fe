@@ -8,13 +8,15 @@ import {
 } from "@/interface/product.types";
 
 export const getProducts = async (
-  sortBy?: string
-): Promise<IProductDetail[]> => {
+  sortBy?: string,
+  page: number = 1,
+  limit: number = 12
+): Promise<{ items: IProductDetail[]; total: number; totalPages: number }> => {
   try {
     const response = await axiosInstance.get(
-      `/products${sortBy ? `?sortby=${sortBy}` : ""}`
+      `/products?${sortBy ? `sortby=${sortBy}&` : ""}p=${page}&limit=${limit}`
     );
-    return response?.data?.data?.items;
+    return response?.data?.data;
   } catch (error) {
     throw error;
   }

@@ -85,7 +85,7 @@ export function ShopMenu() {
         </Link>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-0">
-        <ul className="text-sm">
+        <ul className="text-sm max-h-[300px] overflow-y-auto">
           {categories.map((category) => (
             <li key={category.id}>
               <Link

@@ -59,7 +59,7 @@ const LatestArrivals = () => {
           [1, 2, 3, 4].map((item) => (
             <Skeleton key={item} className="h-[300px] w-full" />
           ))}
-        {products?.map((product) => (
+        {products?.items?.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

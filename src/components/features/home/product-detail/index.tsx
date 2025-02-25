@@ -163,7 +163,7 @@ export default function ProductDetail({
               src={getImageUrl(imageUrl)}
               alt={`${name} - Image`}
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
               className="rounded-lg cursor-pointer"
               onClick={() => handleZoom(imageUrl)}
             />

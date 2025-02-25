@@ -17,22 +17,108 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getSortValue } from "@/lib/utils";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const ProductListingPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const sortBy = searchParams.get("sort_by") || "featured";
+  const currentPage = Number(searchParams.get("page")) || 1;
 
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["getProducts", sortBy],
-    queryFn: () => getProducts(getSortValue(sortBy)),
+  const { data, isLoading } = useQuery({
+    queryKey: ["getProducts", sortBy, currentPage],
+    queryFn: () =>
+      getProducts(getSortValue(sortBy), currentPage, ITEMS_PER_PAGE),
   });
+
+  const products = data?.items || [];
+  const totalPages = data?.totalPages || 1;
 
   const handleSort = (value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.set("sort_by", value);
+    current.set("page", "1"); // Reset to first page on sort
     router.replace(`${pathname}?${current.toString()}`, { scroll: false });
+  };
+
+  const handlePageChange = (page: number) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("page", page.toString());
+    router.replace(`${pathname}?${current.toString()}`, { scroll: true });
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+
+    let startPage = Math.max(1, currentPage - halfVisible);
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // First page
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key="1">
+          <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
+        </PaginationItem>
+      );
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="start-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            isActive={currentPage === i}
+            onClick={() => handlePageChange(i)}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="end-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink onClick={() => handlePageChange(totalPages)}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
   };
 
   return (
@@ -60,6 +146,33 @@ const ProductListingPage = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        {totalPages > 1 && (
+          <Pagination className="my-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
+              </PaginationItem>
+              {renderPaginationItems()}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    handlePageChange(Math.min(totalPages, currentPage + 1))
+                  }
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );
