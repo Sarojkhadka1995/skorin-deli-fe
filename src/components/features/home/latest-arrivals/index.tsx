@@ -7,42 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const LatestArrivals = () => {
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
-  //     description: "(Fruit fondant lollies)",
-  //     price: 7.99,
-  //     weight: "175g",
-  //     image: logo,
-  //     discount: 14,
-  //   },
-  //   {
-  //     id: 1,
-  //     name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
-  //     description: "(Fruit fondant lollies)",
-  //     price: 7.99,
-  //     weight: "175g",
-  //     image: logo,
-  //   },
-  //   {
-  //     id: 1,
-  //     name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
-  //     description: "(Fruit fondant lollies)",
-  //     price: 7.99,
-  //     weight: "175g",
-  //     image: logo,
-  //   },
-  //   {
-  //     id: 1,
-  //     name: "1926 Caramelle Fondenti Assortite al Gusto Frutta",
-  //     description: "(Fruit fondant lollies)",
-  //     price: 7.99,
-  //     weight: "175g",
-  //     image: logo,
-  //   },
-  // ];
-
   const { data: products, isLoading } = useQuery({
     queryKey: ["getProducts"],
     queryFn: () => getProducts(),
@@ -59,7 +23,7 @@ const LatestArrivals = () => {
           [1, 2, 3, 4].map((item) => (
             <Skeleton key={item} className="h-[300px] w-full" />
           ))}
-        {products?.map((product) => (
+        {products?.items?.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

@@ -13,6 +13,7 @@ import { COOKIE_CONFIG } from "@/config/app";
 import { useRouter } from "next/navigation";
 // import { showToast } from "@/utils/toast-utils/toast-util";
 import { useRef } from "react";
+import { COMMON_IMAGES } from "@/config/image";
 
 export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
@@ -56,19 +57,22 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
         <Link href={`/products/${product.slug}`}>
           <div>
             <div className="aspect-square relative mb-4">
-              {product.imageUrl ? (
-                <Image
-                  src={getImageUrl(product.imageUrl)}
-                  alt={product.name}
-                  layout="fill"
-                  objectFit="contain"
-                  className="group-hover:scale-105 !transition-all !ease-in-out !duration-[1000ms]"
-                />
-              ) : (
+              {/* {product.imageUrl ? ( */}
+              <Image
+                src={getImageUrl(product.imageUrl)}
+                onError={(e) => {
+                  e.currentTarget.src = COMMON_IMAGES.noImage;
+                }}
+                alt={product.name}
+                layout="fill"
+                objectFit="contain"
+                className="group-hover:scale-105 !transition-all !ease-in-out !duration-[1000ms]"
+              />
+              {/* ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
                   No Image
                 </div>
-              )}
+              )} */}
               {/* <img src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.image}`} /> */}
               {/* {product.special && (
                 <div className="absolute -top-2 -right-2 bg-[#D14545] text-white px-2 py-1 rounded-sm text-xs">
@@ -82,7 +86,7 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
                   ${Number(product.price).toFixed(2)}
                 </p>
               )}
-              <h3 className="font-semibold text-lg leading-tight line-clamp-2 h-[49px]">
+              <h3 className="font-semibold text-lg leading-tight line-clamp-2 h-[49px] capitalize">
                 {product.name}
               </h3>
               <p className="text-sm text-gray-600 line-clamp-2">

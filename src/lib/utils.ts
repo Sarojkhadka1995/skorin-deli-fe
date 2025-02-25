@@ -1,3 +1,4 @@
+import { COMMON_IMAGES } from "@/config/image";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -6,6 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getImageUrl = (imageUrl: string) => {
+  if (!imageUrl) {
+    return COMMON_IMAGES.noImage;
+  }
   return `${process.env.NEXT_PUBLIC_IMAGE_URL}${imageUrl}`;
 };
 

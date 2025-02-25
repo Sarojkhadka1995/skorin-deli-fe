@@ -85,12 +85,12 @@ export function ShopMenu() {
         </Link>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-0">
-        <ul className="text-sm">
+        <ul className="text-sm max-h-[300px] overflow-y-auto">
           {categories.map((category) => (
             <li key={category.id}>
               <Link
                 href={`/categories/${category.slug}?type=category`}
-                className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3"
+                className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3 capitalize"
               >
                 {category.name}
               </Link>
