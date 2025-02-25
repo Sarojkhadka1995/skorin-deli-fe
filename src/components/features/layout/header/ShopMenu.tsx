@@ -90,7 +90,7 @@ export function ShopMenu() {
             <li key={category.id}>
               <Link
                 href={`/categories/${category.slug}?type=category`}
-                className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3"
+                className="block text-sm text-primary hover:text-accent-foreground hover:bg-accent p-2 py-3 capitalize"
               >
                 {category.name}
               </Link>

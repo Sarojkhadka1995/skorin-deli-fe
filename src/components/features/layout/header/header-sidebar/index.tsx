@@ -9,8 +9,9 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 import PickupLocation from "../pickup-location";
 
-import { ShopMenuAccordion } from "../ShopMenuAccordion";
+// import { ShopMenuAccordion } from "../ShopMenuAccordion";
 
+//NOT USED //
 export default function HeaderSidebar() {
   return (
     <div className="flex-1 overflow-auto">
@@ -65,7 +66,7 @@ export default function HeaderSidebar() {
           Shop
           <ChevronRight className="w-5 h-5" />
         </Link> */}
-        <ShopMenuAccordion />
+        {/* <ShopMenuAccordion /> */}
 
         <Link
           href="/contact"

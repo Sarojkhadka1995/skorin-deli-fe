@@ -43,8 +43,8 @@ interface MenuItem {
 }
 
 export default function SlidingMenu() {
-  const [open, setOpen] = React.useState(false);
-  const [history, setHistory] = React.useState<MenuItem[]>([]);
+  const [open, setOpen] = useState(false);
+  const [history, setHistory] = useState<MenuItem[]>([]);
 
   const [isMounted, setIsMounted] = useState(false);
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
@@ -54,7 +54,23 @@ export default function SlidingMenu() {
     queryFn: () => getShops(),
   });
 
-  React.useEffect(() => {
+  const currentMenu = history[history.length - 1];
+
+  const handleBack = () => {
+    setHistory((current) => current.slice(0, -1));
+  };
+
+  const handleNavigate = (item: MenuItem) => {
+    if (item.items) {
+      setHistory((current) => [...current, item]);
+    }
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (shops) {
       const shopMenuItems: MenuItem = {
         title: "Menu",
@@ -92,22 +108,6 @@ export default function SlidingMenu() {
       setHistory([shopMenuItems]);
     }
   }, [shops]);
-
-  const currentMenu = history[history.length - 1];
-
-  const handleBack = () => {
-    setHistory((current) => current.slice(0, -1));
-  };
-
-  const handleNavigate = (item: MenuItem) => {
-    if (item.items) {
-      setHistory((current) => [...current, item]);
-    }
-  };
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   if (!isMounted) {
     return null;

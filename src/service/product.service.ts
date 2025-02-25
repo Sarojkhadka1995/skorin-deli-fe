@@ -14,7 +14,9 @@ export const getProducts = async (
 ): Promise<{ items: IProductDetail[]; total: number; totalPages: number }> => {
   try {
     const response = await axiosInstance.get(
-      `/products?${sortBy ? `sortby=${sortBy}&` : ""}p=${page}&limit=${limit}`
+      `/products?${
+        sortBy ? `sortby=${sortBy}&` : ""
+      }pageNumber=${page}&limit=${limit}`
     );
     return response?.data?.data;
   } catch (error) {

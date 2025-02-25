@@ -18,7 +18,7 @@ const FavouriteCategories = () => {
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ["getCategories"],
-    queryFn: getCategories,
+    queryFn: () => getCategories(1, 6),
   });
 
   if (isLoading) {
@@ -27,7 +27,7 @@ const FavouriteCategories = () => {
         <Title
           title="Favorite Categories"
           subtitle="Explore our wide range of categories"
-          viewAllLink="/products"
+          viewAllLink="/categories"
         />
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {[1, 2, 3, 4, 5, 6].map((item) => (
@@ -41,7 +41,7 @@ const FavouriteCategories = () => {
     );
   }
 
-  if (!categories?.length) {
+  if (!categories?.data?.items?.length) {
     return null;
   }
 
@@ -50,7 +50,7 @@ const FavouriteCategories = () => {
       <Title
         title="Favorite Categories"
         subtitle="Explore our wide range of categories"
-        viewAllLink="/products"
+        viewAllLink="/categories"
       />
 
       <Swiper
@@ -73,7 +73,7 @@ const FavouriteCategories = () => {
           },
         }}
       >
-        {categories?.map((category) => (
+        {categories?.data?.items?.map((category) => (
           <SwiperSlide
             className="hover:scale-105 transition-all duration-300 p-3"
             key={category.id}
@@ -82,7 +82,7 @@ const FavouriteCategories = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-      {categories.length > 3 && (
+      {categories?.data?.items?.length > 3 && (
         <div className="flex justify-center space-x-4 pt-2 pb-4">
           <Button
             variant="outline"
