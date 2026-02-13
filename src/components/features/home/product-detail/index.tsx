@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -34,7 +34,7 @@ export default function ProductDetail({
   const searchParams = useSearchParams();
   //Ref
   const { profileData } = useProfileStore();
-  const [quantity, setQuantity] = useState<number>(1);
+  const [quantity] = useState<number>(1);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -52,7 +52,7 @@ export default function ProductDetail({
     },
   });
 
-  const { data: stockData, isLoading: checkStockLoading } = useQuery({
+  const { data: stockData } = useQuery({
     queryKey: ["stock", product?.id],
     queryFn: () => {
       if (!product?.id) return 0;
@@ -128,15 +128,14 @@ export default function ProductDetail({
     setZoomedImage(null);
   };
 
-  const updateQuantity = (value: number) => {
-    // if (stockData === 0 || stockData < value) return;
-    setQuantity(value);
-  };
+  // const updateQuantity = (value: number) => {
+  //   setQuantity(value);
+  // };
 
   const handleAddToCart = () => {
     if (!isLoggedIn) {
       const returnUrl = encodeURIComponent(
-        `${window.location.pathname}?addToCart=${id}&quantity=${quantity}`
+        `${window.location.pathname}?addToCart=${id}&quantity=${quantity}`,
       );
       router.push(`/account/login?returnUrl=${returnUrl}`);
       return;
@@ -225,7 +224,7 @@ export default function ProductDetail({
             </p>
           )}
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
+            {/* <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
                 size="lg"
@@ -251,7 +250,7 @@ export default function ProductDetail({
               >
                 <Plus className="h-4 w-4" />
               </Button>
-            </div>
+            </div> */}
 
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger
@@ -273,7 +272,6 @@ export default function ProductDetail({
               <p className="text-red-500">Out of stock</p>
             </div>
           )}
-           
           <div className="my-6">
             <ProductIngredients
               nutritionInfo={product?.nutritionInfo}

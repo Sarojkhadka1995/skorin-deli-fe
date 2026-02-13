@@ -24,7 +24,7 @@ import { IOrder, IOrderHistory } from "@/interface/order.types";
 
 export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState<IOrderHistory | null>(
-    null
+    null,
   );
 
   const { data: orders, isLoading } = useQuery({
@@ -32,7 +32,6 @@ export default function OrderHistory() {
     queryFn: () => getOrders(),
   });
 
-  console.log(orders);
   return (
     <div className="border rounded-lg">
       <Table>

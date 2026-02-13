@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IProductDetail } from "@/interface/product.types";
@@ -12,8 +14,10 @@ import { COOKIE_CONFIG } from "@/config/app";
 // import { createCart } from "@/services/cart/cart.service";
 import { useRouter } from "next/navigation";
 // import { showToast } from "@/utils/toast-utils/toast-util";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { COMMON_IMAGES } from "@/config/image";
+import { Button } from "@/components/ui/button";
+import { Minus, Plus } from "lucide-react";
 
 export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
@@ -26,19 +30,27 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
   // const { profileData } = useProfileStore();
 
   const sheetTrigger = useRef<HTMLButtonElement>(null);
+  const [quantity, setQuantity] = useState<number>(1);
+
+  const updateQuantity = (value: number) => {
+    if (value < 1) return;
+    setQuantity(value);
+  };
 
   const buyNow = async () => {
     if (!isLoggedIn) {
-      // Set returnUrl to the product's specific page
-      const returnUrl = encodeURIComponent(`/products/${product.slug}`);
+      // Set returnUrl to the product's specific page with quantity
+      const returnUrl = encodeURIComponent(
+        `/products/${product.slug}?quantity=${quantity}`,
+      );
       router.push(`/account/login?returnUrl=${returnUrl}`);
     } else {
-      router.push(`/products/${product.slug}`);
+      router.push(`/products/${product.slug}?quantity=${quantity}`);
       // if (!profileData?.id) return;
       // const payload = {
       //   userId: profileData?.id,
-      //   productId,
-      //   quantity: 1,
+      //   productId: product.id,
+      //   quantity: quantity,
       // };
 
       // const response = await createCart(payload);
@@ -87,7 +99,17 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
                 </p>
               )}
               <h3 className="font-semibold text-lg leading-tight line-clamp-2 h-[49px] capitalize">
-                {product.name}
+                {(() => {
+                  const words = product.name.split(" ");
+                  const firstWord = words[0];
+                  const restOfName = words.slice(1).join(" ");
+                  return (
+                    <>
+                      <span className="text-xl">{firstWord}</span>
+                      {restOfName && <span> {restOfName}</span>}
+                    </>
+                  );
+                })()}
               </h3>
               <p className="text-sm text-gray-600 line-clamp-2">
                 {product.description}
@@ -98,8 +120,33 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
             </div>
           </div>
         </Link>
+        <div className="flex justify-center items-center space-x-4 mt-4">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => updateQuantity(quantity - 1)}
+            disabled={quantity === 1}
+            aria-label="Decrease quantity"
+            className="p-2"
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <span className="text-lg font-semibold min-w-[26px] text-center">
+            {quantity}
+          </span>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => updateQuantity(quantity + 1)}
+            disabled={product.quantity === 0 || product.quantity < quantity + 1}
+            aria-label="Increase quantity"
+            className="p-2"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-col justify-center items-center space-y-4">
         <Sheet>
           <SheetTrigger
             ref={sheetTrigger}
@@ -114,6 +161,13 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
           </SheetTrigger>
           <CartSheet />
         </Sheet>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => router.push(`/products/${product.slug}`)}
+        >
+          View Details
+        </Button>
       </CardFooter>
     </Card>
   );
