@@ -111,9 +111,9 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
                   );
                 })()}
               </h3>
-              <p className="text-sm text-gray-600 line-clamp-2">
+              {/* <p className="text-sm text-gray-600 line-clamp-2">
                 {product.description}
-              </p>
+              </p> */}
               {product.quantity === 0 && (
                 <p className="text-red-500 text-sm">Out of stock</p>
               )}
@@ -157,7 +157,7 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
               buyNow();
             }}
           >
-            {product.quantity === 0 ? "Out of Stock" : "Buy now"}
+            {product.quantity === 0 ? "Out of Stock" : "Add to cart"}
           </SheetTrigger>
           <CartSheet />
         </Sheet>
