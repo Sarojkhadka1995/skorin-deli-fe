@@ -18,6 +18,7 @@ import { useRef, useState } from "react";
 import { COMMON_IMAGES } from "@/config/image";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
+import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 
 export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
@@ -43,6 +44,7 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
       const returnUrl = encodeURIComponent(
         `/products/${product.slug}?quantity=${quantity}`,
       );
+      showToast(TOAST_TYPES.warning, "Please login to add to cart");
       router.push(`/account/login?returnUrl=${returnUrl}`);
     } else {
       router.push(`/products/${product.slug}?quantity=${quantity}`);
@@ -164,6 +166,7 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
         <Button
           variant="outline"
           size="lg"
+          className="w-full"
           onClick={() => router.push(`/products/${product.slug}`)}
         >
           View Details

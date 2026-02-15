@@ -30,11 +30,16 @@ import {
 import { useRouter } from "next/router";
 import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useProfileStore from "@/store/useProfileStore";
 
 export default function AccountAndCart() {
-  const { cartTotal, cartData } = useCartStore();
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
+  const { cartTotal, cartData } = useCartStore();
+
+
+  const { profileData } = useProfileStore();
+
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
 
   useEffect(() => {
@@ -71,7 +76,10 @@ export default function AccountAndCart() {
           <DropdownMenuTrigger asChild>
             <Avatar>
               <AvatarImage src="" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>
+                {profileData?.first_name?.charAt(0)?.toUpperCase() || ''}
+                {profileData?.last_name?.charAt(0)?.toUpperCase() || ''}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">

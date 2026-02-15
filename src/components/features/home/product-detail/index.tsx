@@ -11,7 +11,7 @@ import CartSheet from "../../cart/cart-sheet";
 import { getImageUrl } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IProductDetail } from "@/interface/product.types";
-import ProductIngredients from "../../product-detail/product-ingrediens";
+// import ProductIngredients from "../../product-detail/product-ingrediens";
 import { getCookie } from "cookies-next";
 import { COOKIE_CONFIG } from "@/config/app";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -137,6 +137,7 @@ export default function ProductDetail({
       const returnUrl = encodeURIComponent(
         `${window.location.pathname}?addToCart=${id}&quantity=${quantity}`,
       );
+      showToast(TOAST_TYPES.warning, "Please login to add to cart");
       router.push(`/account/login?returnUrl=${returnUrl}`);
       return;
     }
@@ -272,12 +273,12 @@ export default function ProductDetail({
               <p className="text-red-500">Out of stock</p>
             </div>
           )}
-          <div className="my-6">
+          {/* <div className="my-6">
             <ProductIngredients
               nutritionInfo={product?.nutritionInfo}
               ingredients={product?.ingredients}
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
