@@ -19,16 +19,20 @@ import { COMMON_IMAGES } from "@/config/image";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { showToast, TOAST_TYPES } from "@/utils/toast-utils/toast-util";
+import useProfileStore from "@/store/useProfileStore";
+import { createCart } from "@/services/cart/cart.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProductCard({ product }: { product: IProductDetail }) {
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
   // const currentProductId = searchParams.get("id");
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
 
-  // const { profileData } = useProfileStore();
+  const { profileData } = useProfileStore();
 
   const sheetTrigger = useRef<HTMLButtonElement>(null);
   const [quantity, setQuantity] = useState<number>(1);
@@ -47,18 +51,19 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
       showToast(TOAST_TYPES.warning, "Please login to add to cart");
       router.push(`/account/login?returnUrl=${returnUrl}`);
     } else {
-      router.push(`/products/${product.slug}?quantity=${quantity}`);
-      // if (!profileData?.id) return;
-      // const payload = {
-      //   userId: profileData?.id,
-      //   productId: product.id,
-      //   quantity: quantity,
-      // };
+      // router.push(`/products/${product.slug}?quantity=${quantity}`);
+      if (!profileData?.id) return;
+      const payload = {
+        userId: profileData?.id,
+        productId: product.id,
+        quantity: quantity,
+      };
 
-      // const response = await createCart(payload);
-      // if (response) {
-      //   showToast(TOAST_TYPES.success, "Product added to cart");
-      // }
+      const response = await createCart(payload);
+      if (response) {
+        showToast(TOAST_TYPES.success, "Product added to cart");
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+      }
     }
   };
   return (

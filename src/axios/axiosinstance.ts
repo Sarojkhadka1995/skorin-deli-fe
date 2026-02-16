@@ -5,7 +5,6 @@ const axiosInstance = axios.create({
   baseURL: API_CONFIG.baseUrl, // Set the base URL for all requests
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${getCookie(COOKIE_CONFIG.accessToken)}`,
   },
   // withCredentials: true,
 });
@@ -13,12 +12,11 @@ const axiosInstance = axios.create({
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // You can modify the request config here
-    // For example, you can add an auth token to the headers
-    // const token = localStorage.getItem("token");
-    // if (token) {
-    //   config.headers["Authorization"] = `Bearer ${token}`;
-    // }
+    // Dynamically add auth token to headers for each request
+    const token = getCookie(COOKIE_CONFIG.accessToken);
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -31,46 +29,50 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // if (error.response?.status === 401) {
-    //   const errorMessage = error.response?.data?.message;
-    //   if (errorMessage === "Token has expired") {
-    //     try {
-    //       // Attempt to refresh the token
-    //       const response = await axios.post(
-    //         `${config.baseUrl}/auth/refresh`,
-    //         {},
-    //         {
-    //           // withCredentials: true,
-    //           headers: {
-    //             Authorization: `Bearer ${getCookie("refreshToken")}`,
-    //           },
-    //         },
-    //       );
+    if (error.response?.status === 401) {
+      const errorMessage = error.response?.data?.message;
+      if (errorMessage === "Token has expired") {
+        try {
+          // Attempt to refresh the token
+          const response = await axios.post(
+            `${API_CONFIG.baseUrl}/auth/refresh`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${getCookie(COOKIE_CONFIG.refreshToken)}`,
+              },
+            },
+          );
 
-    //       // Update the access token
-    //       const { accessToken } = response.data;
-    //       // You might want to use a cookie setting utility here
-    //       setCookie("accessToken", accessToken);
+          // Update the access token
+          const { access_token } = response.data;
+          // Update the cookie with the new access token
+          const { setCookie } = await import("cookies-next");
+          setCookie(COOKIE_CONFIG.accessToken, access_token);
 
-    //       // Retry the original request
-    //       const originalRequest = error.config;
-    //       originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
-    //       return axios(originalRequest);
-    //     } catch (refreshError) {
-    //       // If refresh token fails, logout user
-    //       window.location.href = "/login";
-    //       return Promise.reject(refreshError);
-    //     }
-    //   } else {
-    //     // Handle general unauthorized access
-    //     deleteCookie("accessToken");
-    //     deleteCookie("refreshToken");
-    //     deleteCookie("isLoggedIn");
-    //     localStorage.clear();
-    //     window.location.href = "/login";
-    //     return Promise.reject(error);
-    //   }
-    // }
+          // Retry the original request with the new token
+          const originalRequest = error.config;
+          originalRequest.headers["Authorization"] = `Bearer ${access_token}`;
+          return axios(originalRequest);
+        } catch (refreshError) {
+          // If refresh token fails, logout user
+          const { deleteCookie } = await import("cookies-next");
+          deleteCookie(COOKIE_CONFIG.accessToken);
+          deleteCookie(COOKIE_CONFIG.refreshToken);
+          deleteCookie(COOKIE_CONFIG.loggedIn);
+          window.location.href = "/account/login";
+          return Promise.reject(refreshError);
+        }
+      } else {
+        // Handle general unauthorized access
+        const { deleteCookie } = await import("cookies-next");
+        deleteCookie(COOKIE_CONFIG.accessToken);
+        deleteCookie(COOKIE_CONFIG.refreshToken);
+        deleteCookie(COOKIE_CONFIG.loggedIn);
+        window.location.href = "/account/login";
+        return Promise.reject(error);
+      }
+    }
 
     // Handle other errors as before
     if (error.response) {
