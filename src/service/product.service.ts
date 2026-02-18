@@ -14,8 +14,7 @@ export const getProducts = async (
 ): Promise<{ items: IProductDetail[]; total: number; totalPages: number }> => {
   try {
     const response = await axiosInstance.get(
-      `/products?${
-        sortBy ? `sortby=${sortBy}&` : ""
+      `/products?${sortBy ? `sortby=${sortBy}&` : ""
       }pageNumber=${page}&limit=${limit}`
     );
     return response?.data?.data;
@@ -73,6 +72,18 @@ export const getProductsByCategory = async (
       `/products/category/${categoryId}`,
       { params }
     );
+    return response?.data?.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getProductsByCompany = async (
+  companyId: string,
+  params?: { sort_by?: string }
+): Promise<IProductDetail[]> => {
+  try {
+    const response = await axiosInstance.get(`/products/company/${companyId}`, { params });
     return response?.data?.data;
   } catch (error) {
     throw error;
