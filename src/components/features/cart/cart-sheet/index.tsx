@@ -86,7 +86,7 @@ const CartSheet = () => {
       };
       updateCart(payload);
     },
-    [updateCart, profileData]
+    [updateCart, profileData],
   );
 
   const removeFromCart = useCallback(
@@ -94,7 +94,7 @@ const CartSheet = () => {
       if (!profileData?.id) return;
       deleteItem({ userId: profileData?.id, id });
     },
-    [deleteItem, profileData]
+    [deleteItem, profileData],
   );
 
   const order = useCallback(() => {
@@ -127,7 +127,7 @@ const CartSheet = () => {
               <div
                 className={cn(
                   "relative",
-                  updateCartPending && "opacity-50 pointer-events-none"
+                  updateCartPending && "opacity-50 pointer-events-none",
                 )}
               >
                 {/* {updateCartPending && (

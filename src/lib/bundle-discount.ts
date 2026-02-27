@@ -1,120 +1,190 @@
-import { ICartItem } from "@/interface/cart.types";
-import {
-  IBundleDealItem,
-  IAppliedBundleDiscount,
-} from "@/interface/bundle.types";
+import { ICartItem } from '@/interface/cart.types'
+import { IBundleDealItem, IBundleDealProduct, IAppliedBundleDiscount } from '@/interface/bundle.types'
 
 function isDealActive(deal: IBundleDealItem): boolean {
-  if (!deal.status) return false;
-  const now = new Date().getTime();
-  if (deal.startDate && new Date(deal.startDate).getTime() > now) return false;
-  if (deal.endDate && new Date(deal.endDate).getTime() < now) return false;
-  return true;
+  if (!deal.status) return false
+  const now = Date.now()
+  if (deal.startDate && new Date(deal.startDate).getTime() > now) return false
+  if (deal.endDate && new Date(deal.endDate).getTime() < now) return false
+  return true
 }
 
-/**
- * Builds a map of productId -> quantity in cart
- */
-function getCartQuantityByProductId(cartData: ICartItem[]): Map<number, number> {
-  const map = new Map<number, number>();
+function buildCartQuantityMap(cartData: ICartItem[]): Map<number, number> {
+  const map = new Map<number, number>()
   for (const item of cartData) {
-    const pid = item.product?.id ?? item.productId;
-    if (pid) map.set(pid, (map.get(pid) ?? 0) + item.quantity);
+    const pid = item.product?.id ?? item.productId
+    if (pid) map.set(pid, (map.get(pid) ?? 0) + item.quantity)
   }
-  return map;
+  return map
+}
+
+function buildPriceMap(cartData: ICartItem[]): Map<number, number> {
+  const map = new Map<number, number>()
+  for (const item of cartData) {
+    const pid = item.product?.id ?? item.productId
+    if (pid) map.set(pid, Number(item.product?.price ?? item.price ?? 0))
+  }
+  return map
 }
 
 /**
- * For one application of the deal, get the total value (for percentage discount)
+ * Product IDs in a deal (ignores products[].quantity).
  */
-function getBundleValuePerApplication(
-  deal: IBundleDealItem,
-  cartData: ICartItem[]
-): number {
-  let value = 0;
-  const priceByProductId = new Map(
-    cartData.map((item) => [
-      item.product?.id ?? item.productId,
-      Number(item.product?.price ?? item.price ?? 0),
-    ])
-  );
-  for (const p of deal.products) {
-    const productId = p.product?.id ?? p.id;
-    const unitPrice = priceByProductId.get(productId) ?? 0;
-    value += unitPrice * p.quantity;
-  }
-  return value;
+function getDealProductIds(deal: IBundleDealItem): number[] {
+  return (deal.products ?? []).map((p) => p.product?.id ?? p.id)
 }
 
 /**
- * Deal applies only when cart quantity exactly matches the deal's required quantity.
- * e.g. deal "2 of product A" applies only when cart has exactly 2 of A (not 4 or 3).
- * For multi-product deals, each product must match its required quantity exactly.
+ * Pool = sum of remaining quantities of all bundle products.
+ * Any product combination can fulfil; one application consumes deal.quantity units from this pool.
  */
-function getDealApplications(
-  deal: IBundleDealItem,
-  cartQtyByProductId: Map<number, number>
-): number {
-  if (!deal.products?.length) return 0;
-  for (const p of deal.products) {
-    const productId = p.product?.id ?? p.id;
-    const cartQty = cartQtyByProductId.get(productId) ?? 0;
-    const required = p.quantity || 1;
-    if (cartQty !== required) return 0;
+function getPool(deal: IBundleDealItem, remainingQty: Map<number, number>): number {
+  const pids = getDealProductIds(deal)
+  let pool = 0
+  for (const pid of pids) {
+    pool += remainingQty.get(pid) ?? 0
   }
-  return 1;
+  return pool
 }
 
 /**
- * Compute total bundle discount and per-deal breakdown.
- * Deal applies only when quantity exactly matches (e.g. "2 for $5 off" only when cart has exactly 2).
+ * Applicable count: floor(pool / deal.quantity). Pool-based; ignores per-product minimum.
+ */
+function getApplicableCount(
+  deal: IBundleDealItem,
+  remainingQty: Map<number, number>,
+): number {
+  if (!deal.products?.length || deal.quantity <= 0) return 0
+  const pool = getPool(deal, remainingQty)
+  return Math.floor(pool / deal.quantity)
+}
+
+/**
+ * Returns the discount amount for ONE application of a deal.
+ */
+function getDiscountPerApplication(
+  deal: IBundleDealItem,
+  priceMap: Map<number, number>,
+): number {
+  if (deal.discountType === 'fixed') {
+    return Number(deal.discountAmount)
+  }
+  // Percentage: value consumed per application × discount rate
+  let valuePerApp = 0
+  for (const p of deal.products) {
+    const pid = p.product?.id ?? p.id
+    valuePerApp += (priceMap.get(pid) ?? 0) * deal.quantity
+  }
+  return Math.round(valuePerApp * (Number(deal.discountAmount) / 100) * 100) / 100
+}
+
+/**
+ * Pure function — greedy highest-total-discount-first bundle engine (pool-based).
+ *
+ * Pool model: each bundle has a pool = sum of cart quantities of its products.
+ * Any product combination can fulfil; one application consumes deal.quantity units from the pool.
+ * applicableCount = floor(pool / deal.quantity). Deduct from product with most stock first.
+ *
+ * Algorithm:
+ *  1. Clone cart quantities; never mutate original.
+ *  2. Each iteration: compute pool and applicableCount for all deals; pick highest totalDiscount.
+ *  3. Apply ONE iteration: deduct deal.quantity units from that deal's pool (any combination).
+ *  4. Repeat until no eligible deal remains.
  */
 export function computeBundleDiscount(
   cartData: ICartItem[],
-  bundleDeals: IBundleDealItem[] | undefined
+  bundleDeals: IBundleDealItem[] | undefined,
 ): {
-  totalBundleDiscount: number;
-  appliedDeals: IAppliedBundleDiscount[];
+  totalBundleDiscount: number
+  appliedDeals: IAppliedBundleDiscount[]
 } {
   if (!bundleDeals?.length || !cartData?.length) {
-    return { totalBundleDiscount: 0, appliedDeals: [] };
+    return { totalBundleDiscount: 0, appliedDeals: [] }
   }
 
-  const cartQtyByProductId = getCartQuantityByProductId(cartData);
-  const appliedDeals: IAppliedBundleDiscount[] = [];
-  let totalBundleDiscount = 0;
+  const activeDeals = bundleDeals.filter(isDealActive)
+  if (!activeDeals.length) return { totalBundleDiscount: 0, appliedDeals: [] }
 
-  for (const deal of bundleDeals) {
-    if (!isDealActive(deal)) continue;
+  const priceMap = buildPriceMap(cartData)
+  const remainingQty = buildCartQuantityMap(cartData)
 
-    const applications = getDealApplications(deal, cartQtyByProductId);
-    if (applications < 1) continue;
+  // dealId -> { deal, timesApplied, totalDiscount }
+  const appliedMap = new Map<string, {
+    deal: IBundleDealItem
+    timesApplied: number
+    totalDiscount: number
+  }>()
 
-    let discountAmount: number;
-    if (deal.discountType === "fixed") {
-      discountAmount = applications * Number(deal.discountAmount);
-    } else {
-      const bundleValuePerApplication = getBundleValuePerApplication(
-        deal,
-        cartData
-      );
-      discountAmount =
-        applications *
-        (bundleValuePerApplication * (Number(deal.discountAmount) / 100));
+  // Greedy loop — no recursion
+  while (true) {
+    let bestDeal: IBundleDealItem | null = null
+    let bestPotential = 0
+
+    for (const deal of activeDeals) {
+      const count = getApplicableCount(deal, remainingQty)
+      if (count === 0) continue
+      const discountPerApp = getDiscountPerApplication(deal, priceMap)
+      const potential = count * discountPerApp
+      // Stable sort: strict greater-than keeps first-encountered on tie
+      if (potential > bestPotential) {
+        bestPotential = potential
+        bestDeal = deal
+      }
     }
 
-    totalBundleDiscount += discountAmount;
+    if (!bestDeal || bestPotential <= 0) break
+
+    // Deduct deal.quantity units from pool (any combination). Deduct from product with most first.
+    const toDeduct = bestDeal.quantity
+    const pids = getDealProductIds(bestDeal)
+    const entries = pids
+      .map((pid) => [pid, remainingQty.get(pid) ?? 0] as const)
+      .sort((a, b) => a[1] - b[1])
+    let left = toDeduct
+    let consumedValue = 0
+    for (const [pid, qty] of entries) {
+      if (left <= 0) break
+      const take = Math.min(left, qty)
+      remainingQty.set(pid, qty - take)
+      left -= take
+      consumedValue += (priceMap.get(pid) ?? 0) * take
+    }
+
+    const discountPerApp = getDiscountPerApplication(bestDeal, priceMap)
+    const cappedDiscount = Math.min(
+      discountPerApp,
+      Math.round(consumedValue * 100) / 100,
+    )
+
+    const existing = appliedMap.get(bestDeal.id)
+    if (existing) {
+      existing.timesApplied++
+      existing.totalDiscount = Math.round((existing.totalDiscount + cappedDiscount) * 100) / 100
+    } else {
+      appliedMap.set(bestDeal.id, {
+        deal: bestDeal,
+        timesApplied: 1,
+        totalDiscount: Math.round(cappedDiscount * 100) / 100,
+      })
+    }
+  }
+
+  const appliedDeals: IAppliedBundleDiscount[] = []
+  let totalBundleDiscount = 0
+
+  appliedMap.forEach(({ deal, timesApplied, totalDiscount }) => {
     appliedDeals.push({
       dealId: deal.id,
       dealName: deal.name,
-      discountAmount,
-      applications,
-      productIds: deal.products.map((p) => p.product?.id ?? p.id),
-    });
-  }
+      discountAmount: totalDiscount,
+      applications: timesApplied,
+      productIds: deal.products.map((p: IBundleDealProduct) => p.product?.id ?? p.id),
+    })
+    totalBundleDiscount += totalDiscount
+  })
 
   return {
     totalBundleDiscount: Math.round(totalBundleDiscount * 100) / 100,
     appliedDeals,
-  };
+  }
 }
