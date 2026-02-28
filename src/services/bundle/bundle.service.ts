@@ -3,7 +3,11 @@ import { IGetAllBundleDeals } from "@/interface/bundle.types";
 
 export const getBundleDeals = async (): Promise<IGetAllBundleDeals> => {
   try {
-    const response = await axiosInstance.get("/bundles");
+    const response = await axiosInstance.get("/bundles", {
+      params: {
+        status: "active",
+      },
+    });
     const data = response?.data?.data ?? response?.data;
     return Array.isArray(data) ? { data } : data;
   } catch (error) {

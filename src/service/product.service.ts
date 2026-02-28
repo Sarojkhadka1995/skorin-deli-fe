@@ -10,12 +10,13 @@ import {
 export const getProducts = async (
   sortBy?: string,
   page: number = 1,
-  limit: number = 12
+  limit: number = 12,
 ): Promise<{ items: IProductDetail[]; total: number; totalPages: number }> => {
   try {
     const response = await axiosInstance.get(
-      `/products?${sortBy ? `sortby=${sortBy}&` : ""
-      }pageNumber=${page}&limit=${limit}`
+      `/products?status=active&${
+        sortBy ? `sortby=${sortBy}&` : ""
+      }pageNumber=${page}&limit=${limit}`,
     );
     return response?.data?.data;
   } catch (error) {
@@ -24,7 +25,7 @@ export const getProducts = async (
 };
 
 export const searchProducts = async (
-  keyword: string
+  keyword: string,
 ): Promise<IProductDetail[]> => {
   try {
     const response = await axiosInstance.get(`/products?keyword=${keyword}`);
@@ -35,7 +36,7 @@ export const searchProducts = async (
 };
 
 export const getProductBySlug = async (
-  slug: string
+  slug: string,
 ): Promise<IProductDetail> => {
   try {
     const response = await axiosInstance.get(`/products/${slug}`);
@@ -65,12 +66,12 @@ export const getSpecialProducts = async (): Promise<IProductDetail[]> => {
 
 export const getProductsByCategory = async (
   categoryId: string,
-  params?: { sort_by?: string }
+  params?: { sort_by?: string },
 ): Promise<IProductDetail[]> => {
   try {
     const response = await axiosInstance.get(
-      `/products/category/${categoryId}`,
-      { params }
+      `/products/category/${categoryId}?status=active`,
+      { params },
     );
     return response?.data?.data;
   } catch (error) {
@@ -80,10 +81,12 @@ export const getProductsByCategory = async (
 
 export const getProductsByCompany = async (
   companyId: string,
-  params?: { sort_by?: string }
+  params?: { sort_by?: string },
 ): Promise<IProductDetail[]> => {
   try {
-    const response = await axiosInstance.get(`/products/company/${companyId}`, { params });
+    const response = await axiosInstance.get(`/products/company/${companyId}`, {
+      params,
+    });
     return response?.data?.data;
   } catch (error) {
     throw error;
