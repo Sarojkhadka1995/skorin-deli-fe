@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus, Tag } from "lucide-react";
 import Link from "next/link";
 import {
   BreadcrumbItem,
@@ -30,12 +30,14 @@ import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { deleteCartItem, updateCartItem } from "@/services/cart/cart.service";
 import useProfileStore from "@/store/useProfileStore";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "@/lib/utils";
 import { ICartItem } from "@/interface/cart.types";
 import { ICreateOrder } from "@/interface/order.types";
 import { orderCreate } from "@/services/order/order.service";
 import NoProducts from "@/components/features/shared/no-products";
+import { getBundleDeals } from "@/services/bundle/bundle.service";
+import { computeBundleDiscount } from "@/lib/bundle-discount";
 
 export default function ShoppingCart() {
   const queryClient = useQueryClient();
@@ -48,6 +50,30 @@ export default function ShoppingCart() {
   } = useCartStore();
 
   const { profileData } = useProfileStore();
+
+  const { data: bundleDealsData } = useQuery({
+    queryKey: ["bundle-deals"],
+    queryFn: getBundleDeals,
+    enabled: cartData.length > 0,
+  });
+
+  const { totalBundleDiscount, appliedDeals } = useMemo(
+    () => computeBundleDiscount(cartData, bundleDealsData?.data),
+    [cartData, bundleDealsData?.data]
+  );
+
+  const finalTotal = useMemo(
+    () => Math.max(0, Number((cartTotal - totalBundleDiscount).toFixed(2))),
+    [cartTotal, totalBundleDiscount]
+  );
+
+  const productIdsInDeals = useMemo(
+    () =>
+      new Set(
+        appliedDeals.flatMap((d) => d.productIds)
+      ),
+    [appliedDeals]
+  );
 
   const { mutate: deleteItem, isPending: deleteCartPending } = useMutation({
     mutationFn: (data: { userId: number; id: number }) =>
@@ -183,6 +209,12 @@ export default function ShoppingCart() {
                           <div className="font-light mb-1">${item.price}</div>
                           <div className="font-medium line-clamp-2">
                             {item.product.name}
+                            {productIdsInDeals.has(item.product.id) && (
+                              <span className="inline-flex items-center gap-1 ml-2 text-xs font-normal text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                                <Tag className="h-3 w-3" />
+                                Deal applied
+                              </span>
+                            )}
                           </div>
                           <div className="font-medium">{item.quantity}</div>
                         </div>
@@ -196,21 +228,27 @@ export default function ShoppingCart() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
+                              updateQuantity(item.id, Math.max(1, item.quantity - 1))
                             }
-                            disabled={updateCartPending}
+                            disabled={updateCartPending || item.quantity <= 1}
                           >
                             <Minus className="h-4 w-4" />
                             <span className="sr-only">Decrease quantity</span>
                           </Button>
                           <Input
                             type="number"
-                            min="1"
+                            min={1}
                             value={item.quantity}
-                            onChange={(e) =>
-                              updateQuantity(item.id, parseInt(e.target.value))
-                            }
-                            disabled={true}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!Number.isNaN(val) && val >= 1)
+                                updateQuantity(item.id, val);
+                            }}
+                            onBlur={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (Number.isNaN(val) || val < 1)
+                                updateQuantity(item.id, 1);
+                            }}
                             className="w-16 h-8 text-center"
                           />
                           <Button
@@ -253,8 +291,37 @@ export default function ShoppingCart() {
           <Card className="p-6 h-fit">
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-4">Total</h2>
-                <div className="text-4xl font-bold">${cartTotal}</div>
+                <h2 className="text-xl font-semibold mb-4">Order summary</h2>
+                <div className="space-y-2 text-base">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span>${cartTotal.toFixed(2)}</span>
+                  </div>
+                  {totalBundleDiscount > 0 && (
+                    <>
+                      <div className="flex justify-between text-green-600 font-medium">
+                        <span>Bundle discount</span>
+                        <span>-${totalBundleDiscount.toFixed(2)}</span>
+                      </div>
+                      {appliedDeals.map((deal) => (
+                        <div
+                          key={deal.dealId}
+                          className="flex items-center gap-1.5 text-sm text-muted-foreground pl-2 border-l-2 border-green-200"
+                        >
+                          <Tag className="h-3.5 w-3.5 shrink-0" />
+                          <span>
+                            {deal.dealName}: {deal.applications}x (
+                            -${deal.discountAmount.toFixed(2)})
+                          </span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  <div className="flex justify-between pt-2 border-t text-lg font-semibold">
+                    <span>Total</span>
+                    <span>${finalTotal.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
 
               <div>

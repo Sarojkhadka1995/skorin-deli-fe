@@ -53,7 +53,7 @@ export default function CartProductCard({
   };
 
   return (
-    <Card className="w-full border-0 group">
+    <Card className="w-full border-0 group mb-2">
       <CardContent className="p-0">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-4 border border-[#e5e5e5] rounded-xl !p-3 h-full flex justify-center items-center">
