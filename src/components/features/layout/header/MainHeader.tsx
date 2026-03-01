@@ -13,10 +13,12 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { COOKIE_CONFIG } from "@/config/app";
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 
 export default function MainHeader() {
   const [isMounted, setIsMounted] = useState(false);
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -46,7 +48,10 @@ export default function MainHeader() {
       </div>
       {isLoggedIn ? (
         <Sheet>
-          <SheetTrigger className="lg:hidden flex justify-end items-center h-full hover:text-primary">
+          <SheetTrigger
+            className="lg:hidden flex justify-end items-center h-full hover:text-primary"
+            onClick={() => router.push("/cart")}
+          >
             <ShoppingCart strokeWidth={2} />
           </SheetTrigger>
           <CartSheet />

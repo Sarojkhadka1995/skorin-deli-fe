@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { SheetClose } from "@/components/ui/sheet";
 import { Loader2 } from "lucide-react";
 
@@ -16,38 +15,50 @@ export default function CartCheckoutButtons({
   checkoutLoading = false,
 }: CartTotalProps) {
   return (
-    <Card className="w-full max-w-sm border-none">
-      <CardContent className="pt-6">
-        <h2 className="text-lg font-medium mb-2">Total</h2>
-        <p className="text-4xl font-bold mb-2">${total.toFixed(2)}</p>
-        <p className="text-sm text-gray-500">
+    <div className="px-6 pb-6">
+      <div className="mb-4">
+        <p className="text-sm text-muted-foreground mb-1">Total</p>
+        <p className="text-3xl font-bold text-foreground">
+          ${total.toFixed(2)}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
           Tax included.{" "}
-          <Link href="#" className="underline">
+          <Link
+            href="#"
+            className="underline hover:text-foreground transition-colors"
+          >
             Shipping
           </Link>{" "}
           calculated at checkout.
         </p>
-      </CardContent>
-      <CardFooter className="flex flex-col gap-2">
+      </div>
+      <div className="flex flex-col gap-2">
         <SheetClose asChild>
           <Link href="/cart" className="w-full">
-            <Button size={"lg"} variant="outline-black" className="w-full">
+            <Button size="lg" variant="outline-black" className="w-full">
               View Cart
             </Button>
           </Link>
         </SheetClose>
         <SheetClose asChild>
           <Button
-            size={"lg"}
-            variant="outline"
+            size="lg"
             className="w-full"
+            variant="outline"
             disabled={checkoutLoading}
             onClick={onCheckout}
           >
-            Check Out {checkoutLoading && <Loader2 className="w-4 h-4 ml-2" />}
+            {checkoutLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Check Out"
+            )}
           </Button>
         </SheetClose>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

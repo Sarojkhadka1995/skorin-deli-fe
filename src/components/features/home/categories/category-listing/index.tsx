@@ -29,7 +29,12 @@ export default function CategoryListing() {
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ["getCategories", currentPage],
-    queryFn: () => getCategories(currentPage),
+    queryFn: () =>
+      getCategories({
+        status: "active",
+        pageNumber: currentPage,
+        limit: 12,
+      }),
   });
 
   const totalPages = categories?.data?.totalPages || 1;
@@ -79,13 +84,13 @@ export default function CategoryListing() {
       items.push(
         <PaginationItem key="1">
           <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
       if (startPage > 2) {
         items.push(
           <PaginationItem key="start-ellipsis">
             <PaginationEllipsis />
-          </PaginationItem>
+          </PaginationItem>,
         );
       }
     }
@@ -100,7 +105,7 @@ export default function CategoryListing() {
           >
             {i}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -110,7 +115,7 @@ export default function CategoryListing() {
         items.push(
           <PaginationItem key="end-ellipsis">
             <PaginationEllipsis />
-          </PaginationItem>
+          </PaginationItem>,
         );
       }
       items.push(
@@ -118,7 +123,7 @@ export default function CategoryListing() {
           <PaginationLink onClick={() => handlePageChange(totalPages)}>
             {totalPages}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 

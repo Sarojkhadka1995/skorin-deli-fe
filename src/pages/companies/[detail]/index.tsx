@@ -39,11 +39,13 @@ const CompanyDetailPage = () => {
     queryFn: () =>
       type === "shop"
         ? getProductsByShop(companySlug, {
-          sort_by: getSortValue(sortBy),
-        })
+            status: "active",
+            sort_by: getSortValue(sortBy),
+          })
         : getProductsByCompany(companySlug, {
-          sort_by: getSortValue(sortBy),
-        }),
+            status: "active",
+            sort_by: getSortValue(sortBy),
+          }),
   });
 
   const handleSort = (value: string) => {

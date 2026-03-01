@@ -39,9 +39,11 @@ const CategoryDetailPage = () => {
     queryFn: () =>
       type === "shop"
         ? getProductsByShop(categorySlug, {
+            status: "active",
             sort_by: getSortValue(sortBy),
           })
         : getProductsByCategory(categorySlug, {
+            status: "active",
             sort_by: getSortValue(sortBy),
           }),
   });

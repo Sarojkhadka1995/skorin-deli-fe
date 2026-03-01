@@ -112,67 +112,99 @@ const CartSheet = () => {
   }, [orderMutation, profileData, orderInstructions, cartData]);
 
   return (
-    <SheetContent className="p-0 sm:min-w-[500px] min-w-full">
-      <SheetHeader className="border-b border-b-[#e5e5e5] p-5 px-6">
-        <SheetTitle className="font-medium text-xl">
-          Shopping Cart ({cartData?.length})
+    <SheetContent className="p-0 sm:min-w-[480px] min-w-full flex flex-col h-full">
+      {/* Fixed Header */}
+      <SheetHeader className="border-b border-border bg-background px-6 py-5 flex-shrink-0">
+        <SheetTitle className="font-semibold text-xl tracking-tight">
+          Shopping Cart
+          {cartData?.length ? (
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              ({cartData.length} {cartData.length === 1 ? "item" : "items"})
+            </span>
+          ) : null}
         </SheetTitle>
       </SheetHeader>
-      <div className="max-h-[calc(100vh-69px)] overflow-y-auto">
-        <div className="p-6 grid gap-4 border-b border-b-[#e5e5e5]">
+
+      {/* Scrollable Products Section */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="p-6">
           {cartLoading ? (
-            <div>Loading...</div>
-          ) : (
-            <>
-              <div
-                className={cn(
-                  "relative",
-                  updateCartPending && "opacity-50 pointer-events-none",
-                )}
-              >
-                {/* {updateCartPending && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
-                    <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-                  </div>
-                )} */}
-                {cartData?.map((item: ICartItem) => (
-                  <CartProductCard
-                    key={item.id}
-                    id={item.product.id}
-                    imageUrl={item.product.imageUrl}
-                    price={Number(item.product.price)}
-                    name={item.product.name}
-                    description={item.product.description}
-                    weight={item.product.weight}
-                    quantity={item.quantity}
-                    onRemove={() => removeFromCart(item.id)}
-                    updateQuantity={(quantity: number) =>
-                      updateQuantity(item.id, quantity)
-                    }
-                  />
-                ))}
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+            </div>
+          ) : cartData?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-muted-foreground"
+                >
+                  <circle cx="8" cy="21" r="1" />
+                  <circle cx="19" cy="21" r="1" />
+                  <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                </svg>
               </div>
-            </>
+              <p className="text-muted-foreground font-medium">
+                Your cart is empty
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Add items to get started
+              </p>
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "relative space-y-3",
+                updateCartPending && "opacity-50 pointer-events-none",
+              )}
+            >
+              {cartData?.map((item: ICartItem) => (
+                <CartProductCard
+                  key={item.id}
+                  id={item.product.id}
+                  imageUrl={item.product.imageUrl}
+                  price={Number(item.product.price)}
+                  name={item.product.name}
+                  description={item.product.description}
+                  weight={item.product.weight}
+                  quantity={item.quantity}
+                  onRemove={() => removeFromCart(item.id)}
+                  updateQuantity={(quantity: number) =>
+                    updateQuantity(item.id, quantity)
+                  }
+                />
+              ))}
+            </div>
           )}
         </div>
-        {/* <div>
-          <RelatedProducts />
-        </div> */}
-        <div className="p-6 border-y border-y-[#e5e5e5]">
-          <p className="text-lg font-medium mb-2">Order instructions</p>
+      </div>
+
+      {/* Fixed Bottom Section */}
+      <div className="flex-shrink-0 border-t border-border bg-background">
+        <div className="p-6 pb-4">
+          <p className="text-sm font-medium text-foreground mb-2">
+            Order instructions
+          </p>
           <Textarea
-            className="min-h-[100px]"
+            className="min-h-[80px] resize-none text-sm"
+            placeholder="Add any special instructions for your order..."
             value={orderInstructions}
             onChange={(e) => setOrderInstructions(e.target.value)}
           />
         </div>
-        <div className="">
-          <CartCheckoutButtons
-            total={cartTotal}
-            onCheckout={order}
-            checkoutLoading={orderPending}
-          />
-        </div>
+        <CartCheckoutButtons
+          total={cartTotal}
+          onCheckout={order}
+          checkoutLoading={orderPending}
+        />
       </div>
     </SheetContent>
   );

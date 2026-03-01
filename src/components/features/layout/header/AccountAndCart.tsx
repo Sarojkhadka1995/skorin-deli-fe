@@ -1,7 +1,7 @@
 import { User, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import CartSheet from "../../cart/cart-sheet";
+// import CartSheet from "../../cart/cart-sheet";
 import Link from "next/link";
 import useCartStore from "@/store/useCartStore";
 import { deleteCookie, getCookie } from "cookies-next";
@@ -35,7 +35,6 @@ import useProfileStore from "@/store/useProfileStore";
 export default function AccountAndCart() {
   const router = useRouter();
   const { cartTotal, cartData } = useCartStore();
-
 
   const { profileData } = useProfileStore();
 
@@ -77,8 +76,8 @@ export default function AccountAndCart() {
             <Avatar>
               <AvatarImage src="" />
               <AvatarFallback>
-                {profileData?.first_name?.charAt(0)?.toUpperCase() || ''}
-                {profileData?.last_name?.charAt(0)?.toUpperCase() || ''}
+                {profileData?.first_name?.charAt(0)?.toUpperCase() || ""}
+                {profileData?.last_name?.charAt(0)?.toUpperCase() || ""}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
@@ -117,11 +116,13 @@ export default function AccountAndCart() {
         <Sheet>
           <SheetTrigger
             className={`inline-flex items-center justify-center gap-2 whitespace-nowrap h-[50px] rounded-full px-7 text-[16px] bg-[#2b2b2b] text-white border-[2px] border-[#2b2b2b]  shadow-sm hover:bg-[#ffffff] hover:text-[#2b2b2b]`}
+            onClick={() => router.push("/cart")}
           >
             <ShoppingCart size={28} className="!h-[22px] !w-[22px]" />$
             {cartTotal} ({cartData?.length})
           </SheetTrigger>
-          <CartSheet />
+          {/* Comment sheet for now */}
+          {/* <CartSheet /> */}
         </Sheet>
       )}
     </div>

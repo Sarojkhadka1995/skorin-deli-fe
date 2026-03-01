@@ -1,14 +1,17 @@
 import axiosInstance from "@/axios/axiosinstance";
-import { ICategory, ICategoryResponse } from "@/interface/category.types";
+import {
+  ICategory,
+  ICategoryPaginationParams,
+  ICategoryResponse,
+} from "@/interface/category.types";
 
 export const getCategories = async (
-  pageNumber: number = 1,
-  limit: number = 12
+  params: ICategoryPaginationParams,
 ): Promise<ICategoryResponse> => {
   try {
-    const response = await axiosInstance.get<ICategoryResponse>(
-      `/categories?pageNumber=${pageNumber}&limit=${limit}`
-    );
+    const response = await axiosInstance.get<ICategoryResponse>(`/categories`, {
+      params,
+    });
     return response?.data;
   } catch (error) {
     throw error;

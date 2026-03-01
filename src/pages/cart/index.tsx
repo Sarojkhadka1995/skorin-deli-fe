@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -47,9 +47,15 @@ export default function ShoppingCart() {
     orderInstructions,
     setOrderInstructions,
     clearOrderInstructions,
+    setCartData,
   } = useCartStore();
 
   const { profileData } = useProfileStore();
+
+  // Track pending operations per item
+  const [pendingOperations, setPendingOperations] = useState<{
+    [itemId: number]: "update" | "delete";
+  }>({});
 
   const { data: bundleDealsData } = useQuery({
     queryKey: ["bundle-deals"],
@@ -57,51 +63,80 @@ export default function ShoppingCart() {
     enabled: cartData.length > 0,
   });
 
+  const sortedCartData = useMemo(
+    () => [...cartData].sort((a, b) => a.id - b.id),
+    [cartData],
+  );
+
   const { totalBundleDiscount, appliedDeals } = useMemo(
-    () => computeBundleDiscount(cartData, bundleDealsData?.data),
-    [cartData, bundleDealsData?.data]
+    () => computeBundleDiscount(sortedCartData, bundleDealsData?.data),
+    [sortedCartData, bundleDealsData?.data],
   );
 
   const finalTotal = useMemo(
     () => Math.max(0, Number((cartTotal - totalBundleDiscount).toFixed(2))),
-    [cartTotal, totalBundleDiscount]
+    [cartTotal, totalBundleDiscount],
   );
 
   const productIdsInDeals = useMemo(
-    () =>
-      new Set(
-        appliedDeals.flatMap((d) => d.productIds)
-      ),
-    [appliedDeals]
+    () => new Set(appliedDeals.flatMap((d) => d.productIds)),
+    [appliedDeals],
   );
 
-  const { mutate: deleteItem, isPending: deleteCartPending } = useMutation({
-    mutationFn: (data: { userId: number; id: number }) =>
+  const { mutate: deleteItem } = useMutation({
+    mutationFn: (data: { userId: number; id: number; originalItem?: ICartItem }) =>
       deleteCartItem(data.userId, data.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
+    onSuccess: (_, variables) => {
+      // Remove from pending operations
+      setPendingOperations(prev => {
+        const newState = { ...prev };
+        delete newState[variables.id];
+        return newState;
       });
-
-      if (cartData.length === 1) {
-        clearOrderInstructions();
-      }
       showToast(TOAST_TYPES.success, "Cart item deleted successfully");
     },
-    onError: () => {
+    onError: (_, variables) => {
+      // Revert the optimistic update
+      if (variables.originalItem) {
+        setCartData([...cartData, variables.originalItem].sort((a, b) => a.id - b.id));
+      }
+      setPendingOperations(prev => {
+        const newState = { ...prev };
+        delete newState[variables.id];
+        return newState;
+      });
       showToast(TOAST_TYPES.error, "Failed to delete cart item");
     },
   });
 
-  const { mutate: updateCart, isPending: updateCartPending } = useMutation({
-    mutationFn: updateCartItem,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
+  const { mutate: updateCart } = useMutation({
+    mutationFn: (data: { userId: number; cartId: number; quantity: number; originalQuantity?: number }) =>
+      updateCartItem({ userId: data.userId, cartId: data.cartId, quantity: data.quantity }),
+    onSuccess: (_, variables) => {
+      // Remove from pending operations
+      setPendingOperations(prev => {
+        const newState = { ...prev };
+        delete newState[variables.cartId];
+        return newState;
       });
       showToast(TOAST_TYPES.success, "Cart item updated successfully");
     },
-    onError: () => {
+    onError: (_, variables) => {
+      // Revert the optimistic update
+      if (variables.originalQuantity !== undefined) {
+        setCartData(
+          cartData.map(item =>
+            item.id === variables.cartId
+              ? { ...item, quantity: variables.originalQuantity! }
+              : item
+          )
+        );
+      }
+      setPendingOperations(prev => {
+        const newState = { ...prev };
+        delete newState[variables.cartId];
+        return newState;
+      });
       showToast(TOAST_TYPES.error, "Failed to update cart item");
     },
   });
@@ -122,7 +157,7 @@ export default function ShoppingCart() {
     if (!profileData?.id) return;
     const payload: ICreateOrder = {
       userId: profileData?.id,
-      items: cartData?.map((item: ICartItem) => ({
+      items: sortedCartData?.map((item: ICartItem) => ({
         productId: item.product.id,
         quantity: item.quantity,
         productName: item.product.name,
@@ -131,24 +166,58 @@ export default function ShoppingCart() {
       orderInstructions,
     };
     orderMutation(payload);
-  }, [orderMutation, profileData, orderInstructions, cartData]);
+  }, [orderMutation, profileData, orderInstructions, sortedCartData]);
 
   const removeItem = (id: number) => {
     if (!profileData?.id) return;
-    deleteItem({ userId: profileData?.id, id });
+
+    // Find the item to remove for potential rollback
+    const itemToRemove = sortedCartData.find(item => item.id === id);
+    if (!itemToRemove) return;
+
+    // Optimistic update: remove item immediately
+    setCartData(cartData.filter(item => item.id !== id));
+    setPendingOperations(prev => ({ ...prev, [id]: "delete" }));
+
+    // Clear instructions if this was the last item
+    if (sortedCartData.length === 1) {
+      clearOrderInstructions();
+    }
+
+    deleteItem({
+      userId: profileData.id,
+      id,
+      originalItem: itemToRemove
+    });
   };
 
   const updateQuantity = useCallback(
     (id: number, quantity: number) => {
       if (!profileData?.id) return;
+
+      // Find current item for potential rollback
+      const currentItem = sortedCartData.find(item => item.id === id);
+      if (!currentItem) return;
+
+      // Optimistic update: update quantity immediately
+      setCartData(
+        cartData.map(item =>
+          item.id === id
+            ? { ...item, quantity }
+            : item
+        )
+      );
+      setPendingOperations(prev => ({ ...prev, [id]: "update" }));
+
       const payload = {
-        userId: profileData?.id,
+        userId: profileData.id,
         quantity,
         cartId: id,
+        originalQuantity: currentItem.quantity,
       };
       updateCart(payload);
     },
-    [updateCart, profileData]
+    [updateCart, profileData, sortedCartData, cartData, setCartData],
   );
 
   return (
@@ -169,7 +238,7 @@ export default function ShoppingCart() {
 
       <div className="grid lg:grid-cols-[1fr,400px] gap-8">
         <Card className="overflow-x-auto">
-          {cartData.length === 0 ? (
+          {sortedCartData.length === 0 ? (
             <div className="text-center text-lg font-medium">
               <NoProducts
                 title="No Products in Cart"
@@ -192,7 +261,7 @@ export default function ShoppingCart() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {cartData.map((item) => (
+                {sortedCartData.map((item) => (
                   <TableRow key={item.id} className="text-slate-900">
                     <TableCell className="min-w-[300px]">
                       <div className="flex items-center space-x-4 py-4 px-6">
@@ -228,9 +297,12 @@ export default function ShoppingCart() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
-                              updateQuantity(item.id, Math.max(1, item.quantity - 1))
+                              updateQuantity(
+                                item.id,
+                                Math.max(1, item.quantity - 1),
+                              )
                             }
-                            disabled={updateCartPending || item.quantity <= 1}
+                            disabled={pendingOperations[item.id] === "update" || item.quantity <= 1}
                           >
                             <Minus className="h-4 w-4" />
                             <span className="sr-only">Decrease quantity</span>
@@ -250,6 +322,7 @@ export default function ShoppingCart() {
                                 updateQuantity(item.id, 1);
                             }}
                             className="w-16 h-8 text-center"
+                            disabled={pendingOperations[item.id] === "update"}
                           />
                           <Button
                             variant="outline"
@@ -258,7 +331,7 @@ export default function ShoppingCart() {
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
                             }
-                            disabled={updateCartPending}
+                            disabled={pendingOperations[item.id] === "update"}
                           >
                             <Plus className="h-4 w-4" />
                             <span className="sr-only">Increase quantity</span>
@@ -268,10 +341,10 @@ export default function ShoppingCart() {
                           variant="link"
                           className="text-slate-600"
                           onClick={() => removeItem(item.id)}
-                          disabled={deleteCartPending}
+                          disabled={pendingOperations[item.id] === "delete"}
                         >
                           Remove{" "}
-                          {deleteCartPending && (
+                          {pendingOperations[item.id] === "delete" && (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           )}
                         </Button>
@@ -287,7 +360,7 @@ export default function ShoppingCart() {
           )}
         </Card>
 
-        {cartData.length > 0 && (
+        {sortedCartData.length > 0 && (
           <Card className="p-6 h-fit">
             <div className="space-y-6">
               <div>
@@ -310,8 +383,8 @@ export default function ShoppingCart() {
                         >
                           <Tag className="h-3.5 w-3.5 shrink-0" />
                           <span>
-                            {deal.dealName}: {deal.applications}x (
-                            -${deal.discountAmount.toFixed(2)})
+                            {deal.dealName}: {deal.applications}x ( -$
+                            {deal.discountAmount.toFixed(2)})
                           </span>
                         </div>
                       ))}
