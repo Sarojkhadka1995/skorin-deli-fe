@@ -22,7 +22,7 @@ export const getShopBySlug = async (slug: string): Promise<IShop> => {
 
 export const getProductsByShop = async (
   shopId: string,
-  params?: { sort_by?: string }
+  params?: { status: string; sort_by?: string },
 ): Promise<IProductDetail[]> => {
   try {
     const response = await axiosInstance.get(`/products/shop/${shopId}`, {

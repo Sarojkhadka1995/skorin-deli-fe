@@ -3,11 +3,11 @@ import { ICategory, ICategoryResponse } from "@/interface/category.types";
 
 export const getCategories = async (
   pageNumber: number = 1,
-  limit: number = 12
+  limit: number = 12,
 ): Promise<ICategoryResponse> => {
   try {
     const response = await axiosInstance.get<ICategoryResponse>(
-      `/categories?pageNumber=${pageNumber}&limit=${limit}`
+      `/categories?status=active&pageNumber=${pageNumber}&limit=${limit}`,
     );
     return response?.data;
   } catch (error) {

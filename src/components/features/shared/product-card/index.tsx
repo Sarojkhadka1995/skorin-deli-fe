@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IProductDetail } from "@/interface/product.types";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import CartSheet from "../../cart/cart-sheet";
+// import CartSheet from "../../cart/cart-sheet";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
 import { getCookie } from "cookies-next";
@@ -61,7 +61,18 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
 
       const response = await createCart(payload);
       if (response) {
-        showToast(TOAST_TYPES.success, "Product added to cart");
+        showToast(
+          TOAST_TYPES.success,
+          <div className="flex items-center gap-2">
+            <span>Product added to cart</span>
+            <Link
+              href="/cart"
+              className="underline font-medium text-black hover:text-black"
+            >
+              View cart
+            </Link>
+          </div>,
+        );
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
     }
@@ -166,7 +177,7 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
           >
             {product.quantity === 0 ? "Out of Stock" : "Add to cart"}
           </SheetTrigger>
-          <CartSheet />
+          {/* <CartSheet /> */}
         </Sheet>
         <Button
           variant="outline"

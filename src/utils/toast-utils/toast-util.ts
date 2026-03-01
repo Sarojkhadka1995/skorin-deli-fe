@@ -1,4 +1,4 @@
-import toast, { Toast } from "react-hot-toast";
+import toast, { Toast, Renderable } from "react-hot-toast";
 
 export enum TOAST_TYPES {
   info,
@@ -7,7 +7,7 @@ export enum TOAST_TYPES {
   warning,
 }
 
-export const showToast = (type: TOAST_TYPES, data: string) => {
+export const showToast = (type: TOAST_TYPES, data: Renderable) => {
   // Dismiss any existing toasts
   toast.dismiss();
 

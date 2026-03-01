@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import CartSheet from "../../cart/cart-sheet";
+// import CartSheet from "../../cart/cart-sheet";
 import { getImageUrl } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IProductDetail } from "@/interface/product.types";
@@ -43,7 +43,18 @@ export default function ProductDetail({
   const { mutate: addToCart } = useMutation({
     mutationFn: createCart,
     onSuccess: () => {
-      showToast(TOAST_TYPES.success, "Product added to cart");
+      showToast(
+        TOAST_TYPES.success,
+        <div className="flex items-center gap-2">
+          <span>Product added to cart</span>
+          <button
+            onClick={() => router.push("/cart")}
+            className="underline text-black hover:text-black"
+          >
+            View cart
+          </button>
+        </div>,
+      );
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       setIsSheetOpen(true);
     },
@@ -264,7 +275,7 @@ export default function ProductDetail({
               >
                 Add to cart
               </SheetTrigger>
-              <CartSheet />
+              {/* <CartSheet /> */}
             </Sheet>
           </div>
           {/* Out of stock */}

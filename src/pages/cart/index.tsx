@@ -59,20 +59,17 @@ export default function ShoppingCart() {
 
   const { totalBundleDiscount, appliedDeals } = useMemo(
     () => computeBundleDiscount(cartData, bundleDealsData?.data),
-    [cartData, bundleDealsData?.data]
+    [cartData, bundleDealsData?.data],
   );
 
   const finalTotal = useMemo(
     () => Math.max(0, Number((cartTotal - totalBundleDiscount).toFixed(2))),
-    [cartTotal, totalBundleDiscount]
+    [cartTotal, totalBundleDiscount],
   );
 
   const productIdsInDeals = useMemo(
-    () =>
-      new Set(
-        appliedDeals.flatMap((d) => d.productIds)
-      ),
-    [appliedDeals]
+    () => new Set(appliedDeals.flatMap((d) => d.productIds)),
+    [appliedDeals],
   );
 
   const { mutate: deleteItem, isPending: deleteCartPending } = useMutation({
@@ -148,7 +145,7 @@ export default function ShoppingCart() {
       };
       updateCart(payload);
     },
-    [updateCart, profileData]
+    [updateCart, profileData],
   );
 
   return (
@@ -228,7 +225,10 @@ export default function ShoppingCart() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
-                              updateQuantity(item.id, Math.max(1, item.quantity - 1))
+                              updateQuantity(
+                                item.id,
+                                Math.max(1, item.quantity - 1),
+                              )
                             }
                             disabled={updateCartPending || item.quantity <= 1}
                           >
@@ -310,8 +310,8 @@ export default function ShoppingCart() {
                         >
                           <Tag className="h-3.5 w-3.5 shrink-0" />
                           <span>
-                            {deal.dealName}: {deal.applications}x (
-                            -${deal.discountAmount.toFixed(2)})
+                            {deal.dealName}: {deal.applications}x ( -$
+                            {deal.discountAmount.toFixed(2)})
                           </span>
                         </div>
                       ))}
