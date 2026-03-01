@@ -23,8 +23,14 @@ const Companies = () => {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ["getCompanies"],
-    queryFn: ({ pageParam = 1 }) => getCompanies(pageParam, 6),
+    queryKey: ["getFetaturedCompanies"],
+    queryFn: () =>
+      getCompanies({
+        status: "active",
+        featured: true,
+        pageNumber: 1,
+        limit: 12,
+      }),
     getNextPageParam: (lastPage) => {
       if (Number(lastPage.data.pageNumber) < Number(lastPage.data.totalPages)) {
         return Number(lastPage.data.pageNumber) + 1;
@@ -37,7 +43,6 @@ const Companies = () => {
   // Flatten all items from different pages
   const allCompanies =
     companies?.pages.flatMap((page) => page.data.items) ?? [];
-
   // Load next page when near end
   const handleSlideChange = (swiper: SwiperClass) => {
     const isNearEnd =
@@ -53,9 +58,9 @@ const Companies = () => {
     return (
       <div className="container">
         <Title
-          title="Categories"
-          subtitle="Explore our wide range of categories"
-          viewAllLink="/categories"
+          title="Companies"
+          subtitle="Explore our wide range of companies"
+          viewAllLink="/companies"
         />
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">

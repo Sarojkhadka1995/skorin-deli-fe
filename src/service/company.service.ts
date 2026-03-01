@@ -1,14 +1,16 @@
 import axiosInstance from "@/axios/axiosinstance";
 import { ICategory, ICategoryResponse } from "@/interface/category.types";
+import { ICompanyPaginationParams } from "@/interface/company.types";
+import { ICompanyResponse } from "@/interface/company.types";
 
 export const getCompanies = async (
-  pageNumber: number = 1,
-  limit: number = 12,
-): Promise<ICategoryResponse> => {
+  params?: ICompanyPaginationParams,
+): Promise<ICompanyResponse> => {
   try {
-    const response = await axiosInstance.get<ICategoryResponse>(
-      `/companies?status=active&pageNumber=${pageNumber}&limit=${limit}`,
-    );
+    const response = await axiosInstance.get<ICategoryResponse>(`/companies`, {
+      params,
+    });
+
     return response?.data;
   } catch (error) {
     throw error;

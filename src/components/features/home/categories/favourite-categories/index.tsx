@@ -18,7 +18,13 @@ const FavouriteCategories = () => {
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ["getCategories"],
-    queryFn: () => getCategories(1, 6),
+    queryFn: () =>
+      getCategories({
+        status: "active",
+        featured: true,
+        pageNumber: 1,
+        limit: 6,
+      }),
   });
 
   if (isLoading) {

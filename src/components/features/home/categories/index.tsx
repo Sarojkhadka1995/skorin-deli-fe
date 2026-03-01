@@ -24,8 +24,14 @@ const Categories = () => {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ["getCategories"],
-    queryFn: ({ pageParam = 1 }) => getCategories(pageParam, 6),
+    queryKey: ["getFeaturedCategories"],
+    queryFn: () =>
+      getCategories({
+        status: "active",
+        featured: true,
+        pageNumber: 1,
+        limit: 12,
+      }),
     getNextPageParam: (lastPage) => {
       if (Number(lastPage.data.pageNumber) < Number(lastPage.data.totalPages)) {
         return Number(lastPage.data.pageNumber) + 1;

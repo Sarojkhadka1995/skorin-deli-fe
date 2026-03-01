@@ -18,7 +18,13 @@ const FavouriteCompanies = () => {
 
   const { data: companies, isLoading } = useQuery({
     queryKey: ["getCompanies"],
-    queryFn: () => getCompanies(1, 6),
+    queryFn: () =>
+      getCompanies({
+        status: "active",
+        featured: true,
+        pageNumber: 1,
+        limit: 6,
+      }),
   });
 
   if (isLoading) {

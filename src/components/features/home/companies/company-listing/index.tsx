@@ -28,7 +28,12 @@ export default function CompanyListing() {
 
   const { data: companies, isLoading } = useQuery({
     queryKey: ["getCompanies", currentPage],
-    queryFn: () => getCompanies(currentPage),
+    queryFn: () =>
+      getCompanies({
+        status: "active",
+        pageNumber: currentPage,
+        limit: 12,
+      }),
   });
 
   const totalPages = companies?.data?.totalPages || 1;
@@ -78,13 +83,13 @@ export default function CompanyListing() {
       items.push(
         <PaginationItem key="1">
           <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
       if (startPage > 2) {
         items.push(
           <PaginationItem key="start-ellipsis">
             <PaginationEllipsis />
-          </PaginationItem>
+          </PaginationItem>,
         );
       }
     }
@@ -99,7 +104,7 @@ export default function CompanyListing() {
           >
             {i}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -109,7 +114,7 @@ export default function CompanyListing() {
         items.push(
           <PaginationItem key="end-ellipsis">
             <PaginationEllipsis />
-          </PaginationItem>
+          </PaginationItem>,
         );
       }
       items.push(
@@ -117,7 +122,7 @@ export default function CompanyListing() {
           <PaginationLink onClick={() => handlePageChange(totalPages)}>
             {totalPages}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 

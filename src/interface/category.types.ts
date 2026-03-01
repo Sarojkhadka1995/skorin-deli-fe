@@ -22,4 +22,6 @@ export interface ICategoryResponse {
 export interface ICategoryPaginationParams {
   pageNumber?: number;
   limit?: number;
+  status?: string;
+  featured?: boolean;
 }
