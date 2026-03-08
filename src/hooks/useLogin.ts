@@ -58,7 +58,7 @@ const useLogin = () => {
     onError: (error: AxiosError<ErrorResponse>) => {
       showToast(
         TOAST_TYPES.error,
-        (error.response?.data as ErrorResponse)?.message || "An error occurred"
+        (error.response?.data as ErrorResponse)?.message || "An error occurred",
       );
     },
   });
