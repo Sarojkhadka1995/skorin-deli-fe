@@ -84,11 +84,14 @@ export default function ShoppingCart() {
   );
 
   const { mutate: deleteItem } = useMutation({
-    mutationFn: (data: { userId: number; id: number; originalItem?: ICartItem }) =>
-      deleteCartItem(data.userId, data.id),
+    mutationFn: (data: {
+      userId: number;
+      id: number;
+      originalItem?: ICartItem;
+    }) => deleteCartItem(data.userId, data.id),
     onSuccess: (_, variables) => {
       // Remove from pending operations
-      setPendingOperations(prev => {
+      setPendingOperations((prev) => {
         const newState = { ...prev };
         delete newState[variables.id];
         return newState;
@@ -98,9 +101,11 @@ export default function ShoppingCart() {
     onError: (_, variables) => {
       // Revert the optimistic update
       if (variables.originalItem) {
-        setCartData([...cartData, variables.originalItem].sort((a, b) => a.id - b.id));
+        setCartData(
+          [...cartData, variables.originalItem].sort((a, b) => a.id - b.id),
+        );
       }
-      setPendingOperations(prev => {
+      setPendingOperations((prev) => {
         const newState = { ...prev };
         delete newState[variables.id];
         return newState;
@@ -110,11 +115,20 @@ export default function ShoppingCart() {
   });
 
   const { mutate: updateCart } = useMutation({
-    mutationFn: (data: { userId: number; cartId: number; quantity: number; originalQuantity?: number }) =>
-      updateCartItem({ userId: data.userId, cartId: data.cartId, quantity: data.quantity }),
+    mutationFn: (data: {
+      userId: number;
+      cartId: number;
+      quantity: number;
+      originalQuantity?: number;
+    }) =>
+      updateCartItem({
+        userId: data.userId,
+        cartId: data.cartId,
+        quantity: data.quantity,
+      }),
     onSuccess: (_, variables) => {
       // Remove from pending operations
-      setPendingOperations(prev => {
+      setPendingOperations((prev) => {
         const newState = { ...prev };
         delete newState[variables.cartId];
         return newState;
@@ -125,15 +139,21 @@ export default function ShoppingCart() {
       // Revert the optimistic update (quantity + total)
       if (variables.originalQuantity !== undefined) {
         setCartData(
-          cartData.map(item => {
+          cartData.map((item) => {
             if (item.id !== variables.cartId) return item;
             const unitPrice = Number(item.price);
-            const revertedTotal = (variables.originalQuantity! * unitPrice).toFixed(2);
-            return { ...item, quantity: variables.originalQuantity!, total: revertedTotal };
-          })
+            const revertedTotal = (
+              variables.originalQuantity! * unitPrice
+            ).toFixed(2);
+            return {
+              ...item,
+              quantity: variables.originalQuantity!,
+              total: revertedTotal,
+            };
+          }),
         );
       }
-      setPendingOperations(prev => {
+      setPendingOperations((prev) => {
         const newState = { ...prev };
         delete newState[variables.cartId];
         return newState;
@@ -173,12 +193,12 @@ export default function ShoppingCart() {
     if (!profileData?.id) return;
 
     // Find the item to remove for potential rollback
-    const itemToRemove = sortedCartData.find(item => item.id === id);
+    const itemToRemove = sortedCartData.find((item) => item.id === id);
     if (!itemToRemove) return;
 
     // Optimistic update: remove item immediately
-    setCartData(cartData.filter(item => item.id !== id));
-    setPendingOperations(prev => ({ ...prev, [id]: "delete" }));
+    setCartData(cartData.filter((item) => item.id !== id));
+    setPendingOperations((prev) => ({ ...prev, [id]: "delete" }));
 
     // Clear instructions if this was the last item
     if (sortedCartData.length === 1) {
@@ -188,7 +208,7 @@ export default function ShoppingCart() {
     deleteItem({
       userId: profileData.id,
       id,
-      originalItem: itemToRemove
+      originalItem: itemToRemove,
     });
   };
 
@@ -197,20 +217,18 @@ export default function ShoppingCart() {
       if (!profileData?.id) return;
 
       // Find current item for potential rollback
-      const currentItem = sortedCartData.find(item => item.id === id);
+      const currentItem = sortedCartData.find((item) => item.id === id);
       if (!currentItem) return;
 
       // Optimistic update: update quantity and recalc total so subtotal updates
       const unitPrice = Number(currentItem.price);
       const newTotal = (quantity * unitPrice).toFixed(2);
       setCartData(
-        cartData.map(item =>
-          item.id === id
-            ? { ...item, quantity, total: newTotal }
-            : item
-        )
+        cartData.map((item) =>
+          item.id === id ? { ...item, quantity, total: newTotal } : item,
+        ),
       );
-      setPendingOperations(prev => ({ ...prev, [id]: "update" }));
+      setPendingOperations((prev) => ({ ...prev, [id]: "update" }));
 
       const payload = {
         userId: profileData.id,
@@ -288,7 +306,7 @@ export default function ShoppingCart() {
                               </span>
                             )}
                           </div>
-                          <div className="font-medium">{item.quantity}</div>
+                          {/* <div className="font-medium">{item.quantity}</div> */}
                         </div>
                       </div>
                     </TableCell>
@@ -305,7 +323,10 @@ export default function ShoppingCart() {
                                 Math.max(1, item.quantity - 1),
                               )
                             }
-                            disabled={pendingOperations[item.id] === "update" || item.quantity <= 1}
+                            disabled={
+                              pendingOperations[item.id] === "update" ||
+                              item.quantity <= 1
+                            }
                           >
                             <Minus className="h-4 w-4" />
                             <span className="sr-only">Decrease quantity</span>

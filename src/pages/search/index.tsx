@@ -31,7 +31,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 20;
 
 const SearchPage = () => {
   const router = useRouter();
@@ -48,11 +48,7 @@ const SearchPage = () => {
     queryKey: ["searchProducts", keyword, currentPage],
     queryFn: () =>
       keyword
-        ? searchProducts(
-            keyword as string,
-            currentPage,
-            ITEMS_PER_PAGE,
-          )
+        ? searchProducts(keyword as string, currentPage, ITEMS_PER_PAGE)
         : null,
     enabled: !!keyword,
   });
@@ -193,13 +189,9 @@ const SearchPage = () => {
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() =>
-                    handlePageChange(Math.max(1, currentPage - 1))
-                  }
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   className={
-                    currentPage === 1
-                      ? "pointer-events-none opacity-50"
-                      : ""
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
                   }
                 />
               </PaginationItem>
