@@ -122,14 +122,15 @@ export default function ShoppingCart() {
       showToast(TOAST_TYPES.success, "Cart item updated successfully");
     },
     onError: (_, variables) => {
-      // Revert the optimistic update
+      // Revert the optimistic update (quantity + total)
       if (variables.originalQuantity !== undefined) {
         setCartData(
-          cartData.map(item =>
-            item.id === variables.cartId
-              ? { ...item, quantity: variables.originalQuantity! }
-              : item
-          )
+          cartData.map(item => {
+            if (item.id !== variables.cartId) return item;
+            const unitPrice = Number(item.price);
+            const revertedTotal = (variables.originalQuantity! * unitPrice).toFixed(2);
+            return { ...item, quantity: variables.originalQuantity!, total: revertedTotal };
+          })
         );
       }
       setPendingOperations(prev => {
@@ -199,11 +200,13 @@ export default function ShoppingCart() {
       const currentItem = sortedCartData.find(item => item.id === id);
       if (!currentItem) return;
 
-      // Optimistic update: update quantity immediately
+      // Optimistic update: update quantity and recalc total so subtotal updates
+      const unitPrice = Number(currentItem.price);
+      const newTotal = (quantity * unitPrice).toFixed(2);
       setCartData(
         cartData.map(item =>
           item.id === id
-            ? { ...item, quantity }
+            ? { ...item, quantity, total: newTotal }
             : item
         )
       );

@@ -179,14 +179,14 @@ export default function ProductCard({ product }: { product: IProductDetail }) {
           </SheetTrigger>
           {/* <CartSheet /> */}
         </Sheet>
-        <Button
+        {/* <Button
           variant="outline"
           size="lg"
           className="w-full"
           onClick={() => router.push(`/products/${product.slug}`)}
         >
           View Details
-        </Button>
+        </Button> */}
       </CardFooter>
     </Card>
   );
