@@ -26,10 +26,19 @@ export const getProducts = async (
 
 export const searchProducts = async (
   keyword: string,
-): Promise<IProductDetail[]> => {
+  page: number = 1,
+  limit: number = 12,
+): Promise<{ items: IProductDetail[]; total: number; totalPages: number }> => {
   try {
-    const response = await axiosInstance.get(`/products?keyword=${keyword}`);
-    return response?.data?.data?.items;
+    const response = await axiosInstance.get(
+      `/products?keyword=${keyword}&pageNumber=${page}&limit=${limit}`,
+    );
+    const data = response?.data?.data;
+    return {
+      items: data?.items ?? [],
+      total: data?.total ?? 0,
+      totalPages: data?.totalPages ?? 1,
+    };
   } catch (error) {
     throw error;
   }
