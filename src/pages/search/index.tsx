@@ -21,6 +21,17 @@ import { useRouter } from "next/router";
 import ProductNotFoundCard from "@/components/features/shared/product-not-found";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const SearchPage = () => {
   const router = useRouter();
@@ -29,18 +40,36 @@ const SearchPage = () => {
   const { keyword } = router.query;
   const searchParams = useSearchParams();
   const sortBy = searchParams.get("sort_by") || "featured";
+  const currentPage = Number(searchParams.get("page")) || 1;
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["searchProducts", keyword],
-    queryFn: () => (keyword ? searchProducts(keyword as string) : null),
+  const { data, isLoading } = useQuery({
+    queryKey: ["searchProducts", keyword, currentPage],
+    queryFn: () =>
+      keyword
+        ? searchProducts(
+            keyword as string,
+            currentPage,
+            ITEMS_PER_PAGE,
+          )
+        : null,
     enabled: !!keyword,
   });
+
+  const products = data?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
 
   const handleSort = (value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.set("sort_by", value);
+    current.set("page", "1");
+    router.replace(`${pathname}?${current.toString()}`);
+  };
+
+  const handlePageChange = (page: number) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("page", page.toString());
     router.replace(`${pathname}?${current.toString()}`);
   };
 
@@ -48,6 +77,66 @@ const SearchPage = () => {
     if (searchQuery.trim()) {
       router.push(`/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+
+    let startPage = Math.max(1, currentPage - halfVisible);
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key="1">
+          <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
+        </PaginationItem>,
+      );
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="start-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>,
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            isActive={currentPage === i}
+            onClick={() => handlePageChange(i)}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>,
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="end-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>,
+        );
+      }
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink onClick={() => handlePageChange(totalPages)}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>,
+      );
+    }
+
+    return items;
   };
 
   return (
@@ -83,7 +172,7 @@ const SearchPage = () => {
         {keyword && <FilterSort onSort={handleSort} sortBy={sortBy} />}
         <div
           className={`${
-            products && products?.length > 0
+            products.length > 0
               ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-6"
               : ""
           }`}
@@ -92,12 +181,43 @@ const SearchPage = () => {
             [1, 2, 3, 4].map((item) => (
               <Skeleton key={item} className="h-[300px] w-full" />
             ))}
-          {products?.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        {(!products || products?.length === 0) && keyword && (
+        {!isLoading && products.length === 0 && keyword && (
           <ProductNotFoundCard onButtonClick={() => router.push("/")} />
+        )}
+        {keyword && totalPages > 1 && (
+          <Pagination className="my-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    handlePageChange(Math.max(1, currentPage - 1))
+                  }
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+              {renderPaginationItems()}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    handlePageChange(Math.min(totalPages, currentPage + 1))
+                  }
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     </div>
