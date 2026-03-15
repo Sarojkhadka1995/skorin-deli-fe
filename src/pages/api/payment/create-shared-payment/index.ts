@@ -11,13 +11,23 @@ export default async function handler(
 
     const data = req.body;
 
+    const host =
+      (req.headers["x-forwarded-host"] as string) || req.headers.host || "";
+    const protocol =
+      req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
+    const baseUrl = `${protocol}://${host}`;
+    const redirectUrl = `${baseUrl}/checkout/payment-return`;
+    const cancelUrl = `${baseUrl}/cart`;
+
     // Validate required credentials
     if (
       !process.env.NEXT_PUBLIC_EWAY_API_KEY ||
       !process.env.NEXT_PUBLIC_EWAY_PASSWORD
     ) {
       console.error("Missing eWAY API credentials");
-      return res.status(500).json({ error: "Payment service configuration error" });
+      return res
+        .status(500)
+        .json({ error: "Payment service configuration error" });
     }
 
     const response = await fetch(
@@ -27,28 +37,29 @@ export default async function handler(
         headers: {
           "Content-Type": "application/json",
           Authorization: `Basic ${Buffer.from(
-            `${process.env.NEXT_PUBLIC_EWAY_API_KEY}:${process.env.NEXT_PUBLIC_EWAY_PASSWORD}`
+            `${process.env.NEXT_PUBLIC_EWAY_API_KEY}:${process.env.NEXT_PUBLIC_EWAY_PASSWORD}`,
           ).toString("base64")}`,
         },
         body: JSON.stringify({
-          // Method: "ProcessPayment",
           Method: "ProcessPaymentShared",
           TransactionType: "Purchase",
-          RedirectUrl: data.RedirectUrl,
-          CancelUrl: data.CancelUrl,
+          RedirectUrl: redirectUrl,
+          CancelUrl: cancelUrl,
           Payment: data.Payment,
           CustomerReadOnly: data.CustomerReadOnly,
           CustomView: data.CustomView,
           HeaderText: data.HeaderText,
           Language: data.Language,
         }),
-      }
+      },
     );
 
     // Enhanced error handling for auth issues
     if (response.status === 401) {
       console.error("eWAY API Authentication failed");
-      return res.status(500).json({ error: "Payment service authentication failed" });
+      return res
+        .status(500)
+        .json({ error: "Payment service authentication failed" });
     }
 
     // Check if response is ok
@@ -57,7 +68,9 @@ export default async function handler(
         status: response.status,
         statusText: response.statusText,
       });
-      return res.status(response.status).json({ error: `eWAY API error: ${response.statusText}` });
+      return res
+        .status(response.status)
+        .json({ error: `eWAY API error: ${response.statusText}` });
     }
 
     // Check content type
@@ -77,7 +90,9 @@ export default async function handler(
         SharedPaymentUrl: responseData.SharedPaymentUrl,
       });
     } else {
-      return res.status(400).json({ error: "Failed to create access code", details: responseData });
+      return res
+        .status(400)
+        .json({ error: "Failed to create access code", details: responseData });
     }
   } catch (error) {
     console.error("Error creating access code:", error);
