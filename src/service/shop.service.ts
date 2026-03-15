@@ -1,5 +1,5 @@
 import axiosInstance from "@/axios/axiosinstance";
-import { IProductDetail } from "@/interface/product.types";
+import { IBaseProductResponse } from "@/interface/product.types";
 import { IShop, IShopResponse } from "@/interface/shop.types";
 
 export const getShops = async (): Promise<IShop[]> => {
@@ -22,13 +22,18 @@ export const getShopBySlug = async (slug: string): Promise<IShop> => {
 
 export const getProductsByShop = async (
   shopId: string,
-  params?: { status: string; sort_by?: string },
-): Promise<IProductDetail[]> => {
+  params?: {
+    status: string;
+    sort_by?: string;
+    pageNumber?: number;
+    limit?: number;
+  },
+): Promise<IBaseProductResponse> => {
   try {
     const response = await axiosInstance.get(`/products/shop/${shopId}`, {
       params,
     });
-    return response?.data?.data;
+    return response?.data;
   } catch (error) {
     throw error;
   }

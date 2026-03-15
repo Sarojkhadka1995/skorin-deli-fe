@@ -11,7 +11,7 @@ const TransparentRedirectPage = () => {
   // const [formActionUrl, setFormActionUrl] = useState<string | null>(null);
   // const [accessCode, setAccessCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const responseCode = searchParams.get("AccessCode");
@@ -73,7 +73,7 @@ const TransparentRedirectPage = () => {
 
   const generateSharedAccessCode = async () => {
     try {
-      setError(null);
+      // setError(null);
       setIsLoading(true);
 
       const paymentData = {
@@ -102,11 +102,11 @@ const TransparentRedirectPage = () => {
         window.location.href = data.SharedPaymentUrl;
         setIsLoading(false);
       } else {
-        setError("Payment initialization failed. Please try again.");
+        // setError("Payment initialization failed. Please try again.");
         console.error("Failed to get access code:", data.error);
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      // setError("Something went wrong. Please try again.");
       console.error("Error generating access code:", error);
     } finally {
       setIsLoading(false);
@@ -128,71 +128,71 @@ const TransparentRedirectPage = () => {
 
       const data = await response.json();
 
-      const exampleResponse = {
-        Transactions: [
-          {
-            AuthorisationCode: "268309",
-            ResponseCode: "00",
-            ResponseMessage: "A2000",
-            InvoiceNumber: "INV-1738908499821",
-            InvoiceReference: "",
-            TotalAmount: 1000,
-            TransactionID: 39946119,
-            TransactionStatus: true,
-            TokenCustomerID: null,
-            BeagleScore: null,
-            Options: [],
-            Verification: {
-              CVN: 0,
-              Address: 0,
-              Email: 0,
-              Mobile: 0,
-              Phone: 0,
-            },
-            BeagleVerification: {
-              Email: 0,
-              Phone: 0,
-            },
-            Customer: {
-              TokenCustomerID: null,
-              Reference: null,
-              Title: "Mr.",
-              FirstName: null,
-              LastName: null,
-              CompanyName: null,
-              JobDescription: null,
-              Street1: null,
-              Street2: "",
-              City: "",
-              State: "",
-              PostalCode: "",
-              Country: "",
-              Email: "",
-              Phone: "",
-              Mobile: null,
-              Comments: null,
-              Fax: null,
-              Url: null,
-            },
-            CustomerNote: null,
-            ShippingAddress: {
-              ShippingMethod: null,
-              FirstName: "",
-              LastName: "",
-              Street1: "",
-              Street2: "",
-              City: "",
-              State: "",
-              Country: "",
-              PostalCode: "",
-              Email: "",
-              Phone: "",
-              Fax: null,
-            },
-          },
-        ],
-        Errors: "",
-      };
+      // const exampleResponse = {
+      //   Transactions: [
+      //     {
+      //       AuthorisationCode: "268309",
+      //       ResponseCode: "00",
+      //       ResponseMessage: "A2000",
+      //       InvoiceNumber: "INV-1738908499821",
+      //       InvoiceReference: "",
+      //       TotalAmount: 1000,
+      //       TransactionID: 39946119,
+      //       TransactionStatus: true,
+      //       TokenCustomerID: null,
+      //       BeagleScore: null,
+      //       Options: [],
+      //       Verification: {
+      //         CVN: 0,
+      //         Address: 0,
+      //         Email: 0,
+      //         Mobile: 0,
+      //         Phone: 0,
+      //       },
+      //       BeagleVerification: {
+      //         Email: 0,
+      //         Phone: 0,
+      //       },
+      //       Customer: {
+      //         TokenCustomerID: null,
+      //         Reference: null,
+      //         Title: "Mr.",
+      //         FirstName: null,
+      //         LastName: null,
+      //         CompanyName: null,
+      //         JobDescription: null,
+      //         Street1: null,
+      //         Street2: "",
+      //         City: "",
+      //         State: "",
+      //         PostalCode: "",
+      //         Country: "",
+      //         Email: "",
+      //         Phone: "",
+      //         Mobile: null,
+      //         Comments: null,
+      //         Fax: null,
+      //         Url: null,
+      //       },
+      //       CustomerNote: null,
+      //       ShippingAddress: {
+      //         ShippingMethod: null,
+      //         FirstName: "",
+      //         LastName: "",
+      //         Street1: "",
+      //         Street2: "",
+      //         City: "",
+      //         State: "",
+      //         Country: "",
+      //         PostalCode: "",
+      //         Email: "",
+      //         Phone: "",
+      //         Fax: null,
+      //       },
+      //     },
+      //   ],
+      //   Errors: "",
+      // };
 
       if (data.Errors?.length > 0) {
         console.error("Payment status error:", data.error);

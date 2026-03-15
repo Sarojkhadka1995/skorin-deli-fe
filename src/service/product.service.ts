@@ -1,5 +1,6 @@
 import axiosInstance from "@/axios/axiosinstance";
 import {
+  IBaseProductResponse,
   // IProduct,
   // IProductResponse,
   // IFeaturedProductResponse,
@@ -75,14 +76,19 @@ export const getSpecialProducts = async (): Promise<IProductDetail[]> => {
 
 export const getProductsByCategory = async (
   categoryId: string,
-  params?: { status: string; sort_by?: string },
-): Promise<IProductDetail[]> => {
+  params?: {
+    status: string;
+    sort_by?: string;
+    pageNumber?: number;
+    limit?: number;
+  },
+): Promise<IBaseProductResponse> => {
   try {
     const response = await axiosInstance.get(
       `/products/category/${categoryId}`,
       { params },
     );
-    return response?.data?.data;
+    return response?.data;
   } catch (error) {
     throw error;
   }
@@ -90,8 +96,13 @@ export const getProductsByCategory = async (
 
 export const getProductsByCompany = async (
   companyId: string,
-  params?: { status: string; sort_by?: string },
-): Promise<IProductDetail[]> => {
+  params?: {
+    status: string;
+    sort_by?: string;
+    pageNumber?: number;
+    limit?: number;
+  },
+): Promise<IBaseProductResponse> => {
   try {
     const response = await axiosInstance.get(`/products/company/${companyId}`, {
       params,
