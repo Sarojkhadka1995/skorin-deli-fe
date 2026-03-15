@@ -43,7 +43,7 @@ export interface IProductDetail {
 }
 
 // Base response type for common structure
-interface IBaseProductResponse {
+export interface IBaseProductResponse {
   status: string;
   data: {
     items: IProductDetail[];

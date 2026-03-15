@@ -30,7 +30,7 @@ import { TOAST_TYPES } from "@/utils/toast-utils/toast-util";
 import { deleteCartItem, updateCartItem } from "@/services/cart/cart.service";
 import useProfileStore from "@/store/useProfileStore";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getImageUrl } from "@/lib/utils";
 import { ICartItem } from "@/interface/cart.types";
 import { ICreateOrder } from "@/interface/order.types";
@@ -40,7 +40,6 @@ import { getBundleDeals } from "@/services/bundle/bundle.service";
 import { computeBundleDiscount } from "@/lib/bundle-discount";
 
 export default function ShoppingCart() {
-  const queryClient = useQueryClient();
   const {
     cartData,
     cartTotal,
@@ -56,6 +55,8 @@ export default function ShoppingCart() {
   const [pendingOperations, setPendingOperations] = useState<{
     [itemId: number]: "update" | "delete";
   }>({});
+  // Keep loader visible until we actually redirect to payment (standard ecommerce UX)
+  const [checkoutInProgress, setCheckoutInProgress] = useState(false);
 
   const { data: bundleDealsData } = useQuery({
     queryKey: ["bundle-deals"],
@@ -162,23 +163,55 @@ export default function ShoppingCart() {
     },
   });
 
-  const { mutate: orderMutation, isPending: orderPending } = useMutation({
-    mutationFn: (payload: ICreateOrder) => orderCreate(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      clearOrderInstructions();
-      showToast(TOAST_TYPES.success, "Order created successfully");
-    },
-    onError: () => {
-      showToast(TOAST_TYPES.error, "Failed to create order");
-    },
-  });
+  const { mutateAsync: orderCreateMutation, isPending: orderPending } =
+    useMutation({
+      mutationFn: (payload: ICreateOrder) => orderCreate(payload),
+      onError: () => {
+        showToast(TOAST_TYPES.error, "Failed to create order");
+      },
+    });
 
-  const order = useCallback(() => {
+  const redirectToPayment = useCallback(
+    async (amountDollars: number, invoiceNumber: string) => {
+      const paymentData = {
+        Payment: {
+          TotalAmount: Math.round(amountDollars * 100),
+          InvoiceNumber: invoiceNumber,
+          InvoiceDescription: "Skorin Deli order",
+          CurrencyCode: "AUD",
+        },
+        RedirectUrl: `${typeof window !== "undefined" ? window.location.origin : ""}/checkout/payment-return`,
+        CancelUrl: `${typeof window !== "undefined" ? window.location.origin : ""}/cart`,
+        Method: "ProcessPayment",
+        TransactionType: "Purchase",
+      };
+
+      const response = await fetch("/api/payment/create-shared-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentData),
+      });
+
+      const data = await response.json();
+      if (data.SharedPaymentUrl) {
+        window.location.href = data.SharedPaymentUrl;
+      } else {
+        setCheckoutInProgress(false);
+        showToast(
+          TOAST_TYPES.error,
+          data.error || "Payment initialization failed",
+        );
+      }
+    },
+    [],
+  );
+
+  const order = useCallback(async () => {
     if (!profileData?.id) return;
+    setCheckoutInProgress(true);
     const payload: ICreateOrder = {
-      userId: profileData?.id,
-      items: sortedCartData?.map((item: ICartItem) => ({
+      userId: profileData.id,
+      items: sortedCartData.map((item: ICartItem) => ({
         productId: item.product.id,
         quantity: item.quantity,
         productName: item.product.name,
@@ -186,8 +219,23 @@ export default function ShoppingCart() {
       })),
       orderInstructions,
     };
-    orderMutation(payload);
-  }, [orderMutation, profileData, orderInstructions, sortedCartData]);
+    try {
+      const created = await orderCreateMutation(payload);
+      const invoiceNumber =
+        created?.id != null ? `INV-${created.id}` : `INV-${Date.now()}`;
+      await redirectToPayment(finalTotal, invoiceNumber);
+    } catch {
+      setCheckoutInProgress(false);
+      // onError already shows toast
+    }
+  }, [
+    orderCreateMutation,
+    profileData,
+    orderInstructions,
+    sortedCartData,
+    finalTotal,
+    redirectToPayment,
+  ]);
 
   const removeItem = (id: number) => {
     if (!profileData?.id) return;
@@ -448,10 +496,12 @@ export default function ShoppingCart() {
                 className="w-full"
                 size="lg"
                 onClick={order}
-                disabled={orderPending}
+                disabled={orderPending || checkoutInProgress}
               >
                 Check Out{" "}
-                {orderPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {(orderPending || checkoutInProgress) && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
               </Button>
             </div>
           </Card>
