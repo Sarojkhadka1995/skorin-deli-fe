@@ -78,7 +78,7 @@ export function ShopMenuAccordion() {
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
-                )
+                ),
             )}
             {/* ) : (
                 <Link

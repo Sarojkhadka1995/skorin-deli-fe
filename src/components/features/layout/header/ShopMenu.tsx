@@ -5,20 +5,25 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { getShops } from "@/service/shop.service";
+// import { getShops } from "@/service/shop.service";
 import { useQuery } from "@tanstack/react-query";
-import { IShop } from "@/interface/shop.types";
+import { getCategories } from "@/service/category.service";
+import { ICategoryResponse } from "@/interface/category.types";
 
 export function ShopMenu() {
-  const { data: shops, isLoading } = useQuery<IShop[]>({
-    queryKey: ["getShops"],
-    queryFn: () => getShops(),
+  const { data: categories, isLoading } = useQuery<ICategoryResponse>({
+    queryKey: ["getCategories"],
+    // queryFn: () => getShops(),
+    queryFn: () =>
+      getCategories({
+        status: "active",
+        featured: true,
+        pageNumber: 1,
+        limit: 10000,
+      }),
   });
 
   if (isLoading) return null;
-
-  // Get categories from the first shop
-  const categories = shops?.[0]?.categories || [];
 
   return (
     <HoverCard openDelay={0} closeDelay={600}>
@@ -86,7 +91,7 @@ export function ShopMenu() {
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-0">
         <ul className="text-sm max-h-[300px] overflow-y-auto">
-          {categories.map((category) => (
+          {categories?.data.items.map((category) => (
             <li key={category.id}>
               <Link
                 href={`/categories/${category.slug}?type=category`}

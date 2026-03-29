@@ -207,7 +207,7 @@ export default function SlidingMenu() {
                         </span>
                         {item.items && <ChevronRight className="h-4 w-4" />}
                       </Button>
-                    )
+                    ),
                   )}
                 </div>
 

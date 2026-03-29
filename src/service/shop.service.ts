@@ -2,9 +2,13 @@ import axiosInstance from "@/axios/axiosinstance";
 import { IBaseProductResponse } from "@/interface/product.types";
 import { IShop, IShopResponse } from "@/interface/shop.types";
 
-export const getShops = async (): Promise<IShop[]> => {
+export const getShops = async (params?: {
+  limit?: number;
+}): Promise<IShop[]> => {
   try {
-    const response = await axiosInstance.get<IShopResponse>("/shops");
+    const response = await axiosInstance.get<IShopResponse>("/shops", {
+      params,
+    });
     return response?.data?.data?.items;
   } catch (error) {
     throw error;
