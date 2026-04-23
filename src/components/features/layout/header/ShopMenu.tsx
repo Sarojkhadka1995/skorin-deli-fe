@@ -12,16 +12,19 @@ import { ICategoryResponse } from "@/interface/category.types";
 
 export function ShopMenu() {
   const { data: categories, isLoading } = useQuery<ICategoryResponse>({
-    queryKey: ["getCategories"],
     // queryFn: () => getShops(),
     queryFn: () =>
       getCategories({
-        status: "active",
         featured: true,
-        pageNumber: 1,
         limit: 10000,
+        pageNumber: 1,
+        status: "active",
       }),
+    queryKey: ["getCategories"],
   });
+  const sortedCategories = categories?.data.items
+    ? [...categories.data.items].sort((a, b) => a.name.localeCompare(b.name))
+    : [];
 
   if (isLoading) return null;
 
@@ -91,7 +94,7 @@ export function ShopMenu() {
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-0">
         <ul className="text-sm max-h-[300px] overflow-y-auto">
-          {categories?.data.items.map((category) => (
+          {sortedCategories.map((category) => (
             <li key={category.id}>
               <Link
                 href={`/categories/${category.slug}?type=category`}

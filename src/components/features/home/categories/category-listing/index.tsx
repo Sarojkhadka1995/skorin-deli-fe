@@ -21,6 +21,7 @@ import { useSearchParams } from "next/navigation";
 import { usePathname } from "next/navigation";
 
 export default function CategoryListing() {
+  const ITEMS_PER_PAGE = 12
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -28,16 +29,24 @@ export default function CategoryListing() {
   const currentPage = Number(searchParams.get("page")) || 1;
 
   const { data: categories, isLoading } = useQuery({
-    queryKey: ["getCategories", currentPage],
+    queryKey: ["getCategories"],
     queryFn: () =>
       getCategories({
         status: "active",
-        pageNumber: currentPage,
-        limit: 12,
+        pageNumber: 1,
+        limit: 1000,
       }),
   });
 
-  const totalPages = categories?.data?.totalPages || 1;
+  const allCategories = (categories?.data?.items ?? [])
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const totalPages = Math.max(1, Math.ceil(allCategories.length / ITEMS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedCategories = allCategories.slice(
+    (safeCurrentPage - 1) * ITEMS_PER_PAGE,
+    safeCurrentPage * ITEMS_PER_PAGE,
+  );
 
   if (isLoading) {
     return (
@@ -57,7 +66,7 @@ export default function CategoryListing() {
     );
   }
 
-  if (!categories?.data?.items?.length) {
+  if (!allCategories.length) {
     return null;
   }
 
@@ -72,7 +81,7 @@ export default function CategoryListing() {
     const maxVisiblePages = 5;
     const halfVisible = Math.floor(maxVisiblePages / 2);
 
-    let startPage = Math.max(1, currentPage - halfVisible);
+    let startPage = Math.max(1, safeCurrentPage - halfVisible);
     const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
@@ -100,7 +109,7 @@ export default function CategoryListing() {
       items.push(
         <PaginationItem key={i}>
           <PaginationLink
-            isActive={currentPage === i}
+            isActive={safeCurrentPage === i}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -134,7 +143,7 @@ export default function CategoryListing() {
     <div className="pb-10">
       <Title title="Collections" className="pt-0" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories?.data?.items?.map((category) => (
+        {paginatedCategories.map((category) => (
           <Link
             key={category.id}
             href={`/categories/${category.slug}`}
@@ -164,9 +173,9 @@ export default function CategoryListing() {
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                onClick={() => handlePageChange(Math.max(1, safeCurrentPage - 1))}
                 className={
-                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  safeCurrentPage === 1 ? "pointer-events-none opacity-50" : ""
                 }
               />
             </PaginationItem>
@@ -174,10 +183,10 @@ export default function CategoryListing() {
             <PaginationItem>
               <PaginationNext
                 onClick={() =>
-                  handlePageChange(Math.min(totalPages, currentPage + 1))
+                  handlePageChange(Math.min(totalPages, safeCurrentPage + 1))
                 }
                 className={
-                  currentPage === totalPages
+                  safeCurrentPage === totalPages
                     ? "pointer-events-none opacity-50"
                     : ""
                 }

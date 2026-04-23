@@ -23,8 +23,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getShops } from "@/service/shop.service";
-import { IShop } from "@/interface/shop.types";
+import { getCategories } from "@/service/category.service";
+import { ICategoryResponse } from "@/interface/category.types";
 
 import storeIcon from "@/public/icons/shop.svg";
 import truckIcon from "@/public/icons/truck.svg";
@@ -49,9 +49,15 @@ export default function SlidingMenu() {
   const [isMounted, setIsMounted] = useState(false);
   const isLoggedIn = getCookie(COOKIE_CONFIG.loggedIn);
 
-  const { data: shops } = useQuery<IShop[]>({
-    queryKey: ["getShops"],
-    queryFn: () => getShops(),
+  const { data: categories } = useQuery<ICategoryResponse>({
+    queryFn: () =>
+      getCategories({
+        featured: true,
+        limit: 10000,
+        pageNumber: 1,
+        status: "active",
+      }),
+    queryKey: ["getCategories"],
   });
 
   const currentMenu = history[history.length - 1];
@@ -71,7 +77,10 @@ export default function SlidingMenu() {
   }, []);
 
   useEffect(() => {
-    if (shops) {
+    if (categories) {
+      const sortedCategories = [...categories.data.items].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
       const shopMenuItems: MenuItem = {
         title: "Menu",
         items: [
@@ -91,7 +100,7 @@ export default function SlidingMenu() {
           {
             title: "Categories",
 
-            items: shops?.[0]?.categories?.map((category) => ({
+            items: sortedCategories.map((category) => ({
               title: category.name,
               href: `/categories/${category.slug}`,
             })),
@@ -107,7 +116,7 @@ export default function SlidingMenu() {
       };
       setHistory([shopMenuItems]);
     }
-  }, [shops]);
+  }, [categories, isLoggedIn]);
 
   if (!isMounted) {
     return null;

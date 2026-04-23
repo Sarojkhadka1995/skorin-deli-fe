@@ -30,7 +30,7 @@ const Categories = () => {
         status: "active",
         featured: true,
         pageNumber: 1,
-        limit: 12,
+        limit: 1000,
       }),
     getNextPageParam: (lastPage) => {
       if (Number(lastPage.data.pageNumber) < Number(lastPage.data.totalPages)) {
@@ -42,8 +42,11 @@ const Categories = () => {
   });
 
   // Flatten all items from different pages
-  const allCategories =
-    categories?.pages.flatMap((page) => page.data.items) ?? [];
+  const allCategories = (
+    categories?.pages.flatMap((page) => page.data.items) ?? []
+  )
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   // Load next page when near end
   const handleSlideChange = (swiper: SwiperClass) => {
